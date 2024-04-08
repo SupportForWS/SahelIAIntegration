@@ -1,0 +1,445 @@
+﻿[
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+
+  {
+    "Key": "OrgNameChangeRequest",
+    "LocalizedValue": {
+      "en": "Organization Name Change Request.",
+      "ar": "طلب تغيير اسم المؤسسة"
+    }
+  },
+
+  {
+    "Key": "RequestAlreadySubmitted",
+    "LocalizedValue": {
+      "en": "A Request for the service (SERVICENAME) has been already submitted. Please check my request screen for the status.",
+      "ar": ".تم تقديم طلب للخدمة (اسم الخدمة) بالفعل. يرجى التحقق من شاشة طلبي للحالة"
+    }
+  },
+
+  {
+    "Key": "OrganizationUpdateRequestCurrentlyActive",
+    "LocalizedValue": {
+      "en": "You cannot create this request when an Organization Update Request is in progress.",
+      "ar": ".لا يمكنك إنشاء هذا الطلب عندما يكون طلب تحديث المؤسسة قيد التقدم"
+    }
+  },
+
+  {
+    "Key": "ActiveRequestOrWorkingData",
+    "LocalizedValue": {
+      "en": "A request has been already submitted and in progress (or) the entered details are related to another organization. Please try again with different details or wait till the submitted request gets completed.",
+      "ar": "تم إرسال طلب بالفعل وهو قيد التقدم (أو) تتعلق التفاصيل المدخلة بمؤسسة أخرى. يرجى المحاولة مرة أخرى بتفاصيل مختلفة أو الانتظار حتى يكتمل الطلب المقدم."
+    }
+  },
+
+
+  {
+    "Key": "ActiveRequestForLicensrequest",
+    "LocalizedValue": {
+      "en": "A request has been already submitted and in progress. Please wait till the submitted request gets completed.",
+      "ar": "تم إرسال طلب بالفعل وهو قيد التقدم . يرجى الانتظار حتى يكتمل الطلب المقدم."
+    }
+  },
+
+  {
+    "Key": "LicenseAlreadyRelatedWithAnotherOrg",
+    "LocalizedValue": {
+      "en": "The selected license details are related to another organization",
+      "ar": "تتعلق تفاصيل الرخصة المختارة بمؤسسة أخرى"
+    }
+  },
+
+  {
+    "Key": "LicenseAlreadyHaveSameDateRange",
+    "LocalizedValue": {
+      "en": "The selected license already exists with the same date range",
+      "ar": "رقم الرخصة المختار موجود بالفعل بنفس نطاق التاريخ"
+    }
+  },
+
+ 
+
+  {
+    "Key": "NewImportLicenseRequest",
+    "LocalizedValue": {
+      "en": "Add New Import License Request.",
+      "ar": ".إضافة طلب ترخيص استيراد جديد"
+    }
+  },
+
+  {
+    "Key": "LicenseIssuerRequired",
+    "LocalizedValue": {
+      "en": "Please select a License Issuer.",
+      "ar": ".الرجاء تحديد جهة إصدار الترخيص"
+    }
+  },
+
+  {
+    "Key": "SubEpayment_Others",
+    "LocalizedValue": {
+      "en": "Others.",
+      "ar": ".أخرى"
+    }
+  },
+
+  {
+    "Key": "RenewImportLicenseRequest",
+    "LocalizedValue": {
+      "en": "Import License Renewal Request.",
+      "ar": "طلب تجديد رخصة الإستيراد"
+    }
+  },
+
+  {
+    "Key": "RenewIndustrialLicenseRequest",
+    "LocalizedValue": {
+      "en": "Industrial License Renewal Request.",
+      "ar": "طلب تجديد الرخصة الصناعية"
+    }
+  },
+
+  {
+    "Key": "RenewCommercialLisenseRequest",
+    "LocalizedValue": {
+      "en": "Commercial License Renewal Request.",
+      "ar": "طلب تجديد الرخصة التجارية"
+    }
+  },
+
+  {
+    "Key": "AddNewAuthorizedSignatory",
+    "LocalizedValue": {
+      "en": "Add New Authorized Signatory Request.",
+      "ar": "إضافة طلب توقيع مفوض جديد"
+    }
+  },
+
+  {
+    "Key": "RenewAuthorizedSignatory",
+    "LocalizedValue": {
+      "en": "Renew Authorized Signatory Request.",
+      "ar": "تجديد طلب المفوض بالتوقيع"
+    }
+  },
+
+  {
+    "Key": "RemoveAuthorizedSignatory",
+    "LocalizedValue": {
+      "en": "Remove Authorized Signatory Request.",
+      "ar": "إزالة طلب المفوض بالتوقيع"
+    }
+  },
+
+  {
+    "Key": "ChangeCommercialAddress",
+    "LocalizedValue": {
+      "en": "Change Commercial Address Request.",
+      "ar": "طلب تغيير العنوان التجاري"
+    }
+  },
+
+  {
+    "Key": "RegionRequired",
+    "LocalizedValue": {
+      "en": "Please select the Region.",
+      "ar": "الرجاء تحديد المنطقة"
+    }
+  },
+
+  {
+    "Key": "GovernorateRequired",
+    "LocalizedValue": {
+      "en": "Please select the Governorate.",
+      "ar": "الرجاء تحديد المحافظة"
+    }
+  },
+
+  {
+    "Key": "NoRelatedImportLicenseForTradeLicense",
+    "LocalizedValue": {
+      "en": "There are no other import licenses associated with your trade license.",
+      "ar": "لا توجد تراخيص استيراد أخرى مرتبطة بالرخصة التجارية الخاصة بك"
+    }
+  },
+
+  {
+    "Key": "somethingwentwrong",
+    "LocalizedValue": {
+      "en": "Something went wrong, Please try again later.",
+      "ar": "هناك شئ خاطئ، يرجى المحاولة فى وقت لاحق"
+    }
+  },
+
+  {
+    "Key": "ErrorMessageResourceNameEnglish",
+    "LocalizedValue": {
+      "en": " Company name in English.",
+      "ar": "اسم الشركة باللغة الإنجليزية"
+    }
+  },
+
+  {
+    "Key": "ErrorMessageResourceNameArabic",
+    "LocalizedValue": {
+      "en": " Company name in Arabic.",
+      "ar": "اسم الشركة باللغة العربية"
+    }
+  },
+  {
+    "Key": "AuthorizzedPersonName",
+    "LocalizedValue": {
+      "en": "Please enter the Authorized person name",
+      "ar": "اسم المعتمد للتوقيع"
+    }
+  },
+  {
+    "Key": "IssueDateRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Issue Date",
+      "ar": "الرجاء اختيار تاريخ الاصدار"
+    }
+  },
+
+  {
+    "Key": "ErrorMessageResourceNameArabic",
+    "LocalizedValue": {
+      "en": " Company name in Arabic.",
+      "ar": "اسم الشركة باللغة العربية"
+    }
+  },
+  {
+    "Key": "CannotRemoveAuthSignatory",
+    "LocalizedValue": {
+      "en": "You cannot remove the authorized signatory as there is only one authorized signatory available for the Organization currently",
+      "ar": "لا يمكنك حذف المفوض بالتوقيع حيث يجب أن يكون هناك مفوض بالتوقيع واحد على الأقل للشركة"
+    }
+  },
+  {
+    "Key": "PostalCodeRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Postal Code",
+      "ar": "الرجاء ادخال الرمز البريدي"
+    }
+  },
+  {
+    "Key": "CountryRequired",
+    "LocalizedValue": {
+      "en": "Address is Required",
+      "ar": "الرجاء كتابة العنوان كاملاً"
+    }
+  },
+  {
+    "Key": "BusinessNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Business number",
+      "ar": "الرجاء كتابة رقم الهاتف"
+    }
+  },
+  {
+    "Key": "BusiFaxNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Business Fax Number",
+      "ar": "يرجى إدخال رقم فاكس العمل"
+    }
+  },
+  {
+    "Key": "MobileNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Mobile Number",
+      "ar": "يرجى إدخال رقم الهاتف النقال"
+    }
+  },
+  {
+    "Key": "ResidenceNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Residence Number",
+      "ar": "يرجى إدخال رقم الإقامة"
+    }
+  },
+  {
+    "Key": "EnterMobileEmail1",
+    "LocalizedValue": {
+      "en": "Please enter Company  Email ID ",
+      "ar": "الرجاء كتابة  البريد الإلكتروني للشركة"
+    }
+  },
+  {
+    "Key": "WebPageAddressRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Web Page Address",
+      "ar": "يرجى إدخال عنوان صفحة الويب"
+    }
+  },
+  {
+    "Key": "BlockRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Block",
+      "ar": "الرجاء ادخال القطعة"
+    }
+  },
+  {
+    "Key": "StreetRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Street",
+      "ar": "الرجاء ادخال الشارع"
+    }
+  },
+  {
+    "Key": "FloorRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Floor Number",
+      "ar": "الرجاء إدخال رقم الطابق"
+    }
+  },
+  {
+    "Key": "ApartmentTypeRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Apartment type",
+      "ar": "الرجاء إدخال نوع الشقة"
+    }
+  },
+  {
+    "Key": "ApartmentNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Apartment number",
+      "ar": "الرجاء إدخال رقم الشقة"
+    }
+  },
+  {
+    "Key": "PostBoxNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Post Box number",
+      "ar": "الرجاء كتابة رقم صندوق  البريد"
+    }
+  },
+  {
+    "Key": "ExpiryDateisRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Expiry Date",
+      "ar": "الرجاء اختيار تاريخ الانتهاء"
+    }
+  },
+  {
+    "Key": "ErrorOccurred",
+    "LocalizedValue": {
+      "en": "Something Went Wrong,Please try again later",
+      "ar": "هناك شئ خاطئ، يرجى المحاولة فى وقت لاحق"
+    }
+  },
+  {
+    "Key": "noApprovedOrganization",
+    "LocalizedValue": {
+      "en": "Our Records, indicates, that you Don't have Any Approved Organization, Please Make sure that you have any Approved Organization. ",
+      "ar": "لن تستطيع استخدام الخدمات، حيث تفيد سجلاتنا بعدم وجود شركة موافق عليها و مسجلة ضمن حسابك ، الرجاء التأكد من ارسال طلب تسجيل شركة، ثم التأكد من الموافقة عليه"
+    }
+  },
+  {
+    "Key": "noLicenceNumberError",
+    "LocalizedValue": {
+      "en": "Please, Add Your Trade Licence Number",
+      "ar": "الرجاء ، كتابة رقم الرخصة التجارية"
+    }
+  },
+  {
+    "Key": "CustomBusinessActivityAlreadyInActive",
+    "LocalizedValue": {
+      "en": "Customs Business Activity Already Inactive",
+      "ar": "هذا النشاط غير مفعل"
+    }
+  },
+
+  {
+    "Key": "CustomBusinessActivityAlreadyActive",
+    "LocalizedValue": {
+      "en": "Customs Business Activity Already Active",
+      "ar": "هذا النشاط مفعل"
+    }
+  },
+
+  {
+    "Key": "SubmittedDate",
+    "LocalizedValue": {
+      "en": "Submitted Date",
+      "ar": "تاريخ الارسال"
+    }
+  },
+  {
+    "Key": "Activated",
+    "LocalizedValue": {
+      "en": "Activated",
+      "ar": "تم التفعيل"
+    }
+  },
+  {
+    "Key": "DeActivated",
+    "LocalizedValue": {
+      "en": "Deactivated",
+      "ar": "تم إيقاف التفعيل"
+    }
+  },
+
+  {
+    "Key": "Extended",
+    "LocalizedValue": {
+      "en": "Extended",
+      "ar": "تم التمديد"
+    }
+  },
+
+  {
+    "Key": "Released",
+    "LocalizedValue": {
+      "en": "Released",
+      "ar": "تم الإفراج"
+    }
+  },
+
+  {
+    "Key": "InitialReleased",
+    "LocalizedValue": {
+      "en": "Initial Released",
+      "ar": "إفراج مبدأي"
+    }
+  },
+
+  {
+    "Key": "Seized",
+    "LocalizedValue": {
+      "en": "Seized",
+      "ar": "تم الحجز"
+    }
+  },
+
+  {
+    "Key": "Corporation",
+    "LocalizedValue": {
+      "en": "Corporation",
+      "ar": "مساهمة"
+    }
+  },
+
+  {
+    "Key": "Partnership",
+    "LocalizedValue": {
+      "en": "Partnership",
+      "ar": "شركات اشخاص"
+    }
+  },
+
+  {
+    "Key": "Personal",
+    "LocalizedValue": {
+      "en": "Personal",
+      "ar": "فردي"
+    }
+  }
+
+]

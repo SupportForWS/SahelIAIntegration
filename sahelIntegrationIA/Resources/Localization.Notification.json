@@ -1,0 +1,9 @@
+﻿[
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  }
+]

@@ -1,0 +1,56 @@
+﻿[
+  {
+    "Key": "Submitted",
+    "LocalizedValue": {
+      "en": "Submitted",
+      "ar": "تم الارسال"
+    }
+  },
+  {
+    "Key": "Approved",
+    "LocalizedValue": {
+      "en": "Approved",
+      "ar": "تمت الموافقة"
+    }
+  },
+  {
+    "Key": "Created",
+    "LocalizedValue": {
+      "en": "Created",
+      "ar": "تم الإنشاء"
+    }
+  },
+  {
+    "Key": "Rejected",
+    "LocalizedValue": {
+      "en": "Rejected",
+      "ar": "تم الرفض"
+    }
+  },
+
+  {
+    "Key": "NoIndustrialLicence",
+    "LocalizedValue": {
+      "en": "There is no information available for entered industrial license number, please re-enter the correct industrial license number, and try again",
+      "ar": "لا يوجد معلومات متوفرة عن رقم الترخيص الصناعي الذي تم إدخاله، يرجى إعادة إدخال رقم الترخيص الصناعي بشكل صحيح وإعادة المحاولة"
+    }
+  },
+
+  {
+    "Key": "approvedStatus",
+    "LocalizedValue": {
+      "en": "Request has been Approved",
+      "ar": "تمت الموافقة على الطلب"
+    }
+  },
+
+  {
+    "Key": "IDPrinted",
+    "LocalizedValue": {
+      "en": "ID Printed",
+      "ar": "تم طباعة الهوية"
+    }
+  }
+
+
+]

@@ -1,0 +1,396 @@
+﻿[
+  {
+    "Key": "ClearingAgent",
+    "LocalizedValue": {
+      "en": "Clearing Agent",
+      "ar": "مخلص"
+    }
+  },
+  {
+    "Key": "Organization",
+    "LocalizedValue": {
+      "en": "Organization",
+      "ar": "مؤسسة"
+    }
+  },
+  {
+    "Key": "Trader",
+    "LocalizedValue": {
+      "en": "Trader",
+      "ar": "تاجر"
+    }
+  },
+  {
+    "Key": "Courier",
+    "LocalizedValue": {
+      "en": "Courier",
+      "ar": "ساعي"
+    }
+  },
+  {
+    "Key": "Male",
+    "LocalizedValue": {
+      "en": "Male",
+      "ar": "ذكر"
+    }
+  },
+  {
+    "Key": "Female",
+    "LocalizedValue": {
+      "en": "Female",
+      "ar": "أنثى"
+    }
+  },
+  {
+    "Key": "Kuwaiti",
+    "LocalizedValue": {
+      "en": "Kuwait",
+      "ar": "الكويت"
+    }
+  },
+  {
+    "Key": "Bahraini",
+    "LocalizedValue": {
+      "en": "Bahrain",
+      "ar": "البحرين"
+    }
+  },
+  {
+    "Key": "Omani",
+    "LocalizedValue": {
+      "en": "Oman",
+      "ar": "عمان"
+    }
+  },
+  {
+    "Key": "Emirati",
+    "LocalizedValue": {
+      "en": "United Arab Emirates",
+      "ar": "الإمارات"
+    }
+  },
+  {
+    "Key": "Qatari",
+    "LocalizedValue": {
+      "en": "Qatar",
+      "ar": "قطر"
+    }
+  },
+  {
+    "Key": "Saudi",
+    "LocalizedValue": {
+      "en": "Saudi Arabia",
+      "ar": "السعودية"
+    }
+  },
+  {
+    "Key": "Salmi",
+    "LocalizedValue": {
+      "en": "Salmi",
+      "ar": "السالمي"
+    }
+  },
+  {
+    "Key": "KuwaitFTZ",
+    "LocalizedValue": {
+      "en": "Kuwait FTZ",
+      "ar": "المنطقة الحرة بالكويت"
+    }
+  },
+  {
+    "Key": "Nuwaiseeb",
+    "LocalizedValue": {
+      "en": "Nuwaiseeb",
+      "ar": "النويصيب"
+    }
+  },
+  {
+    "Key": "VegetableMarket",
+    "LocalizedValue": {
+      "en": "Vegetable Market",
+      "ar": "شبرة الخضار"
+    }
+  },
+  {
+    "Key": "Kaifan",
+    "LocalizedValue": {
+      "en": "Kaifan",
+      "ar": "كيفان"
+    }
+  },
+  {
+    "Key": "Doha",
+    "LocalizedValue": {
+      "en": "Doha",
+      "ar": "ميناء الدوحة"
+    }
+  },
+  {
+    "Key": "Shuaiba",
+    "LocalizedValue": {
+      "en": "Shuaiba",
+      "ar": "ميناء الشعيبة"
+    }
+  },
+  {
+    "Key": "Shuwaikh",
+    "LocalizedValue": {
+      "en": "Shuwaikh",
+      "ar": "ميناء الشويخ"
+    }
+  },
+  {
+    "Key": "AlAhmadi",
+    "LocalizedValue": {
+      "en": "Mina Al Ahmadi",
+      "ar": "ميناء الأحمدي"
+    }
+  },
+  {
+    "Key": "Abdeli",
+    "LocalizedValue": {
+      "en": "Abdeli",
+      "ar": "العبدلي"
+    }
+  },
+  {
+    "Key": "Sulaibiya",
+    "LocalizedValue": {
+      "en": "Sulaibiya",
+      "ar": "الصليبية"
+    }
+  },
+  {
+    "Key": "Hiteen",
+    "LocalizedValue": {
+      "en": "Hiteen",
+      "ar": "حطين"
+    }
+  },
+  {
+    "Key": "LandedByMistakeWithoutDO",
+    "LocalizedValue": {
+      "en": "Landed By Mistake (Without DO)",
+      "ar": "نازل بالخطأ بدون إذن تسليم"
+    }
+  },
+  {
+    "Key": "LandedByMistakeWithDO",
+    "LocalizedValue": {
+      "en": "Landed By Mistake (With DO)",
+      "ar": "نازل بالخطـأ بإذن تسليم"
+    }
+  },
+  {
+    "Key": "Export",
+    "LocalizedValue": {
+      "en": "Export",
+      "ar": "صادر"
+    }
+  },
+  {
+    "Key": "DirectReceivable",
+    "LocalizedValue": {
+      "en": "Direct Receivable",
+      "ar": "تصفيه فورية"
+    }
+  },
+  {
+    "Key": "TemporaryExport",
+    "LocalizedValue": {
+      "en": "Temporary Export",
+      "ar": "تصدير مؤقت"
+    }
+  },
+  {
+    "Key": "ReExport",
+    "LocalizedValue": {
+      "en": "Re-Export",
+      "ar": "إعادة تصدير"
+    }
+  },
+  {
+    "Key": "TemporaryImport",
+    "LocalizedValue": {
+      "en": "Temporary Import",
+      "ar": "إدخال مؤقت"
+    }
+  },
+  {
+    "Key": "Statistical",
+    "LocalizedValue": {
+      "en": "Statistical",
+      "ar": "إحصائي"
+    }
+  },
+  {
+    "Key": "Import",
+    "LocalizedValue": {
+      "en": "Import",
+      "ar": "إستيراد"
+    }
+  },
+  {
+    "Key": "HSCode",
+    "LocalizedValue": {
+      "en": "HSCode",
+      "ar": "رمز النظام المنسق"
+    }
+  },
+  {
+    "Key": "TNT",
+    "LocalizedValue": {
+      "en": "TNT",
+      "ar": "تي ان تي"
+    }
+  },
+  {
+    "Key": "FedEX",
+    "LocalizedValue": {
+      "en": "FedEX",
+      "ar": "فيدكس"
+    }
+  },
+  {
+    "Key": "DHL",
+    "LocalizedValue": {
+      "en": "DHL",
+      "ar": "دي أتش أل"
+    }
+  },
+  {
+    "Key": "Aramex",
+    "LocalizedValue": {
+      "en": "Aramex",
+      "ar": "أراميكس"
+    }
+  },
+  {
+    "Key": "UPS",
+    "LocalizedValue": {
+      "en": "UPS",
+      "ar": "يو بي أس"
+    }
+  },
+  {
+    "Key": "SKYNET",
+    "LocalizedValue": {
+      "en": "SKYNET",
+      "ar": "سكاي نت"
+    }
+  },
+  {
+    "Key": "SHIPA",
+    "LocalizedValue": {
+      "en": "SHIPA",
+      "ar": "شيبا"
+    }
+  },
+  {
+    "Key": "OCS",
+    "LocalizedValue": {
+      "en": "OCS",
+      "ar": "أو سي أس"
+    }
+  },
+  {
+    "Key": "SpecialBroker",
+    "LocalizedValue": {
+      "en": "Special Broker",
+      "ar": "مخلص خاص"
+    }
+  },
+  {
+    "Key": "SpecialMessanger",
+    "LocalizedValue": {
+      "en": "Special Messanger",
+      "ar": "مراسل خاص"
+    }
+  },
+  {
+    "Key": "GeneralBroker",
+    "LocalizedValue": {
+      "en": "General Broker",
+      "ar": "المخلص العام"
+    }
+  },
+  {
+    "Key": "SubBroker",
+    "LocalizedValue": {
+      "en": "Sub Broker",
+      "ar": "مخلص تابع"
+    }
+  },
+  {
+    "Key": "SubMessanger",
+    "LocalizedValue": {
+      "en": "Sub Messanger",
+      "ar": "مندوب"
+    }
+  },
+  {
+    "Key": "DirectReleaseBroker",
+    "LocalizedValue": {
+      "en": "Direct Release Broker",
+      "ar": "مخلص تصفية فورية"
+    }
+  },
+  {
+    "Key": "DirectReleaseMessanger",
+    "LocalizedValue": {
+      "en": "Direct Release Messanger",
+      "ar": "مخلص تصفية مباشر"
+    }
+  },
+  {
+    "Key": "KWSLBSulaibiya",
+    "LocalizedValue": {
+      "en": "Sulaibiya",
+      "ar": "مركز جمرك الصليبية"
+    }
+  },
+  {
+    "Key": "KWSALSalmi",
+    "LocalizedValue": {
+      "en": "Salmi",
+      "ar": "مركز جمرك السالمي"
+    }
+  },
+  {
+    "Key": "KWNUWNuwaiseeb",
+    "LocalizedValue": {
+      "en": "Nuwaiseeb",
+      "ar": "مركز جمرك النويصيب"
+    }
+  },
+
+  {
+    "Key": "emailExist",
+    "LocalizedValue": {
+      "en": "Email Already Used",
+      "ar": "البريد الإلكتروني مستخدم بالفعل"
+    }
+  },
+  {
+    "Key": "SalmiVA",
+    "LocalizedValue": {
+      "en": "Salmi",
+      "ar": "مركز جمرك السالمي"
+    }
+  },
+
+  {
+    "Key": "NuwaiseebVA",
+    "LocalizedValue": {
+      "en": "Nuwaiseeb",
+      "ar": "مركز جمرك النويصيب"
+    }
+  },
+  {
+    "Key": "SulaibiyaVA",
+    "LocalizedValue": {
+      "en": "Sulaibiya",
+      "ar": "مركز جمرك الصليبية"
+    }
+  }
+]

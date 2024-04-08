@@ -1,0 +1,218 @@
+﻿[
+  {
+    "Key": "ExpressCourierTracking",
+    "LocalizedValue": {
+      "en": "Express Courier Tracking",
+      "ar": "تتبع ارساليات البريد السريع"
+    }
+  },
+
+  {
+    "Key": "houseBillRequired",
+    "LocalizedValue": {
+      "en": "Please, Write Housebill  Number",
+      "ar": "الرجاء كتابة رقم بوليصة الشحن"
+    }
+  },
+
+  {
+    "Key": "HousebillNumber",
+    "LocalizedValue": {
+      "en": "Housebill Number",
+      "ar": "رقم البوليصة"
+    }
+  },
+
+  {
+    "Key": "CourierTrackingErrorMsg",
+    "LocalizedValue": {
+      "en": "The shipment data and documents were not submitted to Customs, or it was not declared by consolidation procedures",
+      "ar": "لم يتم تقديم بيانات ومستندات الشحنة إلي الإدارة العامة للجمارك، أو لم يتم التخليص عليها بنظام الشحن المجمع"
+    }
+  },
+
+  {
+    "Key": "expresscouriertrackingmsg",
+    "LocalizedValue": {
+      "en": "Express Courier Tracking",
+      "ar": "خدمة تتبع ارساليات البريد السريع"
+    }
+  },
+
+  {
+    "Key": "HouseBillTrackingMsg",
+    "LocalizedValue": {
+      "en": "Express Courier Tracking",
+      "ar": "تتبع ارساليات البريد السريع"
+    }
+  },
+
+  {
+    "Key": "CourierNameHistory",
+    "LocalizedValue": {
+      "en": "Consolidated Declaration Status",
+      "ar": "حالة الشحنة"
+    }
+  },
+
+  {
+    "Key": "CourierNameDetails",
+    "LocalizedValue": {
+      "en": "Details",
+      "ar": "تفاصيل الشحنة"
+    }
+  },
+
+  {
+    "Key": "GoodDescription",
+    "LocalizedValue": {
+      "en": "Good Description for shipment",
+      "ar": "وصف الشحنه"
+    }
+  },
+
+  {
+    "Key": "Description",
+    "LocalizedValue": {
+      "en": "Description",
+      "ar": "الوصف"
+    }
+  },
+
+  {
+    "Key": "BrokerGoodDescription",
+    "LocalizedValue": {
+      "en": "Broker Good Description",
+      "ar": "وصف المخلص/ البريد السريع"
+    }
+  },
+
+  {
+    "Key": "OGAAgencyRelatedShipment",
+    "LocalizedValue": {
+      "en": "OGA Agency which related to this Shipment",
+      "ar": "الجهات ذات الصلة بالإفراجات عن هذه الشحنة"
+    }
+  },
+
+  {
+    "Key": "OGAAgencyNameInvoice",
+    "LocalizedValue": {
+      "en": "OGA Agency Name based on the Invoice associated",
+      "ar": "أسماء الجهات حسب الفواتير المتربطه بنفس البوليصة"
+    }
+  },
+
+  {
+    "Key": "NoOfInvoicesHbLevel",
+    "LocalizedValue": {
+      "en": "Number of Invoice",
+      "ar": "عدد الفواتير "
+    }
+  },
+
+  {
+    "Key": "EstimatedCustomDuty",
+    "LocalizedValue": {
+      "en": "Estimated Customs Duty for Invoice to the Shipment",
+      "ar": "الضريبة الجمركية المستحقة لهذه الشحنة"
+    }
+  },
+
+  {
+    "Key": "TotalDutyKd",
+    "LocalizedValue": {
+      "en": "Total Duty",
+      "ar": "إجمالي الضريبة"
+    }
+  },
+
+  {
+    "Key": "RevenueStamp",
+    "LocalizedValue": {
+      "en": "Revenue Stamp",
+      "ar": "الطابع الإيرادي"
+    }
+  },
+
+  {
+    "Key": "NoofStamp",
+    "LocalizedValue": {
+      "en": "No of Stamp",
+      "ar": "عدد الطوابع"
+    }
+  },
+
+  {
+    "Key": "EstimatedDutyForPrice",
+    "LocalizedValue": {
+      "en": "Estimated Duty For Price",
+      "ar": "إجمالي الرسم"
+    }
+  },
+
+  {
+    "Key": "GcsFeeLabel",
+    "LocalizedValue": {
+      "en": "Estimated fee for services as per price list",
+      "ar": "الرسم التقديري للخدمات حسب لائحة الأسعار"
+    }
+  },
+
+  {
+    "Key": "NoOfPackage",
+    "LocalizedValue": {
+      "en": "No of Package",
+      "ar": "عدد الطرود"
+    }
+  },
+
+  {
+    "Key": "TotalPackageCourierTracking",
+    "LocalizedValue": {
+      "en": "Total Package",
+      "ar": "طرد من أجمالي"
+    }
+  },
+
+  {
+    "Key": "TotalGCSFees",
+    "LocalizedValue": {
+      "en": "Total Services Fees",
+      "ar": "إجمالي الرسم"
+    }
+  },
+
+  {
+    "Key": "TotalGcsFeesCourierTracking",
+    "LocalizedValue": {
+      "en": "of Total charges for all packages",
+      "ar": "د.ك من إجمالي الرسوم لكل الشحنات"
+    }
+  },
+
+  {
+    "Key": "HSCodeRequired",
+    "LocalizedValue": {
+      "en": "Please, write HSCode number",
+      "ar": "الرجاء كتابة رمز النظام المنسق"
+    }
+  },
+
+  {
+    "Key": "Userblocked30mins",
+    "LocalizedValue": {
+      "en": "User blocked for 30 minutes",
+      "ar": "تم حظر المستخدم لمدة 30 دقيقة"
+    }
+  },
+  {
+    "Key": "Userblocked36hrs",
+    "LocalizedValue": {
+      "en": "User blocked for 36 hours",
+      "ar": "تم حظر المستخدم لمدة 36 ساعة"
+    }
+  }
+
+
+]

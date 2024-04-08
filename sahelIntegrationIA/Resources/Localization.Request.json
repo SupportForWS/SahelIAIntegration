@@ -1,0 +1,400 @@
+﻿[
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+  {
+    "Key": "ExamRequestDuplicated",
+    "LocalizedValue": {
+      "en": "You Have already an Existing Exam Request for The Selected User Type",
+      "ar": "لا يمكن انشاء اكثر من طلب اشتراك لهذا المستخدم"
+    }
+  },
+  {
+    "Key": "UndertakingFormCreatedRequestExists",
+    "LocalizedValue": {
+      "en": "There is a request has been created and not submitted. Please go to my requests page, then choose Undertaking requests list, and Edit the existing request",
+      "ar": "يوجد طلب تعهد قيد الإنشاء و لم يتم ارساله، الرجاء الضغط على طلباتي، ثم اختيار لائحة طلب نموذج تعهد ،حيث يمكنك تعديل الطلب و ارساله"
+    }
+  },
+  {
+    "Key": "UtfRequestMessage",
+    "LocalizedValue": {
+      "en": "You have already an existing Undertaking Request.",
+      "ar": "يوجد لديك طلب تعهد مسبق لحفظ أصل مستندات البيان الجمركي"
+    }
+  },
+  {
+    "Key": "RequestNumber",
+    "LocalizedValue": {
+      "en": "Request Number",
+      "ar": "رقم الطلب"
+    }
+  },
+  {
+    "Key": "CreatedBy",
+    "LocalizedValue": {
+      "en": "Created by",
+      "ar": "أنشأهُ"
+    }
+  },
+  {
+    "Key": "RequestReceivedUnderReview",
+    "LocalizedValue": {
+      "en": "Request Received, and it is under Review",
+      "ar": "الطلب قيد المراجعة"
+    }
+  },
+  {
+    "Key": "RequestStillCreated",
+    "LocalizedValue": {
+      "en": "Request Not Sent Yet",
+      "ar": "لم يتم ارسال الطلب"
+    }
+  },
+  {
+    "Key": "CheckUtfStatus",
+    "LocalizedValue": {
+      "en": "You Cannot Create a New Utf Request Before Existing UTF  expires",
+      "ar": "لايمكنك إنشاء طلب تعهد حفظ أصل مستندات البيان الجمركي جديد قبل إنتهاء تاريخ الطلب الحالي"
+    }
+  },
+  {
+    "Key": "NotValidLicenceNumber",
+    "LocalizedValue": {
+      "en": "Please, Add Your Trade Licence Number",
+      "ar": "الرجاء ، كتابة رقم الرخصة التجارية"
+    }
+  },
+  {
+    "Key": "SendValidRequestNumber",
+    "LocalizedValue": {
+      "en": "Send Valid Request Number",
+      "ar": "ارسال رقم الطلب الصحيح"
+    }
+  },
+
+  {
+    "Key": "ImporterLicenseNumber",
+    "LocalizedValue": {
+      "en": "Importer License Number",
+      "ar": "رقم رخصة الإستيراد"
+    }
+  },
+
+  {
+    "Key": "CustomsBusinessActivity",
+    "LocalizedValue": {
+      "en": "Customs Business Activity",
+      "ar": "نشاط الأعمال الجمركية"
+    }
+  },
+
+  {
+    "Key": "RegesterCustomsBusinessActivityInitialApprovalState",
+    "LocalizedValue": {
+      "en": "Your request has been initially approved",
+      "ar": "تم اعتماد الطلب الخاص بك بشكل مبدئي"
+    }
+  },
+
+  {
+    "Key": "CustomsSystemUserAlreadyCompleted",
+    "LocalizedValue": {
+      "en": "Request is already completed",
+      "ar": "الطلب منتهي بالفعل"
+    }
+  },
+  {
+    "Key": "UserDeActiveRequestExists",
+    "LocalizedValue": {
+      "en": "you couldn't initiate update request for that user as there is an in-progress de-activation request for the same user",
+      "ar": "لا يمكنك تقديم طلب تحديث بيانات لهذا المستخدم، حيث أنه يوجد طلب ايقاف خاص بنفس المستخدم قيد الإجراءات"
+    }
+  },
+  {
+    "Key": "UserUpdateRequestExists",
+    "LocalizedValue": {
+      "en": "you couldn't initiate De-Activate request for that user as there is an in-progress update request for the same user",
+      "ar": "لا يمكنك تقديم طلب إيقاف لهذا المستخدم، حيث أنه يوجد طلب تحديث بيانات خاص بنفس المستخدم قيد الإجراءات"
+    }
+  },
+
+  {
+    "Key": "UserDelivered",
+    "LocalizedValue": {
+      "en": "User Delivered",
+      "ar": "تم تسليم المستخدم"
+    }
+  },
+
+
+  {
+    "Key": "CustomsSystemUser",
+    "LocalizedValue": {
+      "en": "Customs System User",
+      "ar": "مستخدم النظام الجمركي"
+    }
+  },
+
+  {
+    "Key": "approvedStatusMsgExam",
+    "LocalizedValue": {
+      "en": "Your customs clearance exam request has been accepted, You will be notified of the details of the exam as soon as it is announced.",
+      "ar": "لقد تم قبول طلب التسجيل في إختبارات التخليص الجمركي، سيتم إعلامك بتفاصيل الإختبار فور تحديده."
+    }
+  },
+
+  {
+    "Key": "ExamPassed",
+    "LocalizedValue": {
+      "en": "You have Successfully passed the customs clearance Exam, now you Can Request License Issuance through your account at Customs E-Services.",
+      "ar": "لقد قمت بإجتياز إختبار التخليص الجمركي بنجاح، يمكنك الان  التقدم بطلب اصدار رخصة تخليص من خلال خدمة اصدار رخصة التخليص الجمركي."
+    }
+  },
+
+  {
+    "Key": "ExamFailed",
+    "LocalizedValue": {
+      "en": "You failed to pass the customs clearance Exam, you can send a new request for the next exam through your account at Customs E-Services.",
+      "ar": "لقد رسبت في إجتياز إختبار التخليص الجمركي، يمكنك إرسال طلب جديد للتسجيل في الإختبارات القادمة."
+    }
+  },
+
+  {
+    "Key": "ExamNotAttend",
+    "LocalizedValue": {
+      "en": "You Didn't Attend Exam.",
+      "ar": "لم يتم الحضور و المشاركة في الاختبار، يمكنك ارسال طلب جديد."
+    }
+  },
+  {
+    "Key": "rejectedFinalStatusMsgExam",
+    "LocalizedValue": {
+      "en": "Exam Request has been Final Rejected, you can't Resend it",
+      "ar": "تم رفض طلب التقدم للاختبار، رفضاَ نهائياَ، لا يمكن اعادة ارسال الطلب"
+    }
+  },
+
+  {
+    "Key": "rejectedStatusMsgExam",
+    "LocalizedValue": {
+      "en": "Exam Request has been Rejected",
+      "ar": "تم رفض طلب التقدم للاختبار، يمكنك تعديل الطلب و اعادة ارساله"
+    }
+  },
+
+  {
+    "Key": "rejectedStatusMsg",
+    "LocalizedValue": {
+      "en": "Request Has Been Rejected",
+      "ar": "تم رفض الطلب , يمكنك تعديل الطلب وإعادة إرساله"
+    }
+  },
+
+  {
+    "Key": "rejectedStatusMsgFinal",
+    "LocalizedValue": {
+      "en": "Request has been Final Rejected",
+      "ar": "تم رفض الطلب نهائيًا"
+    }
+  },
+
+  {
+    "Key": "RequestAccepted",
+    "LocalizedValue": {
+      "en": "Request has been accepted",
+      "ar": "تم قبول الطلب"
+    }
+  },
+
+  {
+    "Key": "printtedStatus",
+    "LocalizedValue": {
+      "en": "Letter has Been Printted",
+      "ar": "تمت طباعة الكتاب"
+    }
+  },
+
+  {
+    "Key": "examConfirmStatus",
+    "LocalizedValue": {
+      "en": "Exam Attendance Confirmed",
+      "ar": "تم تأكيد حضور الاختبار"
+    }
+  },
+
+  {
+    "Key": "examAnnoncementMSG",
+    "LocalizedValue": {
+      "en": "Please, confirm Attendance",
+      "ar": "الرجاء تأكيد الحضور"
+    }
+  },
+
+  {
+    "Key": "examWillPublishedSoon",
+    "LocalizedValue": {
+      "en": "Exam Date, Time, and Place will be Published Soon",
+      "ar": "سيتم نشر تفاصيل الاختبار قريبا"
+    }
+  },
+
+  {
+    "Key": "approvedStatus",
+    "LocalizedValue": {
+      "en": "Request has been Approved",
+      "ar": "تمت الموافقة على الطلب"
+    }
+  },
+
+  {
+    "Key": "IDPrinted",
+    "LocalizedValue": {
+      "en": "ID Printed",
+      "ar": "تم طباعة الهوية"
+    }
+  },
+
+  {
+    "Key": "DeActivateService",
+    "LocalizedValue": {
+      "en": "Deactivation Request has been Approved",
+      "ar": "تمت الموافقة على طلب الإيقاف"
+    }
+  },
+
+  {
+    "Key": "CancellationReqApproved",
+    "LocalizedValue": {
+      "en": "Cancellation Request has been Approved",
+      "ar": "تمت الموافقة على طلب الإلغاء"
+    }
+  },
+
+  {
+    "Key": "approvedStatusMsgIssuance",
+    "LocalizedValue": {
+      "en": "Issuance License Request has been Approved",
+      "ar": "تمت الموافقة على طلب اصدار الترخيص"
+    }
+  },
+
+  {
+    "Key": "ToWhomConcernReqApproved",
+    "LocalizedValue": {
+      "en": "To Whom Concern Request has been Approved",
+      "ar": "تمت الموافقة على طلب شهادة لمن يهمه الامر"
+    }
+  },
+
+  {
+    "Key": "IssuanceServiceReqApproved",
+    "LocalizedValue": {
+      "en": "Issuance License Request has been Approved",
+      "ar": "تمت الموافقة على طلب اصدار الترخيص"
+    }
+  },
+
+  {
+    "Key": "printtedStatus",
+    "LocalizedValue": {
+      "en": "Letter has Been Printted",
+      "ar": "تمت طباعة الكتاب"
+    }
+  },
+
+  {
+    "Key": "ConsigneeApprovedStatus",
+    "LocalizedValue": {
+      "en": "Your Request has been Approved",
+      "ar": "تمت الموافقة على طلبك"
+    }
+  },
+
+  {
+    "Key": "rejectedStatusMsgRenew",
+    "LocalizedValue": {
+      "en": "Renewal Request has been Rejected",
+      "ar": "تم رفض طلب التجديد، يمكنك تعديل الطلب و اعادة ارساله"
+    }
+  },
+
+  {
+    "Key": "examAnnoncementPublished",
+    "LocalizedValue": {
+      "en": "The date and place of the customs clearance Exam have been determined. Please login to your account at Customs E-Services for exam details and confirming your attendance within 5 days  or else you will be considered excluded from the exam Please, confirm Attendance",
+      "ar": " تم تحديد موعد ومكان إنعقاد إختبارات التخليص الجمركي، يجب  تأكيد حضور الإختبار خلال 5 أيام من تاريخ هذه الرسالة و إلا سيتم إستبعاد طلبك الرجاء تأكيد الحضور"
+    }
+  },
+
+  {
+    "Key": "AdditionalInfoMsg",
+    "LocalizedValue": {
+      "en": "Requested for Additional Info",
+      "ar": "طلب معلومات إضافية"
+    }
+  },
+  {
+    "Key": "OrgRegRejectedMsg",
+    "LocalizedValue": {
+      "en": "You must modify and resubmit the request Within 15 Days",
+      "ar": "يجب تعديل الطلب بناء على الملاحظات و إعادة ارسال الطلب مرة أخرى،"
+    }
+  },
+
+  {
+    "Key": "requestForVisit",
+    "LocalizedValue": {
+      "en": "Request  For Visit ",
+      "ar": "طلب زيارة مبنى الجمارك"
+    }
+  },
+
+  {
+    "Key": "RequestForCreated",
+    "LocalizedValue": {
+      "en": "We received your Request, and it is in Progress @Date.",
+      "ar": "تم استلام طلبك بتاريخ @Date وجاري معالجته الكترونيا."
+    }
+  },
+
+  {
+    "Key": "RequesterEnglishName",
+    "LocalizedValue": {
+      "en": "Requester English Name",
+      "ar": "اسم مقدم الطلب بالإنجليزية"
+    }
+  },
+  {
+    "Key": "RequesterArabicName",
+    "LocalizedValue": {
+      "en": "Requester Arabic Name",
+      "ar": "اسم مقدم الطلب بالعربية"
+    }
+  },
+  {
+    "Key": "RequesterName",
+    "LocalizedValue": {
+      "en": "Requester Name",
+      "ar": "اسم مقدم الطلب"
+    }
+  },
+  {
+    "Key": "DRBrokerName",
+    "LocalizedValue": {
+      "en": "DR Data Entry",
+      "ar": "مخلص التصفية الفورية"
+    }
+  },
+  {
+    "Key": "ExamRequestIsCreatedOrSubmittedForTheSameBrokerType",
+    "LocalizedValue": {
+      "en": "There is an existing exam request for the same broker type, please check my requests page ",
+      "ar": "يوجد طلب امتحان قيد الإنشاء أو تم إرساله بالفعل, الرجاء التحقق من خلال شاشة طلباتي "
+    }
+  }
+]

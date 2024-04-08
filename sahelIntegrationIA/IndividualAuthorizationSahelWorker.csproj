@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-IndividualAuthorizationSahelWorker-dd03bfed-400d-44ed-a642-efd09c936c26</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Kernel\eServicesV2.Kernel.Core\eServicesV2.Kernel.Core.csproj" />
+    <ProjectReference Include="..\..\Kernel\eServicesV2.Kernel.Infrastructure.Logging\eServicesV2.Kernel.Infrastructure.Logging.csproj" />
+    <ProjectReference Include="..\..\Kernel\eServicesV2.Kernel.Infrastructure.Persistence\eServicesV2.Kernel.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\..\Kernel\eServicesV2.Kernel.Service\eServicesV2.Kernel.Service.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,107 @@
+﻿[
+  {
+    "Key": "EntercorrectCaptcha",
+    "LocalizedValue": {
+      "en": "Enter correct Captcha",
+      "ar": "أدخل كلمة التحقق الصحيحة"
+    }
+  },
+
+  {
+    "Key": "SignUPTermeConditions",
+    "LocalizedValue": {
+      "en": "You have to agree with the terms and conditions",
+      "ar": "يجب أن توافق على الشروط والأحكام"
+    }
+  },
+
+  {
+    "Key": "InValidDetails",
+    "LocalizedValue": {
+      "en": "Please enter correct eService account details",
+      "ar": "الرجاء إدخال تفاصيل حسابك بشكل صحيح"
+    }
+  },
+
+
+  {
+    "Key": "AccountCancelled",
+    "LocalizedValue": {
+      "en": "User Account has been Cancelled, For Details you can Contact Customs System Support",
+      "ar": "تم إلغاء حساب المستخدم ، لمزيد من التفاصيل يمكنك الاتصال بدعم نظام الجمارك"
+    }
+  },
+
+  {
+    "Key": "WrongEmailOTPPleasetryagain2",
+    "LocalizedValue": {
+      "en": "Wrong Email OTP, Please try again",
+      "ar": "كلمة مرور البريد الإلكتروني غير صحيحة ، يرجى المحاولة مرة أخرى"
+    }
+  },
+
+  {
+    "Key": "IndustrialLicenseNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Industrial License Number",
+      "ar": "الرجاء إدخال رقم الرخصة الصناعية"
+    }
+  },
+
+  {
+    "Key": "CommercialLicensenumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Commercial License number",
+      "ar": "الرجاء إدخال رقم الرخصة التجارية"
+    }
+  },
+
+  {
+    "Key": "CannotCancelAccount",
+    "LocalizedValue": {
+      "en": "UCannot cancel this account as it is linked to organization eServices requests; you can only request for Update or Deactivate the account from the login screen",
+      "ar": "لا يمكن إلغاء هذا الحساب لأنه مرتبط بطلبات الخدمات الإلكترونية للمؤسسة ؛ يمكنك فقط طلب تحديث أو إلغاء تنشيط الحساب من شاشة تسجيل الدخول"
+    }
+  },
+
+  {
+    "Key": "InvalidBothVerificationCodes",
+    "LocalizedValue": {
+      "en": "Invalid Email or Mobile Verification Code . Please try again",
+      "ar": "رمز التحقق من البريد الإلكتروني أو الهاتف المحمول غير صالح. حاول مرة اخرى"
+    }
+  },
+
+  {
+    "Key": "DuplicateRequestwithSameData",
+    "LocalizedValue": {
+      "en": "A request has been already submitted and in progress for the provided data",
+      "ar": "تم بالفعل إرسال طلبك وهو قيد المعالجة للحصول على البيانات المرادة"
+    }
+  },
+
+  {
+    "Key": "emailExist",
+    "LocalizedValue": {
+      "en": "Given Email ID is already registered with us",
+      "ar": "البريد الإلكتروني المدخل تم تسجيله بالفعل"
+    }
+  },
+
+  {
+    "Key": "emailNotExist",
+    "LocalizedValue": {
+      "en": "The email id could not be located",
+      "ar": "لم يتم العثور على عنوان البريد الإلكتروني"
+    }
+  },
+
+  {
+    "Key": "ValidatedAsFine",
+    "LocalizedValue": {
+      "en": "Validated successfully",
+      "ar": "تم التحقق بنجاح"
+    }
+  }
+
+]

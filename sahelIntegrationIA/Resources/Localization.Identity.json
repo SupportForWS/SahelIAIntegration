@@ -1,0 +1,122 @@
+﻿[
+  {
+    "Key": "RefershToknIsNotValid",
+    "LocalizedValue": {
+      "en": "Your session has ended,  please login to access your services",
+      "ar": "لقد انتهت جلسة الدخول الخاصة بك، يرجى تسجيل الدخول لتتمكن من الوصول الى خدماتك"
+    }
+  },
+  {
+    "Key": "AccountBlocked",
+    "LocalizedValue": {
+      "en": "Account Blocked",
+      "ar": "حساب تم إغلاقه"
+    }
+  },
+  {
+    "Key": "UserNotFound",
+    "LocalizedValue": {
+      "en": "User Not Found",
+      "ar": "لم يتم العثور على المستخدم"
+    }
+  },
+  {
+    "Key": "OrganizationServicesAreNotAllowedForThisAccount",
+    "LocalizedValue": {
+      "en": "Organization Services Are Not Allowed For This Account",
+      "ar": "خدمات المؤسسة غير مسموح بها لهذا الحساب"
+    }
+  },
+  {
+    "Key": "WrongCredentials",
+    "LocalizedValue": {
+      "en": "Please verify your credentials",
+      "ar": "يرجى التحقق من معلومات الدخول"
+    }
+  },
+  {
+    "Key": "MultipleInvalidPassword",
+    "LocalizedValue": {
+      "en": "Multiple invalid login attempts made. Please change your password",
+      "ar": "تم إجراء عدة محاولات تسجيل دخول غير صالحة. يرجى تغيير كلمة المرور"
+    }
+  },
+  {
+    "Key": "AccountConfirmationIsUnderprocessing",
+    "LocalizedValue": {
+      "en": "Account Confirmation is under processing",
+      "ar": "تأكيد الحساب قيد التنفيذ"
+    }
+  },
+  {
+    "Key": "AlreadyRegisteredOrganizationLicense",
+    "LocalizedValue": {
+      "en": "Already Registered Organization License",
+      "ar": "رخصة منظمة مسجلة بالفعل"
+    }
+  },
+  {
+    "Key": "IndustrialLicenseAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "The entered Industrial License number has been already registered with us",
+      "ar": " رقم الترخيص الصناعي مسجل لدينا من قبل ، الرجاء الاتصال بادارة الشركة"
+    }
+  },
+  {
+    "Key": "CommercialLicenseAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "The entered Commercial License number has been already registered with us",
+      "ar": "رقم الرخصة التجارية التي قمت بإدخالها مسجلة لدينا من قبل، الرجاء الإتصال بإدارة الشركة"
+    }
+  },
+  {
+    "Key": "WrongOTPPleaseTryAgain",
+    "LocalizedValue": {
+      "en": "Wrong OTP, Please try again",
+      "ar": "تحقق من الرمز المرسل اليك وأعد المحاولة"
+    }
+  },
+  {
+    "Key": "WrongEmailOTPPleaseTryAgain",
+    "LocalizedValue": {
+      "en": "Wrong Email OTP, Please try again",
+      "ar": "تحقق من رمز البريد الإلكتروني المرسل إليك وحاول مرة أخرى"
+    }
+  },
+  {
+    "Key": "WrongSMSOTPPleaseTryAgain",
+    "LocalizedValue": {
+      "en": "Wrong Mobile OTP, Please try again",
+      "ar": "تحقق من رمز الجوال المرسل إليك وحاول مرة أخرى"
+    }
+  },
+  {
+    "Key": "UnsupportedLegalEntity",
+    "LocalizedValue": {
+      "en": "Unsupported Legal Entity",
+      "ar": "غير مدعم الكيان القانوني"
+    }
+  },
+  {
+    "Key": "ActionCannotBePerformedPleaseContactAdministrator",
+    "LocalizedValue": {
+      "en": "User Account has been Suspended, Please Contact Support",
+      "ar": "تم ايقاف حساب المستخدم .يرجى الاتصال بالدعم الفني"
+    }
+  },
+  {
+    "Key": "ServerNotResponding",
+    "LocalizedValue": {
+      "en": "Server not responding, Please try again later.",
+      "ar": "ارقام التسجيل مكررهالخادم لا يستجيب. الرجاء المحاولة لاحقا"
+    }
+  },
+
+  {
+    "Key": "NoAssociatedOrganization",
+    "LocalizedValue": {
+      "en": "You cannot login to Broker eServices because there is no company associated with the eService account you are trying to login with.",
+      "ar": "لا يمكنك تسجيل الدخول إلى الخدمات الالكترونية للمخلصين نظراً لعدم وجود شركة مسجلة لحساب  الخدمات الالكترونية  الذي تحاول تسجيل الدخول به."
+    }
+  }
+]

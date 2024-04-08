@@ -1,0 +1,47 @@
+﻿[
+  {
+    "Key": "LimitedLiabilityCompany",
+    "LocalizedValue": {
+      "en": "A Limited Liability Company",
+      "ar": "شركة ذات مسؤلية محدودة"
+    }
+  },
+  {
+    "Key": "SolidarityCompany",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  }
+]

@@ -1,0 +1,334 @@
+﻿[
+  {
+    "Key": "AlreadyRegisteredOrgLicense",
+    "LocalizedValue": {
+      "en": "The given Trade License number is already registered with us, Please contact your Organization Admin",
+      "ar": "رقم الرخصة التجارية مسجلة بالفعل ، يرجى الاتصال بمسؤول المؤسسة"
+    }
+  },
+  {
+    "Key": "OrgAraNameRequired",
+    "LocalizedValue": {
+      "en": "Please enter the Organization name in Arabic",
+      "ar": "الرجاء إدخال اسم المؤسسة باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "OrganizationRegCompletedsuccessfully",
+    "LocalizedValue": {
+      "en": "Organization Registration Completed successfully",
+      "ar": "تم تسجيل المؤسسة بنجاح"
+    }
+  },
+
+  {
+    "Key": "LicensetypeRequired",
+    "LocalizedValue": {
+      "en": "Please select a License type",
+      "ar": "يرجى اختيار نوع الترخيص"
+    }
+  },
+
+  {
+    "Key": "Importer_RB_permanent",
+    "LocalizedValue": {
+      "en": "Permanent",
+      "ar": "دائم"
+    }
+  },
+
+  {
+    "Key": "Importer_RB_temporary",
+    "LocalizedValue": {
+      "en": "Temporary",
+      "ar": "مؤقت"
+    }
+  },
+
+  {
+    "Key": "AlreadyRegisteredCivilID",
+    "LocalizedValue": {
+      "en": "The provided Civil ID is already registered with us",
+      "ar": "البطاقة المدنية المدخلة تم تسجيلها بالفعل"
+    }
+  },
+  {
+    "Key": "BrokerTransferRequestExists",
+    "LocalizedValue": {
+      "en": "There is an existing transfer request for the broker which you are trying to transfer, please check with BS customs administration",
+      "ar": "يوجد طلب تحويل حالي للوسيط الذي تحاول نقله ، يرجى مراجعة إدارة الجمارك"
+    }
+  },
+  {
+    "Key": "BankGuranteeStatusForTransfer",
+    "LocalizedValue": {
+      "en": "To initiate broker transfer request, old bank guarantee should be deactivated first",
+      "ar": "لبدء طلب تحويل الوسيط ، يجب إلغاء تنشيط الضمان المصرفي القديم أولاً"
+    }
+  },
+  {
+    "Key": "BrokerIncorrectCorrectInformation",
+    "LocalizedValue": {
+      "en": "Please Enter Correct Info",
+      "ar": "الرجاء إدخال المعلومات الصحيحة"
+    }
+  },
+  {
+    "Key": "generalBroker",
+    "LocalizedValue": {
+      "en": "General Broker",
+      "ar": "المخلص العام"
+    }
+  },
+  {
+    "Key": "subBroker",
+    "LocalizedValue": {
+      "en": "Sub Broker",
+      "ar": "مخلص تابع"
+    }
+  },
+  {
+    "Key": "subMessanger",
+    "LocalizedValue": {
+      "en": "Sub Messanger",
+      "ar": "مندوب"
+    }
+  },
+  {
+    "Key": "specialBroker",
+    "LocalizedValue": {
+      "en": "Special Broker",
+      "ar": "مخلص خاص"
+    }
+  },
+  {
+    "Key": "specialMessanger",
+    "LocalizedValue": {
+      "en": "special Messanger",
+      "ar": "مندوب خاص"
+    }
+  },
+  {
+    "Key": "directReleaseBroker",
+    "LocalizedValue": {
+      "en": "Direct Release Broker",
+      "ar": "مخلص تصفية فورية"
+    }
+  },
+  {
+    "Key": "broker",
+    "LocalizedValue": {
+      "en": "Broker",
+      "ar": "المخلص الجمركي"
+    }
+  },
+  {
+    "Key": "Sessionexpired",
+    "LocalizedValue": {
+      "en": "Your session got expired, Please log in again.",
+      "ar": ".جلسة العمل الخاصة بك قد انتهت ، الرجاء تسجيل الدخول مرة أخرى"
+    }
+  },
+  {
+    "Key": "validemail",
+    "LocalizedValue": {
+      "en": "Please, Write valid email.",
+      "ar": ".من فضلك اكتب بريد إلكتروني صحيح"
+    }
+  },
+  {
+    "Key": "Userdoesnotexist",
+    "LocalizedValue": {
+      "en": "Please enter a valid username or password.",
+      "ar": "الرجاء إدخال اسم مستخدم أو كلمة مرور صالحة"
+    }
+  },
+  {
+    "Key": "OrgServicesNotAllowed",
+    "LocalizedValue": {
+      "en": "You do not have access to stakeholder services.",
+      "ar": "ليس لديك حق الوصول إلى خدمات أصحاب المصلحة"
+    }
+  },
+  {
+    "Key": "userSessionIsActive",
+    "LocalizedValue": {
+      "en": "You Already Have an Active Session, If you want to Close Other Session and Login, Please Close this Message,  and  Try Again.",
+      "ar": "لديك بالفعل جلسة نشطة ، إذا كنت تريد إغلاق جلسة أخرى وتسجيل الدخول ، يرجى إغلاق هذه الرسالة والمحاولة مرة أخرى"
+    }
+  },
+  {
+    "Key": "ActioncannotbeperformedPleasecontactadministrator",
+    "LocalizedValue": {
+      "en": "The user Account has been Suspended, Please Contact Support.",
+      "ar": "تم تعليق حساب المستخدم ، يرجى الاتصال بالدعم"
+    }
+  },
+  {
+    "Key": "wrongcredentials",
+    "LocalizedValue": {
+      "en": "Please verify your credentials.",
+      "ar": "يرجى التحقق من بيانات الاعتماد الخاصة بك"
+    }
+  },
+  {
+    "Key": "Multipleinvalidpassword",
+    "LocalizedValue": {
+      "en": "Multiple invalid login attempts were made. Please change your password.",
+      "ar": "تم إجراء عدة محاولات غير صالحة لتسجيل الدخول. الرجاء تغيير كلمة المرور الخاصة بك"
+    }
+  },
+
+  {
+    "Key": "AccountConfirmationisunderprocessing",
+    "LocalizedValue": {
+      "en": "Account Confirmation is under processing.",
+      "ar": "تأكيد الحساب قيد المعالجة"
+    }
+  },
+  {
+    "Key": "IndustrialLicenseAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "The entered Industrial License number has been already registered with us.",
+      "ar": "تم تسجيل رقم الرخصة الصناعية المدخل لدينا بالفعل"
+    }
+  },
+  {
+    "Key": "CommercialLicenseAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "The entered Commercial License number has been already registered with us.",
+      "ar": "تم تسجيل رقم الرخصة التجارية المدخل لدينا بالفعل"
+    }
+  },
+  {
+    "Key": "Servernotresponding",
+    "LocalizedValue": {
+      "en": "The server does not respond, Please try again later.",
+      "ar": "الخادم لا يستجيب ، يرجى المحاولة مرة أخرى في وقت لاحق"
+    }
+  },
+  {
+    "Key": "ReasonRequired",
+    "LocalizedValue": {
+      "en": "Please enter the reason",
+      "ar": "يرجى ذكر السبب"
+    }
+  },
+  {
+    "Key": "requiredPasswordMsg",
+    "LocalizedValue": {
+      "en": "Please Write Password !!!",
+      "ar": "الرجاء كتابة كلمة المرور"
+    }
+  },
+  {
+    "Key": "TradeLicenseRequired",
+    "LocalizedValue": {
+      "en": "Trade License Required",
+      "ar": "الرجاء كتابة رقم الرخصة"
+    }
+  },
+  {
+    "Key": "Verificationsenttoyourmobile",
+    "LocalizedValue": {
+      "en": "Verification Code is sent to your Mobile Number",
+      "ar": "تم ارسال رمز التحقق الى بريدك رقم الهاتف الجوال"
+    }
+  },
+  {
+    "Key": "IndividualAuthorizationNewState",
+    "LocalizedValue": {
+      "en": "New Request",
+      "ar": "طلب جديد"
+    }
+  },
+  {
+    "Key": "IndividualAuthorizationKMIDCallState",
+    "LocalizedValue": {
+      "en": "The authentication request has been sent",
+      "ar": "تم إرسال طلب المصادقة"
+    }
+  },
+  {
+    "Key": "IndividualAuthorizationInitialApprovalState",
+    "LocalizedValue": {
+      "en": "Initial Approval",
+      "ar": "موافقة مبدئية"
+    }
+  },
+  {
+    "Key": "IndividualAuthorizationApprovedState",
+    "LocalizedValue": {
+      "en": "Approved",
+      "ar": "تمت الموافقة"
+    }
+  },
+  {
+    "Key": "Valid",
+    "LocalizedValue": {
+      "en": "Valid",
+      "ar": "فعال"
+    }
+  },
+  {
+    "Key": "NotCompleted",
+    "LocalizedValue": {
+      "en": "Not Completed",
+      "ar": "الطلب غير مكتمل"
+    }
+  },
+  {
+    "Key": "Completed",
+    "LocalizedValue": {
+      "en": "Completed",
+      "ar": "الطلب مكتمل"
+    }
+  },
+  {
+    "Key": "Accepted",
+    "LocalizedValue": {
+      "en": "Accepted",
+      "ar": "الطلب مقبول"
+    }
+  },
+
+  {
+    "Key": "Delivered",
+    "LocalizedValue": {
+      "en": "Delivered",
+      "ar": "تم توصيل الطلب"
+    }
+  },
+  {
+    "Key": "Expired",
+    "LocalizedValue": {
+      "en": "Expired",
+      "ar": "منتهي"
+    }
+  },
+  {
+    "Key": "Cancelled",
+    "LocalizedValue": {
+      "en": "Cancelled",
+      "ar": "ملغي"
+    }
+  },
+
+  {
+    "Key": "PrintFormInvalid",
+    "LocalizedValue": {
+      "en": "You Cannot Print The Form",
+      "ar": "لا يمكنك طباعة النموذج"
+    }
+  },
+
+
+  {
+    "Key": "UnauthoraizedAction",
+    "LocalizedValue": {
+      "en": "Un Authoraized Action. You do not have permission to access this feature.",
+      "ar": "انت غير مخول باستخدام هذه الصلاحيات .ليس لديك إذن للوصول إلى هذه الميزة."
+    }
+  }
+]

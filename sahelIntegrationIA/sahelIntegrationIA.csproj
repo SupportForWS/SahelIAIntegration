@@ -1,0 +1,460 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+	<TargetFramework>net7.0</TargetFramework>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<UserSecretsId>dotnet-sahelIntegrationIA-75ae198a-fb90-40e6-80b6-f0975fa058a0</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+	<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+	<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
+	  <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Reference Include="Azure.Core">
+	  <HintPath>DLLs\Azure.Core.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Azure.Identity">
+	  <HintPath>DLLs\Azure.Identity.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="BarcodeStandard">
+	  <HintPath>DLLs\BarcodeStandard.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Dapper">
+	  <HintPath>DLLs\Dapper.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Elasticsearch.Net">
+	  <HintPath>DLLs\Elasticsearch.Net.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="EntityFramework">
+	  <HintPath>DLLs\EntityFramework.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="EntityFramework.SqlServer">
+	  <HintPath>DLLs\EntityFramework.SqlServer.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServices.APIs.UserApp.OldApplication">
+	  <HintPath>DLLs\eServices.APIs.UserApp.OldApplication.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Core">
+	  <HintPath>DLLs\eServicesV2.Kernel.Core.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Domain">
+	  <HintPath>DLLs\eServicesV2.Kernel.Domain.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Host.API">
+	  <HintPath>DLLs\eServicesV2.Kernel.Host.API.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Infrastructure.Integration">
+	  <HintPath>DLLs\eServicesV2.Kernel.Infrastructure.Integration.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Infrastructure.Logging">
+	  <HintPath>DLLs\eServicesV2.Kernel.Infrastructure.Logging.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Infrastructure.Persistence">
+	  <HintPath>DLLs\eServicesV2.Kernel.Infrastructure.Persistence.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Repository">
+	  <HintPath>DLLs\eServicesV2.Kernel.Repository.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="eServicesV2.Kernel.Service">
+	  <HintPath>DLLs\eServicesV2.Kernel.Service.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="FluentValidation">
+	  <HintPath>DLLs\FluentValidation.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="FluentValidation.AspNetCore">
+	  <HintPath>DLLs\FluentValidation.AspNetCore.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="FluentValidation.DependencyInjectionExtensions">
+	  <HintPath>DLLs\FluentValidation.DependencyInjectionExtensions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="IndividualAuthorizationSahelWorker">
+	  <HintPath>DLLs\IndividualAuthorizationSahelWorker.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="MicroClear.EnterpriseSolutions">
+	  <HintPath>DLLs\MicroClear.EnterpriseSolutions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="MicroClear.EnterpriseSolutions.CryptographyServices">
+	  <HintPath>DLLs\MicroClear.EnterpriseSolutions.CryptographyServices.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="MicroClear.EnterpriseSolutions.ServiceFactories">
+	  <HintPath>DLLs\MicroClear.EnterpriseSolutions.ServiceFactories.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.AspNetCore.Cryptography.Internal">
+	  <HintPath>DLLs\Microsoft.AspNetCore.Cryptography.Internal.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation">
+	  <HintPath>DLLs\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore">
+	  <HintPath>DLLs\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Bcl.AsyncInterfaces">
+	  <HintPath>DLLs\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.EntityFrameworkCore">
+	  <HintPath>DLLs\Microsoft.EntityFrameworkCore.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.EntityFrameworkCore.Abstractions">
+	  <HintPath>DLLs\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.EntityFrameworkCore.Relational">
+	  <HintPath>DLLs\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.EntityFrameworkCore.SqlServer">
+	  <HintPath>DLLs\Microsoft.EntityFrameworkCore.SqlServer.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Configuration.Binder">
+	  <HintPath>DLLs\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.DependencyModel">
+	  <HintPath>DLLs\Microsoft.Extensions.DependencyModel.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Hosting">
+	  <HintPath>DLLs\Microsoft.Extensions.Hosting.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Hosting.WindowsServices">
+	  <HintPath>DLLs\Microsoft.Extensions.Hosting.WindowsServices.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Identity.Core">
+	  <HintPath>DLLs\Microsoft.Extensions.Identity.Core.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Identity.Stores">
+	  <HintPath>DLLs\Microsoft.Extensions.Identity.Stores.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Localization.Abstractions">
+	  <HintPath>DLLs\Microsoft.Extensions.Localization.Abstractions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Logging.Abstractions">
+	  <HintPath>DLLs\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Extensions.Options">
+	  <HintPath>DLLs\Microsoft.Extensions.Options.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Identity.Client">
+	  <HintPath>DLLs\Microsoft.Identity.Client.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Identity.Client.Extensions.Msal">
+	  <HintPath>DLLs\Microsoft.Identity.Client.Extensions.Msal.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Abstractions">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.JsonWebTokens">
+	  <HintPath>DLLs\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Logging">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Logging.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Protocols">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Protocols.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Protocols.WsTrust">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Protocols.WsTrust.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Tokens">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Tokens.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Tokens.Saml">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Tokens.Saml.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.IdentityModel.Xml">
+	  <HintPath>DLLs\Microsoft.IdentityModel.Xml.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.Common">
+	  <HintPath>DLLs\Microsoft.ReportViewer.Common.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.DataVisualization">
+	  <HintPath>DLLs\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.Design">
+	  <HintPath>DLLs\Microsoft.ReportViewer.Design.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.ProcessingObjectModel">
+	  <HintPath>DLLs\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.WebDesign">
+	  <HintPath>DLLs\Microsoft.ReportViewer.WebDesign.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.ReportViewer.WebForms">
+	  <HintPath>DLLs\Microsoft.ReportViewer.WebForms.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.SqlServer.Server">
+	  <HintPath>DLLs\Microsoft.SqlServer.Server.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.SqlServer.Types">
+	  <HintPath>DLLs\Microsoft.SqlServer.Types.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Web.Infrastructure">
+	  <HintPath>DLLs\Microsoft.Web.Infrastructure.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Microsoft.Win32.SystemEvents">
+	  <HintPath>DLLs\Microsoft.Win32.SystemEvents.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Newtonsoft.Json">
+	  <HintPath>DLLs\Newtonsoft.Json.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Newtonsoft.Json.Bson">
+	  <HintPath>DLLs\Newtonsoft.Json.Bson.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="PhoneNumbers">
+	  <HintPath>DLLs\PhoneNumbers.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Pipelines.Sockets.Unofficial">
+	  <HintPath>DLLs\Pipelines.Sockets.Unofficial.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog">
+	  <HintPath>DLLs\Serilog.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.AspNetCore">
+	  <HintPath>DLLs\Serilog.AspNetCore.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Enrichers.Environment">
+	  <HintPath>DLLs\Serilog.Enrichers.Environment.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Extensions.Hosting">
+	  <HintPath>DLLs\Serilog.Extensions.Hosting.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Extensions.Logging">
+	  <HintPath>DLLs\Serilog.Extensions.Logging.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Formatting.Compact">
+	  <HintPath>DLLs\Serilog.Formatting.Compact.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Formatting.Elasticsearch">
+	  <HintPath>DLLs\Serilog.Formatting.Elasticsearch.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Settings.Configuration">
+	  <HintPath>DLLs\Serilog.Settings.Configuration.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.Console">
+	  <HintPath>DLLs\Serilog.Sinks.Console.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.Debug">
+	  <HintPath>DLLs\Serilog.Sinks.Debug.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.Elasticsearch">
+	  <HintPath>DLLs\Serilog.Sinks.Elasticsearch.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.File">
+	  <HintPath>DLLs\Serilog.Sinks.File.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.MSSqlServer">
+	  <HintPath>DLLs\Serilog.Sinks.MSSqlServer.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="Serilog.Sinks.PeriodicBatching">
+	  <HintPath>DLLs\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="StackExchange.Redis">
+	  <HintPath>DLLs\StackExchange.Redis.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.CodeDom">
+	  <HintPath>DLLs\System.CodeDom.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Configuration.ConfigurationManager">
+	  <HintPath>DLLs\System.Configuration.ConfigurationManager.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Data.SqlClient">
+	  <HintPath>DLLs\System.Data.SqlClient.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Drawing.Common">
+	  <HintPath>DLLs\System.Drawing.Common.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.IdentityModel.Tokens.Jwt">
+	  <HintPath>DLLs\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Memory.Data">
+	  <HintPath>DLLs\System.Memory.Data.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Private.ServiceModel">
+	  <HintPath>DLLs\System.Private.ServiceModel.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Runtime.Caching">
+	  <HintPath>DLLs\System.Runtime.Caching.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Security.Cryptography.ProtectedData">
+	  <HintPath>DLLs\System.Security.Cryptography.ProtectedData.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Security.Permissions">
+	  <HintPath>DLLs\System.Security.Permissions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel">
+	  <HintPath>DLLs\System.ServiceModel.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.Duplex">
+	  <HintPath>DLLs\System.ServiceModel.Duplex.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.Federation">
+	  <HintPath>DLLs\System.ServiceModel.Federation.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.Http">
+	  <HintPath>DLLs\System.ServiceModel.Http.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.NetTcp">
+	  <HintPath>DLLs\System.ServiceModel.NetTcp.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.Primitives">
+	  <HintPath>DLLs\System.ServiceModel.Primitives.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.ServiceModel.Security">
+	  <HintPath>DLLs\System.ServiceModel.Security.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.Helpers">
+	  <HintPath>DLLs\System.Web.Helpers.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.Mvc">
+	  <HintPath>DLLs\System.Web.Mvc.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.Razor">
+	  <HintPath>DLLs\System.Web.Razor.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.WebPages">
+	  <HintPath>DLLs\System.Web.WebPages.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.WebPages.Deployment">
+	  <HintPath>DLLs\System.Web.WebPages.Deployment.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Web.WebPages.Razor">
+	  <HintPath>DLLs\System.Web.WebPages.Razor.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="System.Windows.Extensions">
+	  <HintPath>DLLs\System.Windows.Extensions.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="zxing">
+	  <HintPath>DLLs\zxing.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="ZXing.Net.Mobile.Core">
+	  <HintPath>DLLs\ZXing.Net.Mobile.Core.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="zxing.portable">
+	  <HintPath>DLLs\zxing.portable.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+	<Reference Include="ZXingNetMobile">
+	  <HintPath>DLLs\ZXingNetMobile.dll</HintPath>
+	  <Private>True</Private>
+	</Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DLLs\eServices.APIs.UserApp.OldApplication.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,126 @@
+﻿[
+
+    {
+        "Key": "EServiceBPBGRequestCreatedState",
+        "LocalizedValue": {
+            "en": "Created",
+            "ar": "تم الإنشاء"
+        }
+    },
+
+
+    {
+        "Key": "EServiceBPBGRequestSubmittedState",
+        "LocalizedValue": {
+            "en": "Submitted",
+            "ar": "تم الإرسال"
+        }
+    },
+
+
+    {
+        "Key": "EServiceBPBGRequestRejectedState",
+        "LocalizedValue": {
+            "en": "Rejected",
+            "ar": "تم الرفض"
+        }
+    },
+
+    
+    {
+        "Key": "EServiceBPBGRequestInProgressState",
+        "LocalizedValue": {
+            "en": "In Progress",
+            "ar": "قيد التنفيذ"
+        }
+    },
+
+
+    {
+        "Key": "EServiceBPBGRequestCompletedState",
+        "LocalizedValue": {
+            "en": "Completed",
+            "ar": "تم الإكمال"
+        }
+    },
+
+    {
+        "Key": "BusinessActivityRequestSubmittedState",
+        "LocalizedValue": {
+            "en": "Customs Business Activity Request Submitted",
+            "ar": "تم استلام طلب اضافة نشاط جمركي"
+        }
+    },
+
+    {
+        "Key": "BusinessActivityRequestRejectedState",
+        "LocalizedValue": {
+            "en": "Customs Business Activity Request Rejected",
+            "ar": "تم رفض طلب اضافة نشاط جمركي"
+        }
+    },
+
+    {
+        "Key": "BusinessActivityRequestInialApprovedState",
+        "LocalizedValue": {
+            "en": "Customs Business Activity Request Initial Approved",
+            "ar": "اعتماد مبدئي على طلب اضافة النشاط الجمركي"
+        }
+    },
+
+    {
+        "Key": "BusinessActivityRequestCompletedState",
+        "LocalizedValue": {
+            "en": "Customs Business Activity Request Completed",
+            "ar": "طلب اضافة النشاط الجمركي مكتمل"
+        }
+    },
+
+    {
+        "Key": "UserActivityRequestCreatedState",
+        "LocalizedValue": {
+            "en": "Customs User Activity Request Created",
+            "ar": "تم انشاء طلب اضافة مستخدم جمركي"
+        }
+    },
+
+    {
+        "Key": "UserActivityRequestSubmittedState",
+        "LocalizedValue": {
+            "en": "Customs User Activity Request Created",
+            "ar": "تم استلام طلب اضافة مستخدم جمركي"
+        }
+    },
+
+    {
+        "Key": "UserActivityRequestRejectedState",
+        "LocalizedValue": {
+            "en": "Customs User Activity Request Rejected",
+            "ar": "تم رفض طلب اضافة مستخدم جمركي"
+        }
+    },
+
+    {
+        "Key": "UserActivityRequestAcceptedState",
+        "LocalizedValue": {
+            "en": "Customs User Activity Request Accepted",
+            "ar": "تمت الموافقة على طلب اضافة مستخدم جمركي"
+        }
+    },
+
+    {
+        "Key": "UserActivityRequestCompletedState",
+        "LocalizedValue": {
+            "en": "Customs User Activity Request Completed",
+            "ar": "طلب اضافة مستخدم جمركي مكتمل"
+        }
+    },
+
+    {
+        "Key": "NoIndustrialLicence",
+        "LocalizedValue": {
+            "en": "There is no information available for entered industrial license number, please re-enter the correct industrial license number, and try again",
+            "ar": "لا يوجد معلومات متوفرة عن رقم الترخيص الصناعي الذي تم إدخاله، يرجى إعادة إدخال رقم الترخيص الصناعي بشكل صحيح وإعادة المحاولة"
+        }
+    }
+]
