@@ -100,7 +100,7 @@ namespace sahelIntegrationIA
                 catch (Exception ex)
 
                 {
-                    _logger.LogException(ex, ex.Message);
+                    _logger.LogException(ex, "Sahel-Services");
                     exceptions.Add(ex); // Collect exceptions
 
                 }
@@ -260,6 +260,7 @@ namespace sahelIntegrationIA
                     client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                     //HTTP POST //single to be modified as enum
+                    //HTTP POST //single to be modified as enum
                     Task<HttpResponseMessage> postTask = client.PostAsJsonAsync<Notification>("single", notification);
                     /*                    var notificationString = JsonConvert.SerializeObject(notification);
                                         _logger.LogInformation(notificationString);*/
@@ -359,7 +360,7 @@ namespace sahelIntegrationIA
 
                 IndustrialLicenseNo = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
 
-                //IsFromSahel= serviceRequest.ServiceRequestsDetail.IsFromSahel,
+                //IsFromSahel= serviceRequest.ServiceRequestsDetail.fa,
 
                 LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
 
@@ -367,7 +368,7 @@ namespace sahelIntegrationIA
 
                 RequestNumber = serviceRequest.EserviceRequestNumber,
 
-                // SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizerCivilId,
+                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer,
 
 
 
@@ -375,7 +376,8 @@ namespace sahelIntegrationIA
 
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
 
-                //ImporterLicenseType = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
+                ImporterLicenseType = 
+                int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
 
 
                 LicenseType = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
@@ -383,7 +385,7 @@ namespace sahelIntegrationIA
                 LicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
 
 
-                // TypeOfLicenseRequest = serviceRequest.ServiceRequestsDetail.TypeOfLicenseRequest
+                //TypeOfLicenseRequest = serviceRequest.ServiceRequestsDetail.type
 
 
             };
@@ -405,7 +407,7 @@ namespace sahelIntegrationIA
 
                 RequestNumber = serviceRequest.EserviceRequestNumber,
 
-                // SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizerCivilId
+                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
 
             };
 
