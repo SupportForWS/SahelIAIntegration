@@ -5,6 +5,8 @@ namespace sahelIntegrationIA.Configurations
     {
         public IndividualAuthorizationConfiguration IndividualAuthorizationConfiguration { get; set; }
         public int OrganizationKMIDCallingTimer { get; set; }
+        public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
+
 
     }
     public class IndividualAuthorizationConfiguration
@@ -16,6 +18,11 @@ namespace sahelIntegrationIA.Configurations
         public string NotificationTypeForIA { get; set; }
         public TimeSpan IndividualAuthorizationKMIDCallingTimer { get; set; }
     }
+    public class EservicesUrlsConfigurations
+    {
+        public string AddNewImportLicenseUrl { get; set;}
+        public string ReNewImportLicenseUrl { get; set; }
 
+    }
 
 }

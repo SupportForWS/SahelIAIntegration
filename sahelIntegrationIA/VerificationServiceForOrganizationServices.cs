@@ -167,8 +167,7 @@ namespace sahelIntegrationIA
             {
 
                 case ServiceTypesEnum.NewImportLicenseRequest:
-                    url = "https://localhost:7298/api/v1/SahelIntegratioOrganizationServicesCommands/submit-add-import-license-for-sahel";
-
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.AddNewImportLicenseUrl;
 
                     await CallServiceAPI(GetAddLicenseLicenseDTO(serviceRequest), url);
 
@@ -176,7 +175,7 @@ namespace sahelIntegrationIA
 
 
                 case ServiceTypesEnum.ImportLicenseRenewalRequest:
-                    url = "https://localhost:7298/api/v1/SahelIntegratioOrganizationServicesCommands/submit-renew-import-license-for-sahel";
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.ReNewImportLicenseUrl;
 
 
                     await CallServiceAPI(GetRenewLicenseDTO(serviceRequest), url);
