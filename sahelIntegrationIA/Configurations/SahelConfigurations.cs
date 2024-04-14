@@ -22,6 +22,18 @@ namespace sahelIntegrationIA.Configurations
     {
         public string AddNewImportLicenseUrl { get; set;}
         public string ReNewImportLicenseUrl { get; set; }
+        public string RenewComercialLicenseUrl { get; set; }
+        public string RenewIndustrialLicenseUrl { get; set; }
+        public string AddAuthorizedSignutryUrl { get; set; }
+        public string RemoveAuthorizedSignutryUrl { get; set; }
+        public string RenewAuthorizedSignutryUrl { get; set; }
+        public string ChangeOrgNameUrl { get; set; }
+        public string ChangeComercialAddressUrl { get; set; }
+        public string UnderTakingRequestUrl { get; set; }
+        public string EPaymentRequestUrl { get; set; }
+
+
+
 
     }
 

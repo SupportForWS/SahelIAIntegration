@@ -15,6 +15,7 @@ using System.Text;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using System.Text.RegularExpressions;
 using eServicesV2.Kernel.Core;
+using static eServicesV2.Kernel.Infrastructure.Persistence.Constants.StoredProcedureNames.UpdateMigrationStatus.UpdateMigrationStatusParamerters;
 
 namespace sahelIntegrationIA
 {
@@ -156,6 +157,52 @@ namespace sahelIntegrationIA
                 case ServiceTypesEnum.ImportLicenseRenewalRequest:
                     url = _sahelConfigurations.EservicesUrlsConfigurations.ReNewImportLicenseUrl;
                     await CallServiceAPI(GetRenewLicenseDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.AddNewAuthorizedSignatoryRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.AddAuthorizedSignutryUrl;
+                    await CallServiceAPI(GetAuthorizedSignatoryDto(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.RenewAuthorizedSignatoryRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.RenewAuthorizedSignutryUrl;
+                    await CallServiceAPI(GetReNewAuthorizedSignatoryDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.RemoveAuthorizedSignatoryRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.RemoveAuthorizedSignutryUrl;
+                    await CallServiceAPI(GetRemoveAuthorizedSignatoryDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.CommercialLicenseRenewalRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.RenewComercialLicenseUrl;
+                    await CallServiceAPI(GetCreateRenewCommercialLicenseRequestDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.IndustrialLicenseRenewalRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.RenewIndustrialLicenseUrl;
+                    await CallServiceAPI(GetRenewIndustrialLicenseDto(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.ChangeCommercialAddressRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.ChangeComercialAddressUrl;
+                    await CallServiceAPI(GetOrgCommercialAddressDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.OrgNameChangeReqServiceId:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.ChangeOrgNameUrl;
+                    await CallServiceAPI(GetOrganizationChangeNameDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.ConsigneeUndertakingRequest:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.UnderTakingRequestUrl;
+                    await CallServiceAPI(GetConsigneeUndertakingRequestDTO(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.EPaymentService:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.EPaymentRequestUrl;
+                    //TODO add DTO ans map
+                  //  await CallServiceAPI(GetConsigneeUndertakingRequestDTO(serviceRequest), url);
                     break;
 
                 default:
@@ -302,13 +349,13 @@ namespace sahelIntegrationIA
 
 
         #region DTOs
+
         private CreateRenewImportLicenseDTO GetRenewLicenseDTO(ServiceRequest serviceRequest)
         {
             return new CreateRenewImportLicenseDTO
             {
                 CommercialLicenseNo = serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
                 eServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
-                ImporterLicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
                 IndustrialLicenseNo = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
                 LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
                 LicenseIssueDate = serviceRequest.ServiceRequestsDetail.LicenseIssueDate.Value,
@@ -316,11 +363,13 @@ namespace sahelIntegrationIA
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer,
 
                 //TODO: check this
+                ImporterLicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
+
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
                 ImporterLicenseType =
                 int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
                 LicenseType = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
-                LicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
+                LicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
                 //TypeOfLicenseRequest = serviceRequest.ServiceRequestsDetail.type
             };
 
@@ -341,14 +390,14 @@ namespace sahelIntegrationIA
         {
             return new RenewIndustrialLicenseDto
             {
-                CommercialLicenseNumber= serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
-                ImportLicenseNumber= serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
-                LicenseExpiryDate= serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
-                LicenseIssueDate= serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                CommercialLicenseNumber = serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
+                ImportLicenseNumber = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
+                LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                LicenseIssueDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
                 //todo: check
-                LicenseNumber= serviceRequest.ServiceRequestsDetail.LicenseNumber,
-                RequestNumber= serviceRequest.EserviceRequestNumber,
-                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+                LicenseNumber = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
             };
 
         }
@@ -362,60 +411,65 @@ namespace sahelIntegrationIA
                 LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
                 LicenseIssueDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
                 IndustrialLicenseNumber = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
-                ImportLicenseType= serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
-                ImportLicenseTypeDesc= serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
+                ImportLicenseType = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
+                ImportLicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
                 RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
 
             };
 
         }
+
         private AuthorizedSignatoryDto GetAuthorizedSignatoryDto(ServiceRequest serviceRequest)
         {
             return new AuthorizedSignatoryDto
             {
-                AuthorizedSignatoryCivilIdExpiryDate= serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
-                CivilId= serviceRequest.ServiceRequestsDetail.CivilId,
-                EServiceRequestId= serviceRequest.EserviceRequestId.ToString(),
-                AuthPerson= serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
-                ExpiryDate= serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
-                IssueDate= serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-                NationalityId= serviceRequest.ServiceRequestsDetail.Nationality,
-                OrganizationId= serviceRequest.ServiceRequestsDetail.OrganizationId.Value.ToString(),
+                AuthorizedSignatoryCivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
+                EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
+                AuthPerson = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
+                IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
+                NationalityId = serviceRequest.ServiceRequestsDetail.Nationality,
+                OrganizationId = serviceRequest.ServiceRequestsDetail.OrganizationId.Value.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
             };
 
         }
+
         private RemoveAuthorizedSignatoryDTO GetRemoveAuthorizedSignatoryDTO(ServiceRequest serviceRequest)
         {
             return new RemoveAuthorizedSignatoryDTO
             {
-                AssociatedAuthorizedSignatories= new()
+                AssociatedAuthorizedSignatories = new()
                 {
-                    AssociatedPersonName= serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
-                    CivilIdNo= serviceRequest.ServiceRequestsDetail.CivilId
+                    AssociatedPersonName = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                    CivilIdNo = serviceRequest.ServiceRequestsDetail.CivilId
                 },
                 EServicerequestId = serviceRequest.EserviceRequestId.ToString(),
                 OrganizationNameArabic = serviceRequest.ServiceRequestsDetail.OldOrgAraName,
-                OrganizationNameEnglish= serviceRequest.ServiceRequestsDetail.OldOrgEngName,
-                TradeLicenceNumber= serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                OrganizationNameEnglish = serviceRequest.ServiceRequestsDetail.OldOrgEngName,
+                //todo: check
+                TradeLicenceNumber = serviceRequest.ServiceRequestsDetail.LicenseNumber,
                 RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
             };
 
         }
+
         private ReNewAuthorizedSignatoryDTO GetReNewAuthorizedSignatoryDTO(ServiceRequest serviceRequest)
         {
             return new ReNewAuthorizedSignatoryDTO
             {
-                AuthorizedSignatory= new()
+                AuthorizedSignatory = new()
                 {
-                    CivilId= serviceRequest.ServiceRequestsDetail.CivilId,
-                    CivilIdExpiryDate= serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
-                    ExpiryDate= serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
-                    IssueDate= serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-                    Name= serviceRequest.ServiceRequestsDetail.AuthorizedPerson
+                    //TODO: check
+                    CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
+                    CivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                    ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
+                    IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
+                    Name = serviceRequest.ServiceRequestsDetail.AuthorizedPerson
                 },
                 EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,
@@ -423,7 +477,85 @@ namespace sahelIntegrationIA
             };
 
         }
-      
+
+        private OrgCommercialAddressDTO GetOrgCommercialAddressDTO(ServiceRequest serviceRequest)
+        {
+            return new OrgCommercialAddressDTO
+            {
+                Address = serviceRequest.ServiceRequestsDetail.Address,
+                ApartmentNumber = serviceRequest.ServiceRequestsDetail.ApartmentNumber,
+                ApartmentType = serviceRequest.ServiceRequestsDetail.ApartmentType,
+                Block = serviceRequest.ServiceRequestsDetail.Block,
+                BusinessFaxNumber = serviceRequest.ServiceRequestsDetail.BusiFaxNo,
+                BusinessNumber = serviceRequest.ServiceRequestsDetail.BusiNo,
+                City = serviceRequest.ServiceRequestsDetail.City,
+                Email = serviceRequest.ServiceRequestsDetail.Email,
+                EServicerequestId = serviceRequest.EserviceRequestId.ToString(),
+                Floor = serviceRequest.ServiceRequestsDetail.Floor,
+                MobileNumber = serviceRequest.ServiceRequestsDetail.MobileNo,
+                OrganizationNameArabic = serviceRequest.ServiceRequestsDetail.OldOrgAraName,
+                OrganizationNameEnglish = serviceRequest.ServiceRequestsDetail.OldOrgEngName,
+                POBoxNo = serviceRequest.ServiceRequestsDetail.PoboxNo,
+                PostalCode = serviceRequest.ServiceRequestsDetail.PostalCode,
+                ResidenceNumber = serviceRequest.ServiceRequestsDetail.ResidenceNo,
+                State = serviceRequest.ServiceRequestsDetail.State,
+                Street = serviceRequest.ServiceRequestsDetail.Street,
+                TradeLicenceNumber = serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                WebPageAddress = serviceRequest.ServiceRequestsDetail.WebPageAddress,
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+
+
+        private OrganizationChangeNameDTO GetOrganizationChangeNameDTO(ServiceRequest serviceRequest)
+        {
+            return new OrganizationChangeNameDTO
+            {
+                //todo: check
+                AddNewImportLicenseRequest = false,
+
+                CommercialLicenseNumber = serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
+                eServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
+                ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
+
+                //todo check
+                ImportLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
+                ImporterLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
+                // IssueDate =,
+                // LicenseNo =,
+                // ExpiryDate = ,
+
+                //not used
+                //  organizationName =,
+
+                OrganizationNewArabicName = serviceRequest.ServiceRequestsDetail.NewOrgAraName,
+                OrganizationNewEnglishName = serviceRequest.ServiceRequestsDetail.NewOrgEngName,
+                OrganizationOldArabicName = serviceRequest.ServiceRequestsDetail.OldOrgAraName,
+                OrganizationOldEnglishName = serviceRequest.ServiceRequestsDetail.OldOrgEngName,
+                TradingLicenseNo = serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+
+
+        private ConsigneeUndertakingRequestDTO GetConsigneeUndertakingRequestDTO(ServiceRequest serviceRequest)
+        {
+            return new ConsigneeUndertakingRequestDTO
+            {
+                //todo: check ConsigneeName is org name
+                //  ConsigneeName= serviceRequest.ServiceRequestsDetail.OldOrgAraName,
+                Eservicerequestid = serviceRequest.EserviceRequestId.ToString(),
+                TradeLicenceNumber = serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                RequestNo = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+
         #endregion
 
 
@@ -560,6 +692,77 @@ namespace sahelIntegrationIA
             public DateTime CivilIdExpiryDate { get; set; }
             public DateTime IssueDate { get; set; }
             public DateTime ExpiryDate { get; set; }
+        }
+
+
+        public class OrgCommercialAddressDTO
+        {
+            public string RequestNumber { get; set; }
+            public string OrganizationNameEnglish { get; set; }
+            public string OrganizationNameArabic { get; set; }
+            public string TradeLicenceNumber { get; set; }
+            public string POBoxNo { get; set; }
+            public string Address { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string PostalCode { get; set; }
+            public string BusinessFaxNumber { get; set; }
+            public string BusinessNumber { get; set; }
+            public string MobileNumber { get; set; }
+            public string ResidenceNumber { get; set; }
+            public string Email { get; set; }
+            public string WebPageAddress { get; set; }
+            public string Block { get; set; }
+            public string Street { get; set; }
+            public string Floor { get; set; }
+            public string ApartmentType { get; set; }
+            public string ApartmentNumber { get; set; }
+            public string EServicerequestId { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+
+        }
+
+        public class OrganizationChangeNameDTO
+        {
+            public string OrganizationNewArabicName { get; set; }
+            public string OrganizationNewEnglishName { get; set; }
+            public string RequestNumber { get; set; }
+            public string eServiceRequestId { get; set; }
+            public string OrganizationOldEnglishName { get; set; }
+            public string OrganizationOldArabicName { get; set; }
+            public AvailableImportLicenseDTO availableImportLicenses { get; set; }
+            public bool AddNewImportLicenseRequest { get; set; }
+            public string LicenseNo { get; set; }
+            public int ImportLicenseType { get; set; }
+            public DateTime IssueDate { get; set; }
+            public DateTime ExpiryDate { get; set; }
+            public string TradingLicenseNo { get; set; }
+            public string CommercialLicenseNumber { get; set; }
+            public string organizationName { get; set; }
+            public string ImporterLicenseNo { get; set; }
+            public int ImporterLicenseType { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+
+        }
+        public class AvailableImportLicenseDTO
+        {
+            public string LicenseNumber { get; set; }
+            public bool isSelected { get; set; }
+            public bool isValid { get; set; }
+        }
+
+        public class ConsigneeUndertakingRequestDTO
+        {
+            public string RequestNo { get; set; }
+            public string Eservicerequestid { get; set; }
+            public string TradeLicenceNumber { get; set; }
+            public string ConsigneeName { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
         }
         #endregion
     }
