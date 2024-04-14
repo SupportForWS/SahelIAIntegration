@@ -53,6 +53,12 @@ namespace sahelIntegrationIA
             {
                 (int)ServiceTypesEnum.NewImportLicenseRequest,
                 (int)ServiceTypesEnum.ImportLicenseRenewalRequest,
+                (int)ServiceTypesEnum.CommercialLicenseRenewalRequest,
+                (int)ServiceTypesEnum.IndustrialLicenseRenewalRequest,
+                (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.RemoveAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.OrgNameChangeReqServiceId
             };
 
             var requestList = await _eServicesContext
@@ -61,7 +67,8 @@ namespace sahelIntegrationIA
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
-                                           && serviceIds.Contains((int)p.ServiceId.Value))
+                                           && serviceIds.Contains((int)p.ServiceId.Value)
+                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission.HasValue && p.ServiceRequestsDetail.ReadyForSahelSubmission.Value))
                                 .ToListAsync();
 
             var kmidCreatedList = requestList
