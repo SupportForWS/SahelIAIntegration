@@ -13,6 +13,8 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
+using System.Text.RegularExpressions;
+using eServicesV2.Kernel.Core;
 
 namespace sahelIntegrationIA
 {
@@ -122,7 +124,6 @@ namespace sahelIntegrationIA
 
 
         private async Task ProcessServiceRequest(ServiceRequest serviceRequest)
-
         {
             if (serviceRequest.ServiceId is null or 0)
             {
@@ -142,7 +143,6 @@ namespace sahelIntegrationIA
         }
 
         private async Task ProcessServiceRequestAndCallAPI(ServiceRequest serviceRequest)
-
         {
             string url;
             switch ((ServiceTypesEnum)serviceRequest.ServiceId)
@@ -167,9 +167,7 @@ namespace sahelIntegrationIA
 
 
         private async Task CallServiceAPI<T>(T serviceDTO, string apiUrl)
-
         {
-
             using (var httpClient = new HttpClient())
 
             {
@@ -188,6 +186,7 @@ namespace sahelIntegrationIA
 
         }
 
+        #region Private Methods
         public void PostNotification(Notification notification, string SahelOption = "Business")
         {
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
@@ -299,75 +298,136 @@ namespace sahelIntegrationIA
             }
             return "";
         }
+        #endregion
 
+
+        #region DTOs
         private CreateRenewImportLicenseDTO GetRenewLicenseDTO(ServiceRequest serviceRequest)
-
         {
-
             return new CreateRenewImportLicenseDTO
-
             {
-
                 CommercialLicenseNo = serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
-
                 eServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
-
                 ImporterLicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
-
                 IndustrialLicenseNo = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
-
-                //IsFromSahel= serviceRequest.ServiceRequestsDetail.fa,
-
                 LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
-
                 LicenseIssueDate = serviceRequest.ServiceRequestsDetail.LicenseIssueDate.Value,
-
                 RequestNumber = serviceRequest.EserviceRequestNumber,
-
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer,
 
-
-
-                //check this
-
+                //TODO: check this
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
-
                 ImporterLicenseType =
                 int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
-
-
                 LicenseType = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
-
                 LicenseTypeDesc = serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
-
-
                 //TypeOfLicenseRequest = serviceRequest.ServiceRequestsDetail.type
-
-
             };
 
         }
 
         private CreateAddNewImportLicenseDTO GetAddLicenseLicenseDTO(ServiceRequest serviceRequest)
-
         {
-
             return new CreateAddNewImportLicenseDTO
-
             {
-
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
-
-                // IsFromSahel= serviceRequest.ServiceRequestsDetail.IsFromSahel,
-
                 RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
 
+        }
+
+        private RenewIndustrialLicenseDto GetRenewIndustrialLicenseDto(ServiceRequest serviceRequest)
+        {
+            return new RenewIndustrialLicenseDto
+            {
+                CommercialLicenseNumber= serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
+                ImportLicenseNumber= serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
+                LicenseExpiryDate= serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                LicenseIssueDate= serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                //todo: check
+                LicenseNumber= serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                RequestNumber= serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+
+        private CreateRenewCommercialLicenseRequestDTO GetCreateRenewCommercialLicenseRequestDTO(ServiceRequest serviceRequest)
+        {
+            return new CreateRenewCommercialLicenseRequestDTO
+            {
+                CommercialLicenseNumber = serviceRequest.ServiceRequestsDetail.CommercialLicenseNo,
+                ImportLicenseNumber = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
+                LicenseExpiryDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                LicenseIssueDate = serviceRequest.ServiceRequestsDetail.LicenseExpiryDate.Value,
+                IndustrialLicenseNumber = serviceRequest.ServiceRequestsDetail.IndustrialLicenseNo,
+                ImportLicenseType= serviceRequest.ServiceRequestsDetail.ImporterLicenseType,
+                ImportLicenseTypeDesc= serviceRequest.ServiceRequestsDetail.ImporterLicenseTypeDesc,
+                RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
 
             };
 
         }
+        private AuthorizedSignatoryDto GetAuthorizedSignatoryDto(ServiceRequest serviceRequest)
+        {
+            return new AuthorizedSignatoryDto
+            {
+                AuthorizedSignatoryCivilIdExpiryDate= serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                CivilId= serviceRequest.ServiceRequestsDetail.CivilId,
+                EServiceRequestId= serviceRequest.EserviceRequestId.ToString(),
+                AuthPerson= serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                ExpiryDate= serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
+                IssueDate= serviceRequest.ServiceRequestsDetail.IssueDate.Value,
+                NationalityId= serviceRequest.ServiceRequestsDetail.Nationality,
+                OrganizationId= serviceRequest.ServiceRequestsDetail.OrganizationId.Value.ToString(),
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
 
+        }
+        private RemoveAuthorizedSignatoryDTO GetRemoveAuthorizedSignatoryDTO(ServiceRequest serviceRequest)
+        {
+            return new RemoveAuthorizedSignatoryDTO
+            {
+                AssociatedAuthorizedSignatories= new()
+                {
+                    AssociatedPersonName= serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                    CivilIdNo= serviceRequest.ServiceRequestsDetail.CivilId
+                },
+                EServicerequestId = serviceRequest.EserviceRequestId.ToString(),
+                OrganizationNameArabic = serviceRequest.ServiceRequestsDetail.OldOrgAraName,
+                OrganizationNameEnglish= serviceRequest.ServiceRequestsDetail.OldOrgEngName,
+                TradeLicenceNumber= serviceRequest.ServiceRequestsDetail.LicenseNumber,
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+        private ReNewAuthorizedSignatoryDTO GetReNewAuthorizedSignatoryDTO(ServiceRequest serviceRequest)
+        {
+            return new ReNewAuthorizedSignatoryDTO
+            {
+                AuthorizedSignatory= new()
+                {
+                    CivilId= serviceRequest.ServiceRequestsDetail.CivilId,
+                    CivilIdExpiryDate= serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                    ExpiryDate= serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
+                    IssueDate= serviceRequest.ServiceRequestsDetail.IssueDate.Value,
+                    Name= serviceRequest.ServiceRequestsDetail.AuthorizedPerson
+                },
+                EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
+                RequestNumber = serviceRequest.EserviceRequestNumber,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+            };
+
+        }
+      
+        #endregion
+
+
+        #region DTO
         public class CreateAddNewImportLicenseDTO
 
         {
@@ -417,6 +477,91 @@ namespace sahelIntegrationIA
             public string SelectedAuthorizerCivilId { get; set; }
 
         }
+
+        public class RenewIndustrialLicenseDto
+        {
+            public string RequestNumber { get; set; }
+            public string LicenseNumber { get; set; }
+            public string ImportLicenseNumber { get; set; }
+            public string CommercialLicenseNumber { get; set; }
+            public DateTime LicenseIssueDate { get; set; }
+            public DateTime LicenseExpiryDate { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+        }
+
+        public class CreateRenewCommercialLicenseRequestDTO
+        {
+            public string RequestNumber { get; set; }
+            public string ImportLicenseNumber { get; set; }
+            public string CommercialLicenseNumber { get; set; }
+
+            public string IndustrialLicenseNumber { get; set; }
+
+            public DateTime LicenseIssueDate { get; set; }
+            public DateTime LicenseExpiryDate { get; set; }
+            public string ImportLicenseType { get; set; }
+            public string ImportLicenseTypeDesc { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+
+        }
+
+        public class AuthorizedSignatoryDto
+        {
+            public string EServiceRequestId { get; set; }
+            public string RequestNumber { get; set; }
+            public string OrganizationId { get; set; }
+            public string AuthPerson { get; set; }
+            public string CivilId { get; set; }
+            public DateTime AuthorizedSignatoryCivilIdExpiryDate { get; set; }
+            public int? NationalityId { get; set; }
+            public DateTime IssueDate { get; set; }
+            public DateTime ExpiryDate { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+
+        }
+
+        public class RemoveAuthorizedSignatoryDTO
+        {
+            public string RequestNumber { get; set; }
+            public string OrganizationNameEnglish { get; set; }
+            public string OrganizationNameArabic { get; set; }
+            public AssociatedPersonDetails AssociatedAuthorizedSignatories { get; set; }
+            public string EServicerequestId { get; set; }
+            public string TradeLicenceNumber { get; set; }   //not used 
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+
+
+        }
+        public class AssociatedPersonDetails
+        {
+            public string AssociatedPersonName { get; set; }
+            public string CivilIdNo { get; set; }
+        }
+
+        public class ReNewAuthorizedSignatoryDTO
+        {
+            public string RequestNumber { get; set; }
+            public string EServiceRequestId { get; set; }
+            public CreateAuthorizedSignatoryDTO AuthorizedSignatory { get; set; }
+            public string SelectedAuthorizerCivilId { get; set; }
+            public bool IsFromSahel { get; set; }
+        }
+        public class CreateAuthorizedSignatoryDTO
+        {
+            public string Name { get; set; }
+            public string CivilId { get; set; }
+            public DateTime CivilIdExpiryDate { get; set; }
+            public DateTime IssueDate { get; set; }
+            public DateTime ExpiryDate { get; set; }
+        }
+        #endregion
     }
 
 
