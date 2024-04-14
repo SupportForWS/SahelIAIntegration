@@ -39,12 +39,13 @@ namespace sahelIntegrationIA
         {
             string[] statusEnums = new string[]
             {
-                    nameof(ServiceRequestStatesEnum.EServiceRequestORGCreatedState),
-                     nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo),
+                nameof(ServiceRequestStatesEnum.EServiceRequestORGCreatedState),
+                nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo),
                 nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState),
-                 nameof(ServiceRequestStatesEnum.EServiceRequestCreatedState),
-                  nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState),
+                nameof(ServiceRequestStatesEnum.EServiceRequestCreatedState),
+                nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState),
             };
+
             int[] serviceIds = new int[]
             {
                 (int)ServiceTypesEnum.NewImportLicenseRequest,
@@ -55,46 +56,45 @@ namespace sahelIntegrationIA
                                .Set<ServiceRequest>()
                                .Include(p => p.ServiceRequestsDetail)
                                .Where(p => statusEnums.Contains(p.StateId)
-                 && p.RequestSource == "Sahel"
-                 && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
-                 && serviceIds.Contains((int)p.ServiceId.Value))
+                                           && p.RequestSource == "Sahel"
+                                           && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
+                                           && serviceIds.Contains((int)p.ServiceId.Value))
                                 .ToListAsync();
-            var kmidCreatedList = requestList.Select(a => a.ServiceRequestsDetail.KMIDToken).ToList();
 
-            var kmidStrings = kmidCreatedList.Select(k => k.ToString()).ToList();
+            var kmidCreatedList = requestList
+                .Select(a => a.ServiceRequestsDetail.KMIDToken)
+                .ToList();
+
+            var kmidStrings = kmidCreatedList
+                .Select(k => k.ToString())
+                .ToList();
 
             var currentTime = DateTime.Now;
 
             var expiredKmidRequests = await _eServicesContext.Set<KGACPACIQueue>()
                 .Where(a => kmidStrings.Contains(a.KGACPACIQueueId.ToString())
-                && a.DateCreated.AddSeconds(_sahelConfigurations.OrganizationKMIDCallingTimer) < currentTime)
+                            && a.DateCreated.AddSeconds(_sahelConfigurations.OrganizationKMIDCallingTimer) < currentTime)
                 .Select(a => a.KGACPACIQueueId)
                 .ToListAsync();
+
             var filteredRequestList = requestList
-      .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
-      .ToList();
+                .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
+                .ToList();
 
             return filteredRequestList;
-
         }
 
         public async Task CreateRequestObjectDTO()
-
-
         {
             var serviceRequest = await GetRequestList();
             var exceptions = new List<Exception>();
 
-
             var tasks = serviceRequest.Select(async serviceRequest =>
             {
-
                 try
 
                 {
-
                     await ProcessServiceRequest(serviceRequest);
-
                 }
 
                 catch (Exception ex)
@@ -107,20 +107,15 @@ namespace sahelIntegrationIA
 
             });
 
-
             // Wait for all tasks to complete
-
             await Task.WhenAll(tasks);
 
 
             // If there are any exceptions, handle them here
-
             if (exceptions.Any())
 
             {
-
                 //   throw new AggregateException("One or more exceptions occurred during processing.", exceptions);
-
             }
 
         }
@@ -129,14 +124,11 @@ namespace sahelIntegrationIA
         private async Task ProcessServiceRequest(ServiceRequest serviceRequest)
 
         {
-
             if (serviceRequest.ServiceId is null or 0)
             {
                 _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
                 return; //log the error
             }
-
-
 
             if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
             {
@@ -144,49 +136,31 @@ namespace sahelIntegrationIA
                 return; //log the error
             }
 
-
-            // var enumValue = (ServiceTypesEnum)serviceRequest.ServiceId;
-
-
             // Create DTO and call api
-
             await ProcessServiceRequestAndCallAPI(serviceRequest);
 
         }
 
-
-
         private async Task ProcessServiceRequestAndCallAPI(ServiceRequest serviceRequest)
 
         {
-
-            string url = string.Empty;
-
+            string url;
             switch ((ServiceTypesEnum)serviceRequest.ServiceId)
 
             {
-
                 case ServiceTypesEnum.NewImportLicenseRequest:
                     url = _sahelConfigurations.EservicesUrlsConfigurations.AddNewImportLicenseUrl;
-
                     await CallServiceAPI(GetAddLicenseLicenseDTO(serviceRequest), url);
-
                     break;
-
 
                 case ServiceTypesEnum.ImportLicenseRenewalRequest:
                     url = _sahelConfigurations.EservicesUrlsConfigurations.ReNewImportLicenseUrl;
-
-
                     await CallServiceAPI(GetRenewLicenseDTO(serviceRequest), url);
-
                     break;
 
-
                 default:
-
+                    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
                     break; //log the error
-
             }
 
         }
@@ -199,38 +173,21 @@ namespace sahelIntegrationIA
             using (var httpClient = new HttpClient())
 
             {
+                string json = JsonConvert.SerializeObject(serviceDTO);
 
-                try
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                {
+                var httpResponse = await httpClient.PostAsync(apiUrl, httpContent);
 
-                    string json = JsonConvert.SerializeObject(serviceDTO);
+                string responseContent = await httpResponse.Content.ReadAsStringAsync();
 
+                Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
 
-                    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-
-                    var httpResponse = await httpClient.PostAsync(apiUrl, httpContent);
-
-
-                    string responseContent = await httpResponse.Content.ReadAsStringAsync();
-                    Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
-
-                    PostNotification(notification,"Individual");
-
-                }
-
-                catch
-
-                {
-
-                    throw;
-
-                }
-
+                PostNotification(notification, "Individual");
             }
 
         }
+
         public void PostNotification(Notification notification, string SahelOption = "Business")
         {
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
@@ -268,6 +225,7 @@ namespace sahelIntegrationIA
             }
 
         }
+
         public string GenerateToken(string SahelOption)
         {
             var confi = _configurations.IndividualAuthorizationSahelConfiguration;
@@ -342,7 +300,6 @@ namespace sahelIntegrationIA
             return "";
         }
 
-
         private CreateRenewImportLicenseDTO GetRenewLicenseDTO(ServiceRequest serviceRequest)
 
         {
@@ -367,7 +324,7 @@ namespace sahelIntegrationIA
 
                 RequestNumber = serviceRequest.EserviceRequestNumber,
 
-                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer,
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer,
 
 
 
@@ -375,7 +332,7 @@ namespace sahelIntegrationIA
 
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
 
-                ImporterLicenseType = 
+                ImporterLicenseType =
                 int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
 
 
@@ -391,7 +348,6 @@ namespace sahelIntegrationIA
 
         }
 
-
         private CreateAddNewImportLicenseDTO GetAddLicenseLicenseDTO(ServiceRequest serviceRequest)
 
         {
@@ -406,13 +362,11 @@ namespace sahelIntegrationIA
 
                 RequestNumber = serviceRequest.EserviceRequestNumber,
 
-                SelectedAuthorizerCivilId= serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
+                SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
 
             };
 
         }
-
-
 
         public class CreateAddNewImportLicenseDTO
 
@@ -429,7 +383,6 @@ namespace sahelIntegrationIA
 
 
         }
-
 
         public class CreateRenewImportLicenseDTO
 
@@ -464,8 +417,6 @@ namespace sahelIntegrationIA
             public string SelectedAuthorizerCivilId { get; set; }
 
         }
-
-
     }
 
 
