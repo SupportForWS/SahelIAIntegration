@@ -158,6 +158,7 @@ namespace sahelIntegrationIA
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
             }
+            var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgAr;
             notficationResponse.bodyAr = msgEn;
             notficationResponse.isForSubscriber = "true";
@@ -165,7 +166,7 @@ namespace sahelIntegrationIA
             notficationResponse.dataTableEn = null;
             notficationResponse.dataTableAr = null;
             notficationResponse.subscriberCivilId = civilID;
-
+            notficationResponse.notificationType = ((int)notificationType).ToString();
             PostNotification(notficationResponse, "Individual");
             serviceRequest.ServiceRequestsDetail.MCNotificationSent = true;
             _eServicesContext.Set<ServiceRequest>().Update(serviceRequest);
@@ -174,7 +175,35 @@ namespace sahelIntegrationIA
         }
 
         #region Private Methods
-       
+       public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
+        {
+            switch (service)
+            {
+                case ServiceTypesEnum.AddNewAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.AddNewAuthorizedSignatory;
+                case ServiceTypesEnum.RemoveAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.RemoveAuthorizedSignatory;
+                case ServiceTypesEnum.RenewAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.RenewAuthorizedSignatory;
+                case ServiceTypesEnum.ImportLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewImportLicense;
+                case ServiceTypesEnum.NewImportLicenseRequest:
+                    return SahelNotficationTypesEnum.AddNewImportLicense;
+                case ServiceTypesEnum.ChangeCommercialAddressRequest:
+                    return SahelNotficationTypesEnum.ChangeCommercialAddress;
+                case ServiceTypesEnum.IndustrialLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewIndustrialLicense;
+                case ServiceTypesEnum.CommercialLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewCommercialLicense;
+                case ServiceTypesEnum.OrgNameChangeReqServiceId:
+                    return SahelNotficationTypesEnum.OrganizationNameChange;
+                case ServiceTypesEnum.ConsigneeUndertakingRequest:
+                    return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
+                default:
+                    return SahelNotficationTypesEnum.RenewImportLicense;
+            }
+        }
+
         public void PostNotification(Notification notification, string SahelOption = "Business")
         {
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
