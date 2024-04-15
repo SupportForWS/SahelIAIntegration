@@ -7,7 +7,7 @@ namespace sahelIntegrationIA.Configurations
         public int OrganizationKMIDCallingTimer { get; set; }
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
-
+        public int SahelSubmissionTimer { get; set; }
 
     }
     public class IndividualAuthorizationConfiguration

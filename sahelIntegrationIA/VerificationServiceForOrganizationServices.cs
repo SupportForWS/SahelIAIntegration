@@ -13,9 +13,6 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
-using System.Text.RegularExpressions;
-using eServicesV2.Kernel.Core;
-using static eServicesV2.Kernel.Infrastructure.Persistence.Constants.StoredProcedureNames.UpdateMigrationStatus.UpdateMigrationStatusParamerters;
 
 namespace sahelIntegrationIA
 {
@@ -62,7 +59,7 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
-
+            DateTime currentDate = DateTime.Now;
             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.ServiceRequestsDetail)
@@ -70,9 +67,15 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
                                            && serviceIds.Contains((int)p.ServiceId.Value)
-                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission.HasValue && p.ServiceRequestsDetail.ReadyForSahelSubmission.Value))
+                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="1" ||
+                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime <currentDate.AddMinutes(_sahelConfigurations.SahelSubmissionTimer))))
                                 .ToListAsync();
 
+            var requestId = requestList.Select(a => a.ServiceRequestsDetail).ToList().Select(a => a.EserviceRequestDetailsId).ToList();
+            await _eServicesContext
+                               .Set<ServiceRequestsDetail>()
+                               .Where(a => requestId.Contains(a.EserviceRequestDetailsId))
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.ReadyForSahelSubmission , "2"));
             var kmidCreatedList = requestList
                 .Select(a => a.ServiceRequestsDetail.KMIDToken)
                 .ToList();

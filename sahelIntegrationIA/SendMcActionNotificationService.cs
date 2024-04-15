@@ -11,7 +11,6 @@ using System.Net.Http.Json;
 using System.Net;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
-using eServicesV2.Kernel.Domain.Entities.IndividualAuthorizationEntities;
 
 namespace sahelIntegrationIA
 {
@@ -69,7 +68,7 @@ namespace sahelIntegrationIA
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
                                            && serviceIds.Contains((int)p.ServiceId.Value)
-                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission.HasValue && !p.ServiceRequestsDetail.ReadyForSahelSubmission.Value)
+                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="0")
                                             && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                 .ToListAsync();
             return requestList;

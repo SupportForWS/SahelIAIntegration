@@ -84,8 +84,9 @@ public partial class Program
 
                    services.AddSingleton<IDapper, eServicesV2.Kernel.Infrastructure.Persistence.Dapper.Dapper>();
                    services.AddSingleton<VarificationService>();
-                   services.AddSingleton<VerificationServiceForOrganizationServices>();
                    services.AddSingleton<SendMcActionNotificationService>();
+
+                   services.AddSingleton<VerificationServiceForOrganizationServices>();
 
                    services.AddHostedService<Worker>();
                });
