@@ -1,7 +1,6 @@
 ﻿using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
-using eServicesV2.Kernel.Data.Contexts;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using eServicesV2.Kernel.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,7 @@ using System.Net.Http.Json;
 using System.Net;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
+using sahelIntegrationIA.Models;
 
 namespace sahelIntegrationIA
 {
