@@ -9,14 +9,16 @@ namespace IndividualAuthorizationSahelWorker
         private readonly IRequestLogger _logger;
         private readonly VerificationServiceForOrganizationServices verificationServiceForOrganizationServices;
         private readonly VarificationService varificationService;
+        private readonly SendMcActionNotificationService sendMcActionNotificationService;
         private TimeSpan period;
         IBaseConfiguration _configuration;
 
-        public Worker(IRequestLogger logger,VarificationService varificationService, IBaseConfiguration configuration,VerificationServiceForOrganizationServices verificationServiceForOrganizationServices)
+        public Worker(IRequestLogger logger,VarificationService varificationService,SendMcActionNotificationService sendMcActionNotificationService, IBaseConfiguration configuration,VerificationServiceForOrganizationServices verificationServiceForOrganizationServices)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
             this.varificationService = varificationService;
+            this.sendMcActionNotificationService = sendMcActionNotificationService;
             _configuration = configuration;
         }
 
@@ -33,6 +35,8 @@ namespace IndividualAuthorizationSahelWorker
                 //Console.WriteLine("ssss");
                 await varificationService.VarifyRequests();
                 await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
+                await sendMcActionNotificationService.SendNotification();
+
             }
         }
     }

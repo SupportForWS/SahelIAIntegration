@@ -58,7 +58,9 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
                 (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
                 (int)ServiceTypesEnum.RemoveAuthorizedSignatoryRequest,
-                (int)ServiceTypesEnum.OrgNameChangeReqServiceId
+                (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
+                (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
+                (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
 
             var requestList = await _eServicesContext

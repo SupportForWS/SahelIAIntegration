@@ -6,6 +6,7 @@ namespace sahelIntegrationIA.Configurations
         public IndividualAuthorizationConfiguration IndividualAuthorizationConfiguration { get; set; }
         public int OrganizationKMIDCallingTimer { get; set; }
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
+        public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
 
 
     }
@@ -20,7 +21,7 @@ namespace sahelIntegrationIA.Configurations
     }
     public class EservicesUrlsConfigurations
     {
-        public string AddNewImportLicenseUrl { get; set;}
+        public string AddNewImportLicenseUrl { get; set; }
         public string ReNewImportLicenseUrl { get; set; }
         public string RenewComercialLicenseUrl { get; set; }
         public string RenewIndustrialLicenseUrl { get; set; }
@@ -32,9 +33,19 @@ namespace sahelIntegrationIA.Configurations
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
 
-
-
-
     }
 
+    public class MCNotificationConfiguration
+    {
+        public string RejectNotificationAr { get; set; }
+        public string ApproveNotificationAr { get; set; }
+        public string FinalRejectNotificationAr { get; set; }
+        public string AdditionalInfoNotificationAr { get; set; }
+        public string VisiNotificationAr { get; set; }
+        public string RejectNotificationEn { get; set; }
+        public string ApproveNotificationEn { get; set; }
+        public string FinalRejectNotificationEn { get; set; }
+        public string AdditionalInfoNotificationEn { get; set; }
+        public string VisiNotificationEn { get; set; }
+    }
 }
