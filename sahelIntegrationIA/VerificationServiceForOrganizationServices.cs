@@ -211,11 +211,11 @@ namespace sahelIntegrationIA
                     await CallServiceAPI(GetConsigneeUndertakingRequestDTO(serviceRequest), url);
                     break;
 
-                case ServiceTypesEnum.EPaymentService:
-                    url = _sahelConfigurations.EservicesUrlsConfigurations.EPaymentRequestUrl;
-                    //TODO add DTO ans map
-                  //  await CallServiceAPI(GetConsigneeUndertakingRequestDTO(serviceRequest), url);
-                    break;
+                //case ServiceTypesEnum.EPaymentService:
+                //    url = _sahelConfigurations.EservicesUrlsConfigurations.EPaymentRequestUrl;
+                //    //TODO add DTO ans map
+                //  //  await CallServiceAPI(GetConsigneeUndertakingRequestDTO(serviceRequest), url);
+                //    break;
 
                 default:
                     _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
@@ -520,7 +520,6 @@ namespace sahelIntegrationIA
 
         }
 
-
         private OrganizationChangeNameDTO GetOrganizationChangeNameDTO(ServiceRequest serviceRequest)
         {
             return new OrganizationChangeNameDTO
@@ -552,7 +551,6 @@ namespace sahelIntegrationIA
             };
 
         }
-
 
         private ConsigneeUndertakingRequestDTO GetConsigneeUndertakingRequestDTO(ServiceRequest serviceRequest)
         {
