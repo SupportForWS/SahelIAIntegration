@@ -12,6 +12,7 @@ using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using sahelIntegrationIA.Models;
 using eServices.APIs.UserApp.OldApplication.Models;
+using Azure.Core;
 
 namespace sahelIntegrationIA
 {
@@ -187,9 +188,13 @@ namespace sahelIntegrationIA
                 }));
 
             PostNotification(notficationResponse, "Individual");
-            serviceRequest.ServiceRequestsDetail.MCNotificationSent = true;
-            _eServicesContext.Set<ServiceRequest>().Update(serviceRequest);
-            var commited = await _eServicesContext.SaveChangesAsync();
+            var requestId = serviceRequest.EserviceRequestId;
+
+            await _eServicesContext
+                               .Set<ServiceRequestsDetail>()
+                               .Where(a => a.EserviceRequestId== requestId)
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+       
             _logger.LogInformation(message: "Update McNotification Flag / Request number: {0} - Request Date: {1} - Request Content {3}",
                 propertyValues:new object[]{ serviceRequest.EserviceRequestNumber,serviceRequest.DateCreated, Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
               new JsonSerializerSettings()
