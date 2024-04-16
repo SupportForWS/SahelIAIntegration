@@ -11,6 +11,7 @@ using System.Net;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using sahelIntegrationIA.Models;
+using eServices.APIs.UserApp.OldApplication.Models;
 
 namespace sahelIntegrationIA
 {
@@ -61,6 +62,7 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
+            _logger.LogInformation("start fetching the data for send mc action notifcation");
 
             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
@@ -71,10 +73,18 @@ namespace sahelIntegrationIA
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="0")
                                             && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                 .ToListAsync();
+            _logger.LogInformation(message: "Get Request List of requests need to send notification for users ", propertyValues: Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        }));
+
             return requestList;
         }
         public async Task SendNotification()
         {
+            _logger.LogInformation("start send mc action notification service");
+
             var serviceRequest = await GetRequestList();
             var exceptions = new List<Exception>();
 
@@ -83,6 +93,8 @@ namespace sahelIntegrationIA
                 try
 
                 {
+                    _logger.LogInformation("start check organization requests to send notification for sahel user");
+
                     await ProcessServiceRequest(serviceRequest);
                 }
 
@@ -90,18 +102,12 @@ namespace sahelIntegrationIA
 
                 {
                     _logger.LogException(ex, "Sahel-Services");
-                    exceptions.Add(ex); // Collect exceptions
+                   // exceptions.Add(ex); 
 
                 }
 
             });
             await Task.WhenAll(tasks);
-
-
-            if (exceptions.Any())
-
-            {
-            }
 
         }
         private async Task ProcessServiceRequest(ServiceRequest serviceRequest)
@@ -118,21 +124,26 @@ namespace sahelIntegrationIA
                 return; //log the error
             }
 
-            // Create DTO and call api
             await CreateNotification(serviceRequest);
 
         }
 
         private async Task CreateNotification(ServiceRequest serviceRequest)
         {
+            _logger.LogInformation("start Notification creation process");
+
             string civilID = await _eServicesContext
-                               .Set<User>()
+                               .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
                                .Where(p => p.UserId == serviceRequest.RequesterUserId)
                                .Select(a=> a.CivilId)
                                .FirstOrDefaultAsync();
+            _logger.LogInformation("Get organization civil Id",civilID);
+
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
             string msgEn = string.Empty;
+            _logger.LogInformation("Create Notification message");
+
             if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState))
             {
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
@@ -158,6 +169,8 @@ namespace sahelIntegrationIA
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
             }
+            _logger.LogInformation("Notification Mesaage in arabic : {0} , Notification Message in english {1}", new object[] {msgAr,msgEn});
+
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgAr;
             notficationResponse.bodyAr = msgEn;
@@ -167,15 +180,27 @@ namespace sahelIntegrationIA
             notficationResponse.dataTableAr = null;
             notficationResponse.subscriberCivilId = civilID;
             notficationResponse.notificationType = ((int)notificationType).ToString();
+            _logger.LogInformation(message: "Preparing notification", propertyValues: Newtonsoft.Json.JsonConvert.SerializeObject(notficationResponse, Newtonsoft.Json.Formatting.None,
+                new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                }));
+
             PostNotification(notficationResponse, "Individual");
             serviceRequest.ServiceRequestsDetail.MCNotificationSent = true;
             _eServicesContext.Set<ServiceRequest>().Update(serviceRequest);
             var commited = await _eServicesContext.SaveChangesAsync();
+            _logger.LogInformation(message: "Update McNotification Flag / Request number: {0} - Request Date: {1} - Request Content {3}",
+                propertyValues:new object[]{ serviceRequest.EserviceRequestNumber,serviceRequest.DateCreated, Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
+              new JsonSerializerSettings()
+              {
+                  ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+              })});
 
         }
 
         #region Private Methods
-       public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
+        public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
         {
             switch (service)
             {
