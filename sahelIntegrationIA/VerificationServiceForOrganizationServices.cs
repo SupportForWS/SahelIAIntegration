@@ -25,6 +25,8 @@ namespace sahelIntegrationIA
         private readonly IRequestLogger _requestLogger;
         private readonly IDapper _dapper;
         private readonly SahelConfigurations _sahelConfigurations;
+        Dictionary<int, string> requestedCivilIds = new Dictionary<int, string>();
+
         public VerificationServiceForOrganizationServices(IRequestLogger logger,
             IBaseConfiguration configuration, eServicesContext eServicesContext, IRequestLogger requestLogger, IDapper dapper, SahelConfigurations sahelConfigurations)
         {
@@ -72,7 +74,8 @@ namespace sahelIntegrationIA
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
-                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime < currentDate.AddMinutes(_sahelConfigurations.SahelSubmissionTimer))))
+                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2"&& p.RequestSubmissionDateTime.HasValue && 
+                                            p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
                                 .ToListAsync();
 
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
@@ -102,10 +105,29 @@ namespace sahelIntegrationIA
                 .Select(a => a.KGACPACIQueueId)
                 .ToListAsync();
 
+            if(expiredKmidRequests.Count>0)
+            {
+                var requestedIds = requestList.Select(a => a.RequesterUserId).ToList();
 
+                requestedCivilIds = await _eServicesContext
+                             .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                             .Where(p => requestedIds.Contains(p.UserId))
+                             .Select(a => new { a.UserId, a.CivilId })
+                             .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
+                var expiredRequest = requestList.Where(a => expiredKmidRequests.Contains(Convert.ToInt32(a.ServiceRequestsDetail.KMIDToken))).ToList();
+                await SendExpiredKmidNotification(expiredRequest);
+                var expiredRequestsIds = expiredRequest.Select(a => a.ServiceRequestsDetail).ToList().Select(a => a.EserviceRequestDetailsId).ToList();
+
+                await _eServicesContext
+                               .Set<ServiceRequestsDetail>()
+                               .Where(a => expiredRequestsIds.Contains(a.EserviceRequestDetailsId))
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.KMIDToken, ""));
+
+            }
             var filteredRequestList = requestList
                 .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
                 .ToList();
+            
 
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
             string log = JsonConvert.SerializeObject(requestNumbers);
@@ -118,7 +140,13 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation("Start Organization Verification Service");
             var serviceRequest = await GetRequestList();
+            var requestedIds = serviceRequest.Select(a => a.RequesterUserId).ToList();
 
+            requestedCivilIds = await _eServicesContext
+                              .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                              .Where(p => requestedIds.Contains(p.UserId))
+                              .Select(a => new { a.UserId, a.CivilId })
+                              .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
             var tasks = serviceRequest.Select(async serviceRequest =>
             {
                 try
@@ -263,6 +291,25 @@ namespace sahelIntegrationIA
             }
 
         }
+        public async Task SendExpiredKmidNotification(List<ServiceRequest> serviceRequest)
+        {
+            var tasks = serviceRequest.Select(async request =>
+            {
+                try
+                {
+                    await CreateNotification(request);
+                }
+
+                catch (Exception ex)
+                {
+                    _logger.LogException(ex, "Sahel-Windows-Service");
+                }
+
+            });
+
+            // Wait for all tasks to complete
+            await Task.WhenAll(tasks);
+        }
 
         #region Private Methods
         public void PostNotification(Notification notification, string SahelOption = "Business")
@@ -381,7 +428,83 @@ namespace sahelIntegrationIA
         }
         #endregion
 
+        private async Task CreateNotification(ServiceRequest serviceRequest)
+        {
+            _logger.LogInformation("start Notification creation process for expired kmid");
 
+
+
+            Notification notficationResponse = new Notification();
+            string msgAr = string.Empty;
+            string msgEn = string.Empty;
+            _logger.LogInformation("Create Notification message");
+            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+
+            _logger.LogInformation(message: "Get organization civil Id{0}", propertyValues: new object[] { civilID });
+
+            msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredAr, serviceRequest.EserviceRequestNumber);
+            msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredEn, serviceRequest.EserviceRequestNumber);
+          
+            _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}", propertyValues: new object[] { msgAr, msgEn });
+
+            var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
+            notficationResponse.bodyEn = msgAr;
+            notficationResponse.bodyAr = msgEn;
+            notficationResponse.isForSubscriber = "true";
+            notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
+            notficationResponse.dataTableEn = null;
+            notficationResponse.dataTableAr = null;
+            notficationResponse.subscriberCivilId = civilID;
+            notficationResponse.notificationType = ((int)notificationType).ToString();
+            string log = Newtonsoft.Json.JsonConvert.SerializeObject(notficationResponse, Newtonsoft.Json.Formatting.None,
+                new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+            _logger.LogInformation(message: "Preparing KMID expiration notification {0}", propertyValues: log);
+
+            _logger.LogInformation(message: "start notification: {0}",
+                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+            PostNotification(notficationResponse, "Individual");
+            var requestId = serviceRequest.EserviceRequestId;
+
+            await _eServicesContext
+                               .Set<ServiceRequestsDetail>()
+                               .Where(a => a.EserviceRequestId == requestId)
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+
+            _logger.LogInformation(message: "end notification: {0}",
+                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+
+        }
+        public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
+        {
+            switch (service)
+            {
+                case ServiceTypesEnum.AddNewAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.AddNewAuthorizedSignatory;
+                case ServiceTypesEnum.RemoveAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.RemoveAuthorizedSignatory;
+                case ServiceTypesEnum.RenewAuthorizedSignatoryRequest:
+                    return SahelNotficationTypesEnum.RenewAuthorizedSignatory;
+                case ServiceTypesEnum.ImportLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewImportLicense;
+                case ServiceTypesEnum.NewImportLicenseRequest:
+                    return SahelNotficationTypesEnum.AddNewImportLicense;
+                case ServiceTypesEnum.ChangeCommercialAddressRequest:
+                    return SahelNotficationTypesEnum.ChangeCommercialAddress;
+                case ServiceTypesEnum.IndustrialLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewIndustrialLicense;
+                case ServiceTypesEnum.CommercialLicenseRenewalRequest:
+                    return SahelNotficationTypesEnum.RenewCommercialLicense;
+                case ServiceTypesEnum.OrgNameChangeReqServiceId:
+                    return SahelNotficationTypesEnum.OrganizationNameChange;
+                case ServiceTypesEnum.ConsigneeUndertakingRequest:
+                    return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
+                default:
+                    return SahelNotficationTypesEnum.RenewImportLicense;
+            }
+        }
         #region DTOs
 
         private CreateRenewImportLicenseDTO GetRenewLicenseDTO(ServiceRequest serviceRequest)

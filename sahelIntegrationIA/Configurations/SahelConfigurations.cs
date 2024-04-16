@@ -32,7 +32,7 @@ namespace sahelIntegrationIA.Configurations
         public string ChangeComercialAddressUrl { get; set; }
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
-
+        
     }
 
     public class MCNotificationConfiguration
@@ -47,5 +47,7 @@ namespace sahelIntegrationIA.Configurations
         public string FinalRejectNotificationEn { get; set; }
         public string AdditionalInfoNotificationEn { get; set; }
         public string VisiNotificationEn { get; set; }
+        public string KmidExpiredAr { get; set; }
+        public string KmidExpiredEn { get; set; }
     }
 }
