@@ -108,7 +108,8 @@ namespace sahelIntegrationIA
                 .ToList();
 
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
-            _logger.LogInformation("Filtered Requests Numbers: {filteredRequestList}", JsonConvert.SerializeObject(requestNumbers));
+            string log = JsonConvert.SerializeObject(requestNumbers);
+            _logger.LogInformation("Filtered Requests Numbers: {filteredRequestList}",log);
 
             return filteredRequestList;
         }

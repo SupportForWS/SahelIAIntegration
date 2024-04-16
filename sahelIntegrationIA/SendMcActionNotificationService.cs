@@ -74,11 +74,12 @@ namespace sahelIntegrationIA
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="0")
                                             && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                 .ToListAsync();
-            _logger.LogInformation(message: "Get Request List of requests need to send notification for users ", propertyValues: Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
+            string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                        }));
+                        });
+            _logger.LogInformation(message: "Get Request List of requests need to send notification for users {0}", log);
 
             return requestList;
         }
@@ -136,9 +137,9 @@ namespace sahelIntegrationIA
             string civilID = await _eServicesContext
                                .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
                                .Where(p => p.UserId == serviceRequest.RequesterUserId)
-                               .Select(a=> a.CivilId)
+                               .Select(a => a.CivilId)
                                .FirstOrDefaultAsync();
-            _logger.LogInformation("Get organization civil Id",civilID);
+            _logger.LogInformation(message: "Get organization civil Id{0}", propertyValues: new object[] { civilID });
 
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
@@ -155,7 +156,7 @@ namespace sahelIntegrationIA
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
             }
-            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState)|| (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState)))
+            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState) || (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState)))
             {
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
@@ -170,7 +171,7 @@ namespace sahelIntegrationIA
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
             }
-            _logger.LogInformation("Notification Mesaage in arabic : {0} , Notification Message in english {1}", new object[] {msgAr,msgEn});
+            _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}", propertyValues: new object[] { msgAr, msgEn });
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgAr;
@@ -181,26 +182,27 @@ namespace sahelIntegrationIA
             notficationResponse.dataTableAr = null;
             notficationResponse.subscriberCivilId = civilID;
             notficationResponse.notificationType = ((int)notificationType).ToString();
-            _logger.LogInformation(message: "Preparing notification", propertyValues: Newtonsoft.Json.JsonConvert.SerializeObject(notficationResponse, Newtonsoft.Json.Formatting.None,
+            string log = Newtonsoft.Json.JsonConvert.SerializeObject(notficationResponse, Newtonsoft.Json.Formatting.None,
                 new JsonSerializerSettings()
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
+                });
+            _logger.LogInformation(message: "Preparing notification {0}", propertyValues: log);
 
             PostNotification(notficationResponse, "Individual");
             var requestId = serviceRequest.EserviceRequestId;
 
             await _eServicesContext
                                .Set<ServiceRequestsDetail>()
-                               .Where(a => a.EserviceRequestId== requestId)
+                               .Where(a => a.EserviceRequestId == requestId)
                                .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
-       
-            _logger.LogInformation(message: "Update McNotification Flag / Request number: {0} - Request Date: {1} - Request Content {3}",
-                propertyValues:new object[]{ serviceRequest.EserviceRequestNumber,serviceRequest.DateCreated, Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
-              new JsonSerializerSettings()
-              {
-                  ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-              })});
+            string log2 = Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
+                   new JsonSerializerSettings()
+                   {
+                       ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                   });
+        _logger.LogInformation(message: "Update McNotification Flag / Request number: {0} - Request Date: {1} - Request Content {3}",
+                propertyValues:new object[] { serviceRequest.EserviceRequestNumber, serviceRequest.DateCreated, log2});
 
         }
 
@@ -236,6 +238,10 @@ namespace sahelIntegrationIA
 
         public void PostNotification(Notification notification, string SahelOption = "Business")
         {
+
+            _logger.LogInformation(message: "post notification started {0}", propertyValues: new object[] { notification.bodyEn });
+            _logger.LogInformation(message: "post notification started {0}",  notification.bodyEn );
+
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
                 return;
