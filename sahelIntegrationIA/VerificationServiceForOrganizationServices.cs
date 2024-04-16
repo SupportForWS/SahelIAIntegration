@@ -60,6 +60,10 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
             DateTime currentDate = DateTime.Now;
+
+            _logger.LogInformation("Start fetching data for organization verification service");
+
+
             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.ServiceRequestsDetail)
@@ -67,15 +71,21 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
                                            && serviceIds.Contains((int)p.ServiceId.Value)
-                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="1" ||
-                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime <currentDate.AddMinutes(_sahelConfigurations.SahelSubmissionTimer))))
+                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
+                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime < currentDate.AddMinutes(_sahelConfigurations.SahelSubmissionTimer))))
                                 .ToListAsync();
+
+            var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
+            _logger.LogInformation("Number of records: {Records}. List of request numbers: {RequestNumbers}",
+                                   requestList.Count,
+                                   JsonConvert.SerializeObject(requestNumbers));
 
             var requestId = requestList.Select(a => a.ServiceRequestsDetail).ToList().Select(a => a.EserviceRequestDetailsId).ToList();
             await _eServicesContext
                                .Set<ServiceRequestsDetail>()
                                .Where(a => requestId.Contains(a.EserviceRequestDetailsId))
-                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.ReadyForSahelSubmission , "2"));
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.ReadyForSahelSubmission, "2"));
+
             var kmidCreatedList = requestList
                 .Select(a => a.ServiceRequestsDetail.KMIDToken)
                 .ToList();
@@ -92,46 +102,38 @@ namespace sahelIntegrationIA
                 .Select(a => a.KGACPACIQueueId)
                 .ToListAsync();
 
+
             var filteredRequestList = requestList
                 .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
                 .ToList();
+
+            requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
+            _logger.LogInformation("Filtered Requests Numbers: {filteredRequestList}", JsonConvert.SerializeObject(requestNumbers));
 
             return filteredRequestList;
         }
 
         public async Task CreateRequestObjectDTO()
         {
+            _logger.LogInformation("Start Organization Verification Service");
             var serviceRequest = await GetRequestList();
-            var exceptions = new List<Exception>();
 
             var tasks = serviceRequest.Select(async serviceRequest =>
             {
                 try
-
                 {
                     await ProcessServiceRequest(serviceRequest);
                 }
 
                 catch (Exception ex)
-
                 {
-                    _logger.LogException(ex, "Sahel-Services");
-                    exceptions.Add(ex); // Collect exceptions
-
+                    _logger.LogException(ex, "Sahel-Windows-Service");
                 }
 
             });
 
             // Wait for all tasks to complete
             await Task.WhenAll(tasks);
-
-
-            // If there are any exceptions, handle them here
-            if (exceptions.Any())
-
-            {
-                //   throw new AggregateException("One or more exceptions occurred during processing.", exceptions);
-            }
 
         }
 
@@ -140,14 +142,14 @@ namespace sahelIntegrationIA
         {
             if (serviceRequest.ServiceId is null or 0)
             {
-                _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; //log the error
+                _logger.LogException(new NullReferenceException($"Invalid Service Id {serviceRequest.ServiceId}"), "Sahel-Windows-Service");
+                return;
             }
 
             if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
             {
-                _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; //log the error
+                _logger.LogException(new ArgumentException($"Invalid Service Id {serviceRequest.ServiceId}"), "Sahel-Windows-Service");
+                return;
             }
 
             // Create DTO and call api
@@ -157,6 +159,8 @@ namespace sahelIntegrationIA
 
         private async Task ProcessServiceRequestAndCallAPI(ServiceRequest serviceRequest)
         {
+            _logger.LogInformation("Start processing service request: {EserviceRequestNumber}", serviceRequest.EserviceRequestNumber);
+
             string url;
             switch ((ServiceTypesEnum)serviceRequest.ServiceId)
 
@@ -218,8 +222,10 @@ namespace sahelIntegrationIA
                 //    break;
 
                 default:
-                    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                    break; //log the error
+                    var errorMessage = $"Invalid service ID: {serviceRequest.ServiceId}";
+                    _logger.LogException(new ArgumentException(errorMessage), "Sahel-Windows-Service");
+                    break;
+
             }
 
         }
@@ -227,20 +233,32 @@ namespace sahelIntegrationIA
 
         private async Task CallServiceAPI<T>(T serviceDTO, string apiUrl)
         {
-            using (var httpClient = new HttpClient())
-
+            try
             {
-                string json = JsonConvert.SerializeObject(serviceDTO);
+                _logger.LogInformation("Start calling eService API at URL: {ApiUrl}", apiUrl);
 
-                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                using (var httpClient = new HttpClient())
+                {
+                    string json = JsonConvert.SerializeObject(serviceDTO);
 
-                var httpResponse = await httpClient.PostAsync(apiUrl, httpContent);
+                    _logger.LogInformation("Serialized DTO: {SerializedDTO}", json);
 
-                string responseContent = await httpResponse.Content.ReadAsStringAsync();
+                    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
+                    var httpResponse = await httpClient.PostAsync(apiUrl, httpContent);
 
-                PostNotification(notification, "Individual");
+                    string responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+                    _logger.LogInformation("eService Response content: {ResponseContent}", responseContent);
+
+                    Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
+
+                    PostNotification(notification, "Individual");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex, "Error occurred while calling API at URL: {ApiUrl}", apiUrl);
             }
 
         }
@@ -248,12 +266,15 @@ namespace sahelIntegrationIA
         #region Private Methods
         public void PostNotification(Notification notification, string SahelOption = "Business")
         {
+
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
                 return;
             }
             string notificationString = JsonConvert.SerializeObject(notification);
-            _logger.LogInformation($"NotificationBody-->{notificationString}");
+
+            _logger.LogInformation("Start Sending NotificationBody: {NotificationBody}", notificationString);
+
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = //SecurityProtocolType.Tls12;
             SecurityProtocolType.Tls12 |
@@ -345,7 +366,7 @@ namespace sahelIntegrationIA
             }
             catch (Exception ex)
             {
-                _logger.LogException(ex, "Sahel-Service");
+                _logger.LogException(ex, "Sahel-Windows-Service");
                 string path = AppDomain.CurrentDomain.BaseDirectory;
                 using (System.IO.StreamWriter outputFile = new
                   System.IO.StreamWriter(path + "\\log.txt", true))
