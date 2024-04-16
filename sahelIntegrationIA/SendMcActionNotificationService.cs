@@ -13,6 +13,7 @@ using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using sahelIntegrationIA.Models;
 using eServices.APIs.UserApp.OldApplication.Models;
 using Azure.Core;
+using eServicesV2.Kernel.Domain.Entities;
 
 namespace sahelIntegrationIA
 {
@@ -25,6 +26,8 @@ namespace sahelIntegrationIA
         private readonly IRequestLogger _requestLogger;
         private readonly IDapper _dapper;
         private readonly SahelConfigurations _sahelConfigurations;
+        Dictionary<int, string> requestedCivilIds = new Dictionary<int, string>();
+
         public SendMcActionNotificationService(IRequestLogger logger,
             IBaseConfiguration configuration, eServicesContext eServicesContext, IRequestLogger requestLogger, IDapper dapper, SahelConfigurations sahelConfigurations)
         {
@@ -71,7 +74,7 @@ namespace sahelIntegrationIA
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
                                            && serviceIds.Contains((int)p.ServiceId.Value)
-                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission =="0")
+                                           && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "0")
                                             && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                 .ToListAsync();
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
@@ -87,10 +90,18 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation("start send mc action notification service");
 
-            var serviceRequest = await GetRequestList();
+            var serviceRequests = await GetRequestList();
+            var requestedIds = serviceRequests.Select(a => a.RequesterUserId).ToList();
+
+            requestedCivilIds = await _eServicesContext
+                              .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                              .Where(p => requestedIds.Contains(p.UserId))
+                              .Select(a => new { a.UserId, a.CivilId })
+                              .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
+
             var exceptions = new List<Exception>();
 
-            var tasks = serviceRequest.Select(async serviceRequest =>
+            var tasks = serviceRequests.Select(async serviceRequest =>
             {
                 try
 
@@ -104,7 +115,7 @@ namespace sahelIntegrationIA
 
                 {
                     _logger.LogException(ex, "Sahel-Services");
-                   // exceptions.Add(ex); 
+                    // exceptions.Add(ex); 
 
                 }
 
@@ -134,11 +145,8 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation("start Notification creation process");
 
-            string civilID = await _eServicesContext
-                               .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
-                               .Where(p => p.UserId == serviceRequest.RequesterUserId)
-                               .Select(a => a.CivilId)
-                               .FirstOrDefaultAsync();
+            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+
             _logger.LogInformation(message: "Get organization civil Id{0}", propertyValues: new object[] { civilID });
 
             Notification notficationResponse = new Notification();
@@ -146,6 +154,8 @@ namespace sahelIntegrationIA
             string msgEn = string.Empty;
             _logger.LogInformation("Create Notification message");
 
+
+            //todo: change to switch
             if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState))
             {
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
@@ -189,6 +199,8 @@ namespace sahelIntegrationIA
                 });
             _logger.LogInformation(message: "Preparing notification {0}", propertyValues: log);
 
+            _logger.LogInformation(message: "start notification: {0}",
+                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
             PostNotification(notficationResponse, "Individual");
             var requestId = serviceRequest.EserviceRequestId;
 
@@ -196,13 +208,9 @@ namespace sahelIntegrationIA
                                .Set<ServiceRequestsDetail>()
                                .Where(a => a.EserviceRequestId == requestId)
                                .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
-            string log2 = Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
-                   new JsonSerializerSettings()
-                   {
-                       ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                   });
-        _logger.LogInformation(message: "Update McNotification Flag / Request number: {0} - Request Date: {1} - Request Content {3}",
-                propertyValues:new object[] { serviceRequest.EserviceRequestNumber, serviceRequest.DateCreated, log2});
+
+            _logger.LogInformation(message: "end notification: {0}",
+                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
 
         }
 
@@ -240,14 +248,13 @@ namespace sahelIntegrationIA
         {
 
             _logger.LogInformation(message: "post notification started {0}", propertyValues: new object[] { notification.bodyEn });
-            _logger.LogInformation(message: "post notification started {0}",  notification.bodyEn );
 
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
+                _logger.LogInformation(message: "Can't send notification because the body is empty");
                 return;
             }
-            string notificationString = JsonConvert.SerializeObject(notification);
-            _logger.LogInformation($"NotificationBody-->{notificationString}");
+
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = //SecurityProtocolType.Tls12;
             SecurityProtocolType.Tls12 |
@@ -273,6 +280,8 @@ namespace sahelIntegrationIA
                     /*                    var notificationString = JsonConvert.SerializeObject(notification);
                                         _logger.LogInformation(notificationString);*/
                     String rEsult = getResult(postTask);
+
+                    _logger.LogInformation("notification result: {0}", rEsult);
                 }
             }
 
