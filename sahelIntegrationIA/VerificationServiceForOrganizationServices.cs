@@ -225,7 +225,7 @@ namespace sahelIntegrationIA
                 default:
                     var errorMessage = $"Invalid service ID: {serviceRequest.ServiceId}";
                     _logger.LogException(new ArgumentException(errorMessage), "Sahel-Windows-Service");
-                    break;
+                    return; //end the request;
 
             }
 
