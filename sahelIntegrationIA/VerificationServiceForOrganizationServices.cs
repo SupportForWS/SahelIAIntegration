@@ -1,4 +1,4 @@
-﻿using eServicesV2.Kernel.Core.Configurations;
+using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
@@ -74,14 +74,21 @@ namespace sahelIntegrationIA
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
-                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2"&& p.RequestSubmissionDateTime.HasValue && 
+                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime.HasValue &&
                                             p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
                                 .ToListAsync();
 
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
+
+            string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
+
             _logger.LogInformation("Number of records: {Records}. List of request numbers: {RequestNumbers}",
                                    requestList.Count,
-                                   JsonConvert.SerializeObject(requestNumbers));
+                                   log);
 
             var requestId = requestList.Select(a => a.ServiceRequestsDetail).ToList().Select(a => a.EserviceRequestDetailsId).ToList();
             await _eServicesContext
@@ -105,7 +112,7 @@ namespace sahelIntegrationIA
                 .Select(a => a.KGACPACIQueueId)
                 .ToListAsync();
 
-            if(expiredKmidRequests.Count>0)
+            if (expiredKmidRequests.Count > 0)
             {
                 var requestedIds = requestList.Select(a => a.RequesterUserId).ToList();
 
@@ -127,11 +134,11 @@ namespace sahelIntegrationIA
             var filteredRequestList = requestList
                 .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
                 .ToList();
-            
+
 
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
-            string log = JsonConvert.SerializeObject(requestNumbers);
-            _logger.LogInformation("Filtered Requests Numbers: {filteredRequestList}",log);
+            string requestNumbersLog = JsonConvert.SerializeObject(requestNumbers);
+            _logger.LogInformation("Filtered Requests Numbers: {filteredRequestList}", requestNumbersLog);
 
             return filteredRequestList;
         }
@@ -444,7 +451,7 @@ namespace sahelIntegrationIA
 
             msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredAr, serviceRequest.EserviceRequestNumber);
             msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredEn, serviceRequest.EserviceRequestNumber);
-          
+
             _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}", propertyValues: new object[] { msgAr, msgEn });
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
@@ -667,7 +674,7 @@ namespace sahelIntegrationIA
 
         private OrganizationChangeNameDTO GetOrganizationChangeNameDTO(ServiceRequest serviceRequest)
         {
-            return new OrganizationChangeNameDTO
+            var obj = new OrganizationChangeNameDTO
             {
                 //todo: check
                 AddNewImportLicenseRequest = false,
@@ -676,12 +683,6 @@ namespace sahelIntegrationIA
                 eServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
                 ImporterLicenseNo = serviceRequest.ServiceRequestsDetail.ImporterLicenseNo,
 
-                //todo check
-                ImportLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
-                ImporterLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType),
-                // IssueDate =,
-                // LicenseNo =,
-                // ExpiryDate = ,
 
                 //not used
                 //  organizationName =,
@@ -695,6 +696,16 @@ namespace sahelIntegrationIA
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
             };
 
+            //todo check
+            //if (!string.IsNullOrWhiteSpace(serviceRequest.ServiceRequestsDetail.ImporterLicenseType))
+            //{
+            //    obj.ImportLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType);
+            //    obj.ImporterLicenseType = int.Parse(serviceRequest.ServiceRequestsDetail.ImporterLicenseType);
+            //    obj.IssueDate = null;
+            //    obj.LicenseNo = null;
+            //    obj.ExpiryDate = null;
+            //}
+            return obj;
         }
 
         private ConsigneeUndertakingRequestDTO GetConsigneeUndertakingRequestDTO(ServiceRequest serviceRequest)
