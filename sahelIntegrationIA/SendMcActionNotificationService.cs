@@ -1,4 +1,4 @@
-﻿using eServicesV2.Kernel.Core.Configurations;
+using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
@@ -19,6 +19,7 @@ namespace sahelIntegrationIA
 {
     public class SendMcActionNotificationService
     {
+        private string _jobCycleId = Guid.NewGuid().ToString();
         private readonly IRequestLogger _logger;
         private TimeSpan period;
         private readonly IBaseConfiguration _configurations;
@@ -42,6 +43,8 @@ namespace sahelIntegrationIA
 
         public async Task<List<ServiceRequest>> GetRequestList()
         {
+            _jobCycleId = Guid.NewGuid().ToString();
+
             string[] statusEnums = new string[]
             {
                 nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState),
@@ -66,7 +69,21 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
-            _logger.LogInformation("start fetching the data for send mc action notifcation");
+
+            var statusJson = Newtonsoft.Json.JsonConvert.SerializeObject(statusEnums, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
+
+            var serviceIdsJson = Newtonsoft.Json.JsonConvert.SerializeObject(serviceIds, Newtonsoft.Json.Formatting.None,
+                        new JsonSerializerSettings()
+                        {
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
+
+            _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start Sahel MC Notifications - {0} - {1}",
+                        new object[] { statusJson, serviceIdsJson });
 
             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
@@ -76,19 +93,20 @@ namespace sahelIntegrationIA
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "0")
                                             && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
-                                .ToListAsync();
+                               .AsNoTracking()
+                               .ToListAsync();
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
-            _logger.LogInformation(message: "Get Request List of requests need to send notification for users {0}", log);
+            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Sahel MC Notifications {0}", log);
 
             return requestList;
         }
         public async Task SendNotification()
         {
-            _logger.LogInformation("start send mc action notification service");
+            _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start send mc action notification service");
 
             var serviceRequests = await GetRequestList();
             var requestedIds = serviceRequests.Select(a => a.RequesterUserId).ToList();
@@ -104,24 +122,19 @@ namespace sahelIntegrationIA
             var tasks = serviceRequests.Select(async serviceRequest =>
             {
                 try
-
                 {
-                    _logger.LogInformation("start check organization requests to send notification for sahel user");
-
                     await ProcessServiceRequest(serviceRequest);
                 }
 
                 catch (Exception ex)
-
                 {
-                    _logger.LogException(ex, "Sahel-Services");
-                    // exceptions.Add(ex); 
-
+                    _logger.LogException(ex,
+                        $"{_jobCycleId} - ShaleNotificationMC - notification sahel exception - {0}",
+                        new object[] { serviceRequest.EserviceRequestNumber });
                 }
 
             });
             await Task.WhenAll(tasks);
-
         }
         private async Task ProcessServiceRequest(ServiceRequest serviceRequest)
         {
@@ -143,16 +156,22 @@ namespace sahelIntegrationIA
 
         private async Task CreateNotification(ServiceRequest serviceRequest)
         {
-            _logger.LogInformation("start Notification creation process");
+            var reqJson = Newtonsoft.Json.JsonConvert.SerializeObject(serviceRequest, Newtonsoft.Json.Formatting.None,
+                new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+            _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start Notification creation process - {0}",
+                propertyValues: new object[] { reqJson });
 
             string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
 
-            _logger.LogInformation(message: "Get organization civil Id{0}", propertyValues: new object[] { civilID });
+            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID });
 
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
             string msgEn = string.Empty;
-            _logger.LogInformation("Create Notification message");
 
 
             //todo: change to switch
@@ -181,7 +200,6 @@ namespace sahelIntegrationIA
                 msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                 msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
             }
-            _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}", propertyValues: new object[] { msgAr, msgEn });
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgAr;
@@ -197,19 +215,27 @@ namespace sahelIntegrationIA
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
-            _logger.LogInformation(message: "Preparing notification {0}", propertyValues: log);
 
-            _logger.LogInformation(message: "start notification: {0}",
-                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
-            PostNotification(notficationResponse, "Individual");
-            var requestId = serviceRequest.EserviceRequestId;
+            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Preparing notification {0} - {1}",
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log });
 
-            await _eServicesContext
-                               .Set<ServiceRequestsDetail>()
-                               .Where(a => a.EserviceRequestId == requestId)
-                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+            var sendNotificationResult = PostNotification(notficationResponse, serviceRequest.EserviceRequestNumber, "Individual");
 
-            _logger.LogInformation(message: "end notification: {0}",
+            if (sendNotificationResult)
+            {
+                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - notification sent successfully: {0}",
+                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+                await _eServicesContext
+                                   .Set<ServiceRequestsDetail>()
+                                   .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
+                                   .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+            }
+            else
+            {
+                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - notification sent faild: {0}",
+                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+            }
+            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - end notification: {0}",
                     propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
 
         }
@@ -244,15 +270,13 @@ namespace sahelIntegrationIA
             }
         }
 
-        public void PostNotification(Notification notification, string SahelOption = "Business")
+        public bool PostNotification(Notification notification, string requestNumber, string SahelOption = "Business")
         {
-
-            _logger.LogInformation(message: "post notification started {0}", propertyValues: new object[] { notification.bodyEn });
-
-            if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
+            if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyEn))
             {
-                _logger.LogInformation(message: "Can't send notification because the body is empty");
-                return;
+                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Can't send notification because the body is empty - {0}",
+                    propertyValues: new object[] { requestNumber });
+                return false;
             }
 
             ServicePointManager.Expect100Continue = true;
@@ -280,11 +304,13 @@ namespace sahelIntegrationIA
                     /*                    var notificationString = JsonConvert.SerializeObject(notification);
                                         _logger.LogInformation(notificationString);*/
                     String rEsult = getResult(postTask);
+                    _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - notification result: {0} - {1}",
+                        propertyValues: new object[] { requestNumber, rEsult });
 
-                    _logger.LogInformation("notification result: {0}", rEsult);
+                    return !string.IsNullOrEmpty(rEsult);
                 }
             }
-
+            return false;
         }
 
         public string GenerateToken(string SahelOption)
