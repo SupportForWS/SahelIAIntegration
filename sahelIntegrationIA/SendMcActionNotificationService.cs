@@ -176,32 +176,30 @@ namespace sahelIntegrationIA
 
 
             //todo: change to switch
-            if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState))
+            switch (serviceRequest.StateId)
             {
-                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
-                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationEn, serviceRequest.EserviceRequestNumber);
-            }
-            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo))
-            {
-                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationAr, serviceRequest.EserviceRequestNumber);
-                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
-            }
-            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState) || 
-                serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState))
-            {
-                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
-                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
-            }
-            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestFinalRejectedState))
-            {
-                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationAr, serviceRequest.EserviceRequestNumber);
-                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationEn, serviceRequest.EserviceRequestNumber);
-            }
-            else if (serviceRequest.StateId == nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState) 
-                || serviceRequest.StateId == "EServiceRequestApprovedState")
-            {
-                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
-                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
+                case nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+                case nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+                case nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState):
+                case nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+                case nameof(ServiceRequestStatesEnum.EServiceRequestFinalRejectedState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+                case nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState):
+                case "EServiceRequestApprovedState":
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
             }
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
