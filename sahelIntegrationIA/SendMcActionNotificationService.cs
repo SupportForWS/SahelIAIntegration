@@ -175,7 +175,6 @@ namespace sahelIntegrationIA
             string msgEn = string.Empty;
 
 
-            //todo: change to switch
             switch (serviceRequest.StateId)
             {
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState):

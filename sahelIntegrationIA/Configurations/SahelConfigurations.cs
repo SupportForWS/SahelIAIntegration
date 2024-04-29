@@ -8,6 +8,7 @@ namespace sahelIntegrationIA.Configurations
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
         public int SahelSubmissionTimer { get; set; }
+        public bool IsMcNotificationForSahelEnabled { get; set; }
 
     }
     public class IndividualAuthorizationConfiguration

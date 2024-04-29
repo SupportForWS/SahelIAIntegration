@@ -1,6 +1,7 @@
 ﻿using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
+using sahelIntegrationIA.Configurations;
 
 namespace IndividualAuthorizationSahelWorker
 {
@@ -10,16 +11,29 @@ namespace IndividualAuthorizationSahelWorker
         private readonly VerificationServiceForOrganizationServices verificationServiceForOrganizationServices;
         private readonly VarificationService varificationService;
         private readonly SendMcActionNotificationService sendMcActionNotificationService;
+        private readonly SendMCNotificationForSahelService sendMCNotificationForSahelService;
+        private readonly SahelConfigurations _sahelConfigurations;
+
+
         private TimeSpan period;
         IBaseConfiguration _configuration;
 
-        public Worker(IRequestLogger logger,VarificationService varificationService,SendMcActionNotificationService sendMcActionNotificationService, IBaseConfiguration configuration,VerificationServiceForOrganizationServices verificationServiceForOrganizationServices)
+        public Worker(
+            IRequestLogger logger,
+            VarificationService varificationService,
+            SendMcActionNotificationService sendMcActionNotificationService,
+            IBaseConfiguration configuration,
+            VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
+            SendMCNotificationForSahelService sendMCNotificationForSahelService,
+            SahelConfigurations sahelConfigurations)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
             this.varificationService = varificationService;
             this.sendMcActionNotificationService = sendMcActionNotificationService;
             _configuration = configuration;
+            this.sendMCNotificationForSahelService = sendMCNotificationForSahelService;
+            _sahelConfigurations = sahelConfigurations;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -36,6 +50,11 @@ namespace IndividualAuthorizationSahelWorker
                 await varificationService.VarifyRequests();
                 await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
                 await sendMcActionNotificationService.SendNotification();
+
+                if (_sahelConfigurations.IsMcNotificationForSahelEnabled)
+                {
+                    await sendMCNotificationForSahelService.SendNotification();
+                }
 
             }
         }
