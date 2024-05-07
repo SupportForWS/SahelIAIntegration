@@ -49,12 +49,17 @@ namespace IndividualAuthorizationSahelWorker
                 //Console.WriteLine("ssss");
                 await varificationService.VarifyRequests();
                 await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
-                await sendMcActionNotificationService.SendNotification();
 
-                if (_sahelConfigurations.IsMcNotificationForSahelEnabled)
+                if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
+                {
+                    await sendMcActionNotificationService.SendNotification();
+                }
+
+                if (_sahelConfigurations.IsSahelNotificationServiceEnable)
                 {
                     await sahelNotificationService.SendNotification();
                 }
+
 
             }
         }

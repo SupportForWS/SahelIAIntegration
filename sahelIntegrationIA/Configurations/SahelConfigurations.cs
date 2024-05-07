@@ -8,7 +8,8 @@ namespace sahelIntegrationIA.Configurations
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
         public int SahelSubmissionTimer { get; set; }
-        public bool IsMcNotificationForSahelEnabled { get; set; }
+        public bool IsSahelNotificationServiceEnable { get; set; }
+        public bool IsSendMcActionNotificationServiceEnable { get; set; }
         public int TryCountForMCNotification { get; set; }
         public int TryCountForeServiceNotification { get; set; }
 
