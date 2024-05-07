@@ -15,6 +15,7 @@ using eServices.APIs.UserApp.OldApplication.Models;
 using Azure.Core;
 using eServicesV2.Kernel.Domain.Entities;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
+using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 
 namespace sahelIntegrationIA
 {
@@ -56,6 +57,8 @@ namespace sahelIntegrationIA
                 nameof(ServiceRequestStatesEnum.EServiceRequestFinalRejectedState),
                 "EServiceRequestApprovedState",
                 "EServiceRequestRejectState",
+                "OrganizationRequestRejectedState",
+                "OrganizationRequestedForAdditionalInfoState"
             };
 
             int[] serviceIds = new int[]
@@ -84,8 +87,8 @@ namespace sahelIntegrationIA
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
 
-            _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start Sahel MC Notifications - {0} - {1}",
-                        new object[] { statusJson, serviceIdsJson });
+            _logger.LogInformation("{2} - ShaleNotificationMC - start Sahel MC Notifications - {0} - {1}",
+                        new object[] { statusJson, serviceIdsJson, _jobCycleId });
 
             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
@@ -98,12 +101,27 @@ namespace sahelIntegrationIA
                                             && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                .AsNoTracking()
                                .ToListAsync();
+            //var organizationRequests = await _eServicesContext
+            //                   .Set<ServiceRequest>()
+            //                   .Where(p => statusEnums.Contains(p.StateId)
+            //                               && p.RequestSource == "Sahel"
+            //                               && p.ServiceId == (int)ServiceTypesEnum.OrganizationRegistrationService
+            //                               )
+            //                   .Select(a => a.EserviceRequestNumber)
+            //                   .ToListAsync();
+            //if(organizationRequests.Any())
+            //{
+            //   var organizationRequestNeedMcnotification = await _eServicesContext
+            //                   .Set<OrganizationRequests>()
+            //    .Where(p => statusEnums.Contains(p.StateId)
+            //                   && organizationRequests.Contains(p.req) 
+            //}
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
-            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Sahel MC Notifications {0}", log);
+            _logger.LogInformation(message: "{1} - ShaleNotificationMC - Sahel MC Notifications {0}", new object[] { log, _jobCycleId });
 
             return requestList;
         }
@@ -164,13 +182,13 @@ namespace sahelIntegrationIA
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
-            _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start Notification creation process - {0}",
-                propertyValues: new object[] { reqJson });
+            _logger.LogInformation("{1} - ShaleNotificationMC - start Notification creation process - {0}",
+                propertyValues: new object[] { reqJson , _jobCycleId });
 
             string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
 
-            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
-                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID });
+            _logger.LogInformation(message: "{2} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID , _jobCycleId });
 
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
@@ -218,16 +236,16 @@ namespace sahelIntegrationIA
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
 
-            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Preparing notification {0} - {1}",
-                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log });
+            _logger.LogInformation(message: "{2} - ShaleNotificationMC - Preparing notification {0} - {1}",
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log , _jobCycleId });
 
             var sendNotificationResult = PostNotification(notficationResponse, serviceRequest.EserviceRequestNumber, "Individual");
             await InsertNotification(notficationResponse, sendNotificationResult);
 
             if (sendNotificationResult)
             {
-                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - notification sent successfully: {0}",
-                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+                _logger.LogInformation(message: " {1} - ShaleNotificationMC - notification sent successfully: {0}",
+                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
                 await _eServicesContext
                                    .Set<ServiceRequestsDetail>()
                                    .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
@@ -235,11 +253,11 @@ namespace sahelIntegrationIA
             }
             else
             {
-                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - notification sent faild: {0}",
-                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+                _logger.LogInformation(message: "{1} - ShaleNotificationMC - notification sent faild: {0}",
+                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber , _jobCycleId });
             }
-            _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - end notification: {0}",
-                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
+            _logger.LogInformation(message: "{1} - ShaleNotificationMC - end notification: {0}",
+                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
 
         }
 
@@ -268,6 +286,8 @@ namespace sahelIntegrationIA
                     return SahelNotficationTypesEnum.OrganizationNameChange;
                 case ServiceTypesEnum.ConsigneeUndertakingRequest:
                     return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
+                    case ServiceTypesEnum.OrganizationRegistrationService:
+                    return SahelNotficationTypesEnum.OrganizationRegistrationService;
                 default:
                     return SahelNotficationTypesEnum.RenewImportLicense;
             }
@@ -277,8 +297,8 @@ namespace sahelIntegrationIA
         {
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyEn))
             {
-                _logger.LogInformation(message: $"{_jobCycleId} - ShaleNotificationMC - Can't send notification because the body is empty - {0}",
-                    propertyValues: new object[] { requestNumber });
+                _logger.LogInformation(message: "{1} - ShaleNotificationMC - Can't send notification because the body is empty - {0}",
+                    propertyValues: new object[] { requestNumber , _jobCycleId });
                 return false;
             }
 
@@ -307,8 +327,8 @@ namespace sahelIntegrationIA
                     /*                    var notificationString = JsonConvert.SerializeObject(notification);
                                         _logger.LogInformation(notificationString);*/
                     String rEsult = getResult(postTask);
-                    _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - notification result: {0} - {1}",
-                        propertyValues: new object[] { requestNumber, rEsult });
+                    _logger.LogInformation("{2} - ShaleNotificationMC - notification result: {0} - {1}",
+                        propertyValues: new object[] { requestNumber, rEsult, _jobCycleId });
 
                     return !string.IsNullOrEmpty(rEsult);
                 }

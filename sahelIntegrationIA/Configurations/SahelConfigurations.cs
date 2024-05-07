@@ -35,9 +35,8 @@ namespace sahelIntegrationIA.Configurations
         public string ChangeComercialAddressUrl { get; set; }
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
-        public string OrganizationRegistrationServiceUrl { get; set; }
+        public string OrganizationRegistrationUrl { get; set; }
 
-        
 
     }
 
