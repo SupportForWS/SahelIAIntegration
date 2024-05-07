@@ -9,12 +9,7 @@ using sahelIntegrationIA.Configurations;
 using System.Net.Http.Json;
 using System.Net;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
-using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using sahelIntegrationIA.Models;
-using eServices.APIs.UserApp.OldApplication.Models;
-using Azure.Core;
-using eServicesV2.Kernel.Domain.Entities;
-using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 
 namespace sahelIntegrationIA
@@ -58,7 +53,10 @@ namespace sahelIntegrationIA
                 "EServiceRequestApprovedState",
                 "EServiceRequestRejectState",
                 "OrganizationRequestRejectedState",
-                "OrganizationRequestedForAdditionalInfoState"
+                "OrganizationRequestedForAdditionalInfoState",
+                "OrganizationRequestApprovedForUpdate",
+                "OrganizationRequestApprovedForCreate"
+
             };
 
             int[] serviceIds = new int[]
@@ -97,25 +95,33 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "0")
-                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue 
-                                            && !p.ServiceRequestsDetail.MCNotificationSent.Value))
+                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                .AsNoTracking()
                                .ToListAsync();
-            //var organizationRequests = await _eServicesContext
-            //                   .Set<ServiceRequest>()
-            //                   .Where(p => statusEnums.Contains(p.StateId)
-            //                               && p.RequestSource == "Sahel"
-            //                               && p.ServiceId == (int)ServiceTypesEnum.OrganizationRegistrationService
-            //                               )
-            //                   .Select(a => a.EserviceRequestNumber)
-            //                   .ToListAsync();
-            //if(organizationRequests.Any())
+
+            var organizationRequests = await _eServicesContext
+                               .Set<ServiceRequest>()
+                               .Include(p => p.OrganizationRequest)
+                               .Where(p => statusEnums.Contains(p.OrganizationRequest.StateId)
+                                           && p.RequestSource == "Sahel"
+                                           && p.ServiceId == (int)ServiceTypesEnum.OrganizationRegistrationService
+                                           && (p.OrganizationRequest.ReadyForSahelSubmission == "0")
+                                            && (p.OrganizationRequest.MCNotificationSent.HasValue && !p.OrganizationRequest.MCNotificationSent.Value))
+                               .ToListAsync();
+            //var organizationRequetNumbers = organizationRequests.Select(a => a.EserviceRequestNumber).ToList();
+            //if (organizationRequests.Any())
             //{
-            //   var organizationRequestNeedMcnotification = await _eServicesContext
-            //                   .Set<OrganizationRequests>()
-            //    .Where(p => statusEnums.Contains(p.StateId)
-            //                   && organizationRequests.Contains(p.req) 
+            //    var organizationRequestNeedMcnotification = await _eServicesContext
+            //                    .Set<eServicesV2.Kernel.Domain.Entities.OrganizationEntities.OrganizationRequests>()
+            //     .Where(p => statusEnums.Contains(p.StateId)
+            //                    && organizationRequetNumbers.Contains(p.RequestNumber)
+            //                    && p.ReadyForSahelSubmission =="0"
+            //      && (p.MCNotificationSent.HasValue && !p.MCNotificationSent.Value))
+            //     .Select(a=> a.EserviceRequestNumber)
+            //                    .ToListAsync();
+            //    organizationRequests.Where(a => organizationRequestNeedMcnotification.Contains(a.EserviceRequestNumber));
             //}
+            requestList.AddRange(organizationRequests);
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
                         {
@@ -193,20 +199,33 @@ namespace sahelIntegrationIA
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
             string msgEn = string.Empty;
+            string stateId = string.Empty;
+            if(serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
+            {
+                stateId = serviceRequest.StateId;
 
-
-            switch (serviceRequest.StateId)
+            }
+            else
+            {
+                stateId = serviceRequest.OrganizationRequest.StateId;
+            }
+           
+            switch (stateId)
             {
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState):
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo):
+                case "OrganizationRequestedForAdditionalInfoState":
+
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState):
                 case nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState):
+                case "OrganizationRequestRejectedState":
+                case "EServiceRequestRejectState":
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
@@ -216,6 +235,8 @@ namespace sahelIntegrationIA
                     break;
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState):
                 case "EServiceRequestApprovedState":
+                case "OrganizationRequestApprovedForUpdate":
+                case "OrganizationRequestApprovedForCreate":
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
@@ -240,16 +261,26 @@ namespace sahelIntegrationIA
                 propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log , _jobCycleId });
 
             var sendNotificationResult = PostNotification(notficationResponse, serviceRequest.EserviceRequestNumber, "Individual");
-            await InsertNotification(notficationResponse, sendNotificationResult);
 
             if (sendNotificationResult)
             {
                 _logger.LogInformation(message: " {1} - ShaleNotificationMC - notification sent successfully: {0}",
                         propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
-                await _eServicesContext
+                if(serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
+                {
+                    await _eServicesContext
                                    .Set<ServiceRequestsDetail>()
                                    .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
                                    .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+                }
+                else
+                {
+                    await _eServicesContext
+                                   .Set<OrganizationRequests>()
+                                   .Where(a => a.RequestNumber == serviceRequest.EserviceRequestNumber)
+                                   .ExecuteUpdateAsync<OrganizationRequests>(a => a.SetProperty(b => b.MCNotificationSent, true));
+                }
+               
             }
             else
             {
@@ -409,29 +440,6 @@ namespace sahelIntegrationIA
             }
             return "";
         }
-
-        private async Task InsertNotification(Notification notification, bool isSent)
-        {
-            var syncQueueItem = new KGACSahelOutSyncQueue
-            {
-                CivilId = notification.subscriberCivilId,
-                CreatedBy = notification.subscriberCivilId,
-                NotificationId = int.Parse(notification.notificationType),
-                SahelType = "B",
-                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
-                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
-                MsgBodyEn = notification.bodyEn,
-                MsgBodyAr = notification.bodyAr,
-                DateCreated = DateTime.Now,
-                Sync = isSent,
-                TryCount = 1,
-                Source = "eService"
-            };
-
-            _eServicesContext.Add(syncQueueItem);
-            await _eServicesContext.SaveChangesAsync();
-        }
-
         #endregion
     }
 }
