@@ -216,14 +216,16 @@ namespace sahelIntegrationIA
                     break;
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState):
                 case "EServiceRequestApprovedState":
-                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr,
+                        serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn,
+                        serviceRequest.EserviceRequestNumber);
                     break;
             }
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
-            notficationResponse.bodyEn = msgAr;
-            notficationResponse.bodyAr = msgEn;
+            notficationResponse.bodyEn = msgEn;
+            notficationResponse.bodyAr = msgAr;
             notficationResponse.isForSubscriber = "true";
             notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
             notficationResponse.dataTableEn = null;

@@ -1,13 +1,10 @@
 using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
-using eServicesV2.Kernel.Data.Contexts;
-using eServicesV2.Kernel.Infrastructure.Logging.Logging.Implementations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Serilog;
-using sahelIntegrationIA.Models;
 using RequestLogger = sahelIntegrationIA.Models.RequestLogger;
 using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
 using sahelIntegrationIA.Configurations;
