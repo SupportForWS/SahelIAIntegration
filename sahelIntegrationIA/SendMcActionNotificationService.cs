@@ -14,6 +14,7 @@ using sahelIntegrationIA.Models;
 using eServices.APIs.UserApp.OldApplication.Models;
 using Azure.Core;
 using eServicesV2.Kernel.Domain.Entities;
+using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 
 namespace sahelIntegrationIA
 {
@@ -93,7 +94,8 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "0")
-                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
+                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue 
+                                            && !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                .AsNoTracking()
                                .ToListAsync();
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
@@ -220,6 +222,7 @@ namespace sahelIntegrationIA
                 propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log });
 
             var sendNotificationResult = PostNotification(notficationResponse, serviceRequest.EserviceRequestNumber, "Individual");
+            await InsertNotification(notficationResponse, sendNotificationResult);
 
             if (sendNotificationResult)
             {
@@ -386,6 +389,29 @@ namespace sahelIntegrationIA
             }
             return "";
         }
+
+        private async Task InsertNotification(Notification notification, bool isSent)
+        {
+            var syncQueueItem = new KGACSahelOutSyncQueue
+            {
+                CivilId = notification.subscriberCivilId,
+                CreatedBy = notification.subscriberCivilId,
+                NotificationId = int.Parse(notification.notificationType),
+                SahelType = "B",
+                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
+                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
+                MsgBodyEn = notification.bodyEn,
+                MsgBodyAr = notification.bodyAr,
+                DateCreated = DateTime.Now,
+                Sync = isSent,
+                TryCount = 1,
+                Source = "eService"
+            };
+
+            _eServicesContext.Add(syncQueueItem);
+            await _eServicesContext.SaveChangesAsync();
+        }
+
         #endregion
     }
 }

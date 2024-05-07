@@ -11,7 +11,7 @@ namespace IndividualAuthorizationSahelWorker
         private readonly VerificationServiceForOrganizationServices verificationServiceForOrganizationServices;
         private readonly VarificationService varificationService;
         private readonly SendMcActionNotificationService sendMcActionNotificationService;
-        private readonly SendMCNotificationForSahelService sendMCNotificationForSahelService;
+        private readonly SahelNotificationService sahelNotificationService;
         private readonly SahelConfigurations _sahelConfigurations;
 
 
@@ -24,7 +24,7 @@ namespace IndividualAuthorizationSahelWorker
             SendMcActionNotificationService sendMcActionNotificationService,
             IBaseConfiguration configuration,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
-            SendMCNotificationForSahelService sendMCNotificationForSahelService,
+            SahelNotificationService sahelNotificationService,
             SahelConfigurations sahelConfigurations)
         {
             _logger = logger;
@@ -32,7 +32,7 @@ namespace IndividualAuthorizationSahelWorker
             this.varificationService = varificationService;
             this.sendMcActionNotificationService = sendMcActionNotificationService;
             _configuration = configuration;
-            this.sendMCNotificationForSahelService = sendMCNotificationForSahelService;
+            this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
         }
 
@@ -53,7 +53,7 @@ namespace IndividualAuthorizationSahelWorker
 
                 if (_sahelConfigurations.IsMcNotificationForSahelEnabled)
                 {
-                    await sendMCNotificationForSahelService.SendNotification();
+                    await sahelNotificationService.SendNotification();
                 }
 
             }

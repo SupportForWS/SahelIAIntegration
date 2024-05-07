@@ -9,6 +9,8 @@ namespace sahelIntegrationIA.Configurations
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
         public int SahelSubmissionTimer { get; set; }
         public bool IsMcNotificationForSahelEnabled { get; set; }
+        public int TryCountForMCNotification { get; set; }
+        public int TryCountForeServiceNotification { get; set; }
 
     }
     public class IndividualAuthorizationConfiguration
@@ -33,7 +35,10 @@ namespace sahelIntegrationIA.Configurations
         public string ChangeComercialAddressUrl { get; set; }
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
+        public string OrganizationRegistrationServiceUrl { get; set; }
+
         
+
     }
 
     public class MCNotificationConfiguration

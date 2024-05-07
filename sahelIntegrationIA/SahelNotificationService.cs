@@ -13,7 +13,7 @@ using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 
 namespace sahelIntegrationIA
 {
-    public class SendMCNotificationForSahelService
+    public class SahelNotificationService
     {
         private string _jobCycleId = Guid.NewGuid().ToString();
         private readonly IRequestLogger _logger;
@@ -25,7 +25,7 @@ namespace sahelIntegrationIA
         private readonly SahelConfigurations _sahelConfigurations;
         Dictionary<int, string> requestedCivilIds = new Dictionary<int, string>();
 
-        public SendMCNotificationForSahelService(
+        public SahelNotificationService(
             IRequestLogger logger,
             IBaseConfiguration configuration,
             eServicesContext eServicesContext,
@@ -45,12 +45,16 @@ namespace sahelIntegrationIA
 
         public async Task<List<KGACSahelOutSyncQueue>> GetNotifications()
         {
-            _logger.LogInformation("MCNotificationForSahelService - start MC Notifications For Sahel");
+            _logger.LogInformation("SahelNotificationService - start Notifications For Sahel");
 
             var notificationList = await _eServicesContext
                                .Set<KGACSahelOutSyncQueue>()
-                               .Where(x => x.Sync.Value != true
-                                           && x.TryCount.Value < 3)
+                               .Where(x => (x.Source == "MC"
+                                                  && x.Sync.Value != true
+                                                  && x.TryCount.Value < _sahelConfigurations.TryCountForMCNotification)
+                                           ||( x.Source=="eService"
+                                               && x.Sync!=true 
+                                               && x.TryCount.Value < _sahelConfigurations.TryCountForeServiceNotification))
                                .AsNoTracking()
                                .ToListAsync();
 
@@ -60,7 +64,7 @@ namespace sahelIntegrationIA
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
 
-            _logger.LogInformation(message: $"MCNotificationForSahelService - MC Notifications For Sahel {0}", log);
+            _logger.LogInformation(message: $"SahelNotificationService - start Notifications For Sahel {0}", log);
 
 
             return notificationList;
@@ -69,7 +73,7 @@ namespace sahelIntegrationIA
 
         public async Task SendNotification()
         {
-            _logger.LogInformation($"MCNotificationForSahelService - start send mc notification for sahel service");
+            _logger.LogInformation($"SahelNotificationService - start send notification for sahel service");
 
             var notificationList = await GetNotifications();
 
@@ -83,7 +87,7 @@ namespace sahelIntegrationIA
                 catch (Exception ex)
                 {
                     _logger
-                    .LogException(ex, "MCNotificationForSahelService - mc notification sahel exception - {0}",
+                    .LogException(ex, "SahelNotificationService - notification sahel exception - {0}",
                     notification.KGACSahelOutSyncQueueId);
                 }
 
@@ -94,20 +98,7 @@ namespace sahelIntegrationIA
 
         private async Task ProcessServiceRequest(KGACSahelOutSyncQueue notification)
         {
-            //if (serviceRequest.ServiceId is null or 0)
-            //{
-            //    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-            //    return; //log the error
-            //}
-
-            //if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
-            //{
-            //    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-            //    return; //log the error
-            //}
-
             await CreateNotification(notification);
-
         }
 
         private async Task CreateNotification(KGACSahelOutSyncQueue notification)
@@ -118,7 +109,7 @@ namespace sahelIntegrationIA
                  ReferenceLoopHandling = ReferenceLoopHandling.Ignore
              });
 
-            _logger.LogInformation("MCNotificationForSahelService - start Notification creation process - {0}",
+            _logger.LogInformation("SahelNotificationService - start Notification creation process - {0}",
                 propertyValues: new { reqJson });
 
             Notification notficationResponse = new Notification();
@@ -127,9 +118,19 @@ namespace sahelIntegrationIA
             notficationResponse.bodyAr = notification.MsgBodyEn;
             notficationResponse.isForSubscriber = "true";
             notficationResponse.notificationType = notification.NotificationId.ToString();
-            notficationResponse.dataTableEn = new Dictionary<string, string> { { "Header", notification.MsgTableEn } };
-            notficationResponse.dataTableAr = new Dictionary<string, string> { { "عنوان", notification.MsgTableAr } };
             notficationResponse.subscriberCivilId = notification.CivilId;
+
+            try
+            {
+                notficationResponse.dataTableEn = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableEn);
+                notficationResponse.dataTableAr = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableAr);
+            }
+            catch (JsonException ex)
+            {
+                //Add log
+                notficationResponse.dataTableEn = new Dictionary<string, string> { { "Header", notification.MsgTableEn } };
+                notficationResponse.dataTableAr = new Dictionary<string, string> { { "عنوان", notification.MsgTableAr } };
+            }
 
             string log = JsonConvert.SerializeObject(notficationResponse, Formatting.None,
                 new JsonSerializerSettings()
@@ -137,7 +138,7 @@ namespace sahelIntegrationIA
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
 
-            _logger.LogInformation("MCNotificationForSahelService - Preparing notification {0} - {1}",
+            _logger.LogInformation("SahelNotificationService - Preparing notification {0} - {1}",
                 propertyValues: new { notification.KGACSahelOutSyncQueueId, log });
 
             var sahelOption = notification.SahelType.ToLower() switch
@@ -150,7 +151,7 @@ namespace sahelIntegrationIA
             if (string.IsNullOrEmpty(sahelOption))
             {
                 _logger.LogException(new ArgumentException("Invalid SahelType"),
-               "MCNotificationForSahelService - mc notification sahel exception - {0} - {1}",
+               "SahelNotificationService - notification sahel exception - {0} - {1}",
                notification.SahelType, notification.KGACSahelOutSyncQueueId);
                 return;
             }
@@ -160,7 +161,7 @@ namespace sahelIntegrationIA
             if (sendNotificationResult)
             {
                 _logger
-                    .LogInformation("MCNotificationForSahelService - notification sent successfully: {0}", notification.KGACSahelOutSyncQueueId);
+                    .LogInformation("SahelNotificationService - notification sent successfully: {0}", notification.KGACSahelOutSyncQueueId);
 
                 await _eServicesContext
                                   .Set<KGACSahelOutSyncQueue>()
@@ -173,7 +174,7 @@ namespace sahelIntegrationIA
             else
             {
                 _logger
-                    .LogInformation("MCNotificationForSahelService - notification sent faild: {0}", notification.KGACSahelOutSyncQueueId);
+                    .LogInformation("SahelNotificationService - notification sent faild: {0}", notification.KGACSahelOutSyncQueueId);
 
                 await _eServicesContext
                                   .Set<KGACSahelOutSyncQueue>()
@@ -182,7 +183,7 @@ namespace sahelIntegrationIA
                                   .SetProperty(b => b.TryCount, notification.TryCount + 1)
                                   .SetProperty(b => b.DateModified, DateTime.Now));
             }
-            _logger.LogInformation(message: "MCNotificationForSahelService - end notification: {0}", notification.KGACSahelOutSyncQueueId);
+            _logger.LogInformation(message: "SahelNotificationService - end notification: {0}", notification.KGACSahelOutSyncQueueId);
 
         }
 
@@ -194,7 +195,7 @@ namespace sahelIntegrationIA
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyEn))
             {
                 _logger
-                    .LogInformation("MCNotificationForSahelService - Can't send notification because the body is empty - {0}",
+                    .LogInformation("SahelNotificationService - Can't send notification because the body is empty - {0}",
                     notificationID);
                 return false;
             }

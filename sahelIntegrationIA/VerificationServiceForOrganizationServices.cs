@@ -28,7 +28,11 @@ namespace sahelIntegrationIA
         Dictionary<int, string> requestedCivilIds = new Dictionary<int, string>();
 
         public VerificationServiceForOrganizationServices(IRequestLogger logger,
-            IBaseConfiguration configuration, eServicesContext eServicesContext, IRequestLogger requestLogger, IDapper dapper, SahelConfigurations sahelConfigurations)
+                                                          IBaseConfiguration configuration,
+                                                          eServicesContext eServicesContext,
+                                                          IRequestLogger requestLogger,
+                                                          IDapper dapper,
+                                                          SahelConfigurations sahelConfigurations)
         {
             _logger = logger;
             _configurations = configuration;
@@ -289,7 +293,8 @@ namespace sahelIntegrationIA
 
                     Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
 
-                    PostNotification(notification, "Individual");
+                    bool isSent = PostNotification(notification, "Individual");
+                    await InsertNotification(notification, isSent);
                 }
             }
             catch (Exception ex)
@@ -318,13 +323,35 @@ namespace sahelIntegrationIA
             await Task.WhenAll(tasks);
         }
 
+        private async Task InsertNotification(Notification notification, bool isSent)
+        {
+            var syncQueueItem = new KGACSahelOutSyncQueue
+            {
+                CivilId = notification.subscriberCivilId,
+                CreatedBy = notification.subscriberCivilId,
+                NotificationId = int.Parse(notification.notificationType),
+                SahelType = "B",
+                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
+                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
+                MsgBodyEn = notification.bodyEn,
+                MsgBodyAr = notification.bodyAr,
+                DateCreated = DateTime.Now,
+                Sync = isSent,
+                TryCount = 1,
+                Source = "eService"
+            };
+
+            _eServicesContext.Add(syncQueueItem);
+            await _eServicesContext.SaveChangesAsync();
+        }
+
         #region Private Methods
-        public void PostNotification(Notification notification, string SahelOption = "Business")
+        public bool PostNotification(Notification notification, string SahelOption = "Business")
         {
 
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
-                return;
+                return false;
             }
             string notificationString = JsonConvert.SerializeObject(notification);
 
@@ -354,10 +381,10 @@ namespace sahelIntegrationIA
                     Task<HttpResponseMessage> postTask = client.PostAsJsonAsync<Notification>("single", notification);
                     /*                    var notificationString = JsonConvert.SerializeObject(notification);
                                         _logger.LogInformation(notificationString);*/
-                    String rEsult = getResult(postTask);
+                    return !string.IsNullOrEmpty(getResult(postTask));
                 }
             }
-
+            return false;
         }
 
         public string GenerateToken(string SahelOption)
@@ -404,7 +431,7 @@ namespace sahelIntegrationIA
             }
         }
 
-        private String getResult(Task<HttpResponseMessage> postTask)
+        private string getResult(Task<HttpResponseMessage> postTask)
         {
             try
             {
@@ -452,7 +479,8 @@ namespace sahelIntegrationIA
             msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredAr, serviceRequest.EserviceRequestNumber);
             msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.KmidExpiredEn, serviceRequest.EserviceRequestNumber);
 
-            _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}", propertyValues: new object[] { msgAr, msgEn });
+            _logger.LogInformation(message: "Notification Mesaage in arabic : {0} , Notification Message in english {1}",
+                propertyValues: new object[] { msgAr, msgEn });
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgAr;
@@ -472,7 +500,10 @@ namespace sahelIntegrationIA
 
             _logger.LogInformation(message: "start notification: {0}",
                     propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
-            PostNotification(notficationResponse, "Individual");
+
+            bool isSent = PostNotification(notficationResponse, "Individual");
+            await InsertNotification(notficationResponse, isSent);
+
             var requestId = serviceRequest.EserviceRequestId;
 
             await _eServicesContext
@@ -484,6 +515,7 @@ namespace sahelIntegrationIA
                     propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
 
         }
+
         public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
         {
             switch (service)
