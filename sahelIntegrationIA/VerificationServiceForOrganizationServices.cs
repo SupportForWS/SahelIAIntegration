@@ -90,29 +90,24 @@ namespace sahelIntegrationIA
 
             var organizationRequestList = await _eServicesContext
                                .Set<ServiceRequest>()
+                               .Include(a => a.OrganizationRequest)
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
                                            && p.ServiceId ==(int)ServiceTypesEnum.OrganizationRegistrationService
-                                           && (p.RequestSubmissionDateTime.Value == null || p.RequestSubmissionDateTime.HasValue && (p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate ))
-                                          )
+                                           && !string.IsNullOrEmpty(p.OrganizationRequest.KMIDToken)
+                                           && p.OrganizationRequest.StateId != "OrganizationRequestForCreateState" && p.OrganizationRequest.StateId != "OrganizationRequestForUpdateState"
+
+                               && (p.OrganizationRequest.ReadyForSahelSubmission == "1" || (p.OrganizationRequest.ReadyForSahelSubmission == "2" &&
+                               p.RequestSubmissionDateTime.HasValue &&
+                                            p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
                                 .ToListAsync();
+                                   
 
             var organizationRequestNumberList = organizationRequestList.Select(a => a.EserviceRequestNumber).ToList();
 
-            var organizationRequestsKmid = await _eServicesContext
-                               .Set<OrganizationRequests>()
-                               .Where(p => organizationRequestNumberList.Contains(p.EserviceRequestNumber)
-                                && !string.IsNullOrEmpty(p.KMIDToken)
-                                && p.StateId != "OrganizationRequestForCreateState"
-                               && (p.ReadyForSahelSubmission == "1" || p.ReadyForSahelSubmission == "2"))
-                               .Select(a=> new
-                               {
-                                   a.KMIDToken,
-                                   a.RequestNumber
-                               })
-                               .ToListAsync();
-                               
 
+
+            var organizationrequestId = organizationRequestList.Select(a => a.OrganizationRequest).ToList().Select(a => a.EserviceRequestNumber).ToList();
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
 
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
@@ -133,7 +128,7 @@ namespace sahelIntegrationIA
 
             await _eServicesContext
                                        .Set<OrganizationRequests>()
-                                       .Where(a => organizationRequestsKmid.Select(a=> a.RequestNumber).ToList().Contains(a.RequestNumber))
+                                       .Where(a => organizationrequestId.Contains(a.EserviceRequestNumber))
                                        .ExecuteUpdateAsync<OrganizationRequests>(a => a.SetProperty(b => b.ReadyForSahelSubmission, "2")
                                       );
 
@@ -141,7 +136,7 @@ namespace sahelIntegrationIA
                 .Select(a => a.ServiceRequestsDetail.KMIDToken)
                 .ToList();
 
-            kmidCreatedList.AddRange(organizationRequestsKmid.Select(a=> a.KMIDToken).ToList());
+            kmidCreatedList.AddRange(organizationRequestList.Select(a=> a.OrganizationRequest.KMIDToken).ToList());
 
             var kmidStrings = kmidCreatedList
                 .Select(k => k.ToString())
@@ -166,8 +161,8 @@ namespace sahelIntegrationIA
                              .Select(a => new { a.UserId, a.CivilId })
                              .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
 
-                 expiredOrganizationRequestNumbers = organizationRequestsKmid.Where(a=> expiredKmidRequests.Contains(Convert.ToInt32(a.KMIDToken))).Select(a => a.RequestNumber).ToList();
-                var organizationServiceRequests = organizationRequestList.Where(a => expiredOrganizationRequestNumbers.Contains(a.EserviceRequestNumber)).ToList();
+                // expiredOrganizationRequestNumbers = organizationRequestsKmid.Where(a=> expiredKmidRequests.Contains(Convert.ToInt32(a.KMIDToken))).Select(a => a.RequestNumber).ToList();
+                var organizationServiceRequests = organizationRequestList.Where(a => expiredKmidRequests.Contains(Convert.ToInt32(a.OrganizationRequest.KMIDToken))).ToList();
                 var expiredRequest = requestList.Where(a => expiredKmidRequests.Contains(Convert.ToInt32(a.ServiceRequestsDetail.KMIDToken))).ToList();
                 expiredRequest.AddRange(organizationServiceRequests);
                 await SendExpiredKmidNotification(expiredRequest);
@@ -199,7 +194,7 @@ namespace sahelIntegrationIA
                 .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
                 .ToList();
 
-            var notExpiredOrganizationRequests = organizationRequestList.Where(a => !expiredOrganizationRequestNumbers.Contains(a.EserviceRequestNumber)).ToList();
+            var notExpiredOrganizationRequests = organizationRequestList.Where(a => !expiredKmidRequests.Contains(int.Parse(a.OrganizationRequest.KMIDToken))).ToList();
 
             filteredRequestList.AddRange(notExpiredOrganizationRequests);
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
