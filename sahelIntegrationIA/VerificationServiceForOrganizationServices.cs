@@ -354,7 +354,7 @@ namespace sahelIntegrationIA
 
                     Notification notification = JsonConvert.DeserializeObject<Notification>(responseContent);
 
-                    bool isSent = PostNotification(notification, "Individual");
+                    bool isSent = PostNotification(notification, "Business");
                     await InsertNotification(notification, isSent);
                 }
             }
@@ -562,7 +562,7 @@ namespace sahelIntegrationIA
             _logger.LogInformation(message: "start notification: {0}",
                     propertyValues: new object[] { serviceRequest.EserviceRequestNumber });
 
-            bool isSent = PostNotification(notficationResponse, "Individual");
+            bool isSent = PostNotification(notficationResponse, "Business");
             await InsertNotification(notficationResponse, isSent);
 
             var requestId = serviceRequest.EserviceRequestId;

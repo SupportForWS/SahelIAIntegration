@@ -11,6 +11,7 @@ using System.Net;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using sahelIntegrationIA.Models;
 using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
+using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 
 namespace sahelIntegrationIA
 {
@@ -260,7 +261,10 @@ namespace sahelIntegrationIA
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Preparing notification {0} - {1}",
                 propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log , _jobCycleId });
 
-            var sendNotificationResult = PostNotification(notficationResponse, serviceRequest.EserviceRequestNumber, "Individual");
+            var sendNotificationResult = PostNotification(notficationResponse,
+                serviceRequest.EserviceRequestNumber,
+                "Business");
+            await InsertNotification(notficationResponse, sendNotificationResult);
 
             if (sendNotificationResult)
             {
@@ -440,6 +444,29 @@ namespace sahelIntegrationIA
             }
             return "";
         }
+
+        private async Task InsertNotification(Notification notification, bool isSent)
+        {
+            var syncQueueItem = new KGACSahelOutSyncQueue
+            {
+                CivilId = notification.subscriberCivilId,
+                CreatedBy = notification.subscriberCivilId,
+                NotificationId = int.Parse(notification.notificationType),
+                SahelType = "B",
+                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
+                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
+                MsgBodyEn = notification.bodyEn,
+                MsgBodyAr = notification.bodyAr,
+                DateCreated = DateTime.Now,
+                Sync = isSent,
+                TryCount = 1,
+                Source = "eService"
+            };
+
+            _eServicesContext.Add(syncQueueItem);
+            await _eServicesContext.SaveChangesAsync();
+        }
+
         #endregion
     }
 }
