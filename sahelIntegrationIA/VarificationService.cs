@@ -400,6 +400,7 @@ namespace IndividualAuthorizationSahelWorker
                     notification.subscriberCivilId = authorizationRequest.AuthorizerCivilId;
 
                     //notification.actionButtonRequestList = null;
+                    //notification.actionButtonRequestList = null;
 
                     isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
                     await InsertNotification( notification, isSent);
