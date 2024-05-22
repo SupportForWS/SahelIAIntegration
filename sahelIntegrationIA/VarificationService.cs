@@ -66,8 +66,9 @@ namespace IndividualAuthorizationSahelWorker
                     (int)IndividualAuthorizationStatusEnum.PendingRequesterApproval,
 
             };
+
             int interval = Convert.ToInt32(_configurations.IndividualAuthorizationSahelConfiguration.TimeIntervalToCheckRequests);
-            DateTime timeToCheck = DateTime.Now.AddSeconds(interval);
+            DateTime timeToCheck = DateTime.Now.AddDays(interval);
 
             try
             {
@@ -76,8 +77,8 @@ namespace IndividualAuthorizationSahelWorker
                 List<IndividualAuthorizationRequest>? recentIARequestsFromSahel = await _eServicesContext
                     .Set<IndividualAuthorizationRequest>()
                     .Include(p => p.Actions)
-                    .Where(p => p.AppliedBySahel == true /*&&
-                            (p.CreatedAt >= timeToCheck || p.LastModifiedAt >= timeToCheck)*/ &&
+                    .Where(p => p.AppliedBySahel == true &&
+                            (p.CreatedAt >= timeToCheck || p.LastModifiedAt >= timeToCheck) &&
                             statusEnums.Contains(p.StateId)
                             )
                     .ToListAsync();
