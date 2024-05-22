@@ -19,6 +19,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using sahelIntegrationIA.Configurations;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Net;
@@ -392,12 +393,17 @@ namespace IndividualAuthorizationSahelWorker
                         string authorizationRequestStr = JsonConvert.SerializeObject(authorizationRequest);
                         _logger.LogInformation($"Authorization Request is empty or null ==>{authorizationRequestStr}");
                     }
-                   
-                        PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
-                        notification.subscriberCivilId = authorizationRequest.AuthorizerCivilId;
-                        //notification.actionButtonRequestList = null;
-                        PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
-                    
+
+                  
+                    bool isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
+                    await InsertNotification(notification, isSent);
+                    notification.subscriberCivilId = authorizationRequest.AuthorizerCivilId;
+
+                    //notification.actionButtonRequestList = null;
+
+                    isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
+                    await InsertNotification( notification, isSent);
+
                 }
 
             }
@@ -431,11 +437,11 @@ namespace IndividualAuthorizationSahelWorker
             return new VerifyKMIDSharedFunctionResponse();
         }
 
-        public void PostNotification(Notification notification, string SahelOption = "Business")
+        public bool PostNotification(Notification notification, string SahelOption = "Business")
         {
             if(string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
-                return;
+                return false;
             }
             string notificationString=JsonConvert.SerializeObject(notification);
             _logger.LogInformation($"NotificationBody-->{notificationString}");
@@ -462,11 +468,12 @@ namespace IndividualAuthorizationSahelWorker
                     Task<HttpResponseMessage> postTask = client.PostAsJsonAsync<Notification>("single", notification);
 /*                    var notificationString = JsonConvert.SerializeObject(notification);
                     _logger.LogInformation(notificationString);*/
-                    String rEsult = getResult(postTask);
+                    return !string.IsNullOrEmpty(getResult(postTask));
                 }
             }
-
+            return false;
         }
+
         public string GenerateToken(string SahelOption)
         {
             var confi = _configurations.IndividualAuthorizationSahelConfiguration;
@@ -541,6 +548,27 @@ namespace IndividualAuthorizationSahelWorker
             return "";
         }
 
+        private async Task InsertNotification(Notification notification, bool isSent)
+        {
+            var syncQueueItem = new KGACSahelOutSyncQueue
+            {
+                CivilId = notification.subscriberCivilId,
+                CreatedBy = notification.subscriberCivilId,
+                NotificationId = int.Parse(notification.notificationType),
+                SahelType = "I", //Individual
+                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
+                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
+                MsgBodyEn = notification.bodyEn,
+                MsgBodyAr = notification.bodyAr,
+                DateCreated = DateTime.Now,
+                Sync = isSent,
+                TryCount = 1,
+                Source = "eService"
+            };
+
+            _eServicesContext.Add(syncQueueItem);
+            await _eServicesContext.SaveChangesAsync();
+        }
 
         public async Task AddAction(long requestId, IndividualAuthorizationRequest authorizationRequest,
          IndividualAuthorizationStatusEnum status, IndividualAuthorizationStatusEnum action)
