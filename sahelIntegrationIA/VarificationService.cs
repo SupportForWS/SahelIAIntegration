@@ -395,16 +395,16 @@ namespace IndividualAuthorizationSahelWorker
                         _logger.LogInformation($"Authorization Request is empty or null ==>{authorizationRequestStr}");
                     }
 
-                  
+                    int requestIdInt = Convert.ToInt16(authorizationRequest.Id);
                     bool isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
-                    await InsertNotification(notification, isSent);
+                    await InsertNotification(notification, isSent, requestIdInt);
                     notification.subscriberCivilId = authorizationRequest.AuthorizerCivilId;
 
                     //notification.actionButtonRequestList = null;
                     //notification.actionButtonRequestList = null;
 
                     isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
-                    await InsertNotification( notification, isSent);
+                    await InsertNotification( notification, isSent, requestIdInt);
 
                 }
 
@@ -550,7 +550,7 @@ namespace IndividualAuthorizationSahelWorker
             return "";
         }
 
-        private async Task InsertNotification(Notification notification, bool isSent)
+        private async Task InsertNotification(Notification notification, bool isSent, int requestId)
         {
             var syncQueueItem = new KGACSahelOutSyncQueue
             {
@@ -565,7 +565,12 @@ namespace IndividualAuthorizationSahelWorker
                 DateCreated = DateTime.Now,
                 Sync = isSent,
                 TryCount = 1,
-                Source = "eService"
+                Source = "eService",
+                ReferenceId=requestId,
+                RefreneceType="IA",
+                DataprofileClassId= "IndividualAuth",
+                PageId= "Sahel",
+                ActionId="Create"
             };
 
             _eServicesContext.Add(syncQueueItem);
