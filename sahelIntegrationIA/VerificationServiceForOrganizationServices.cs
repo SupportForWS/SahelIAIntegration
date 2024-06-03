@@ -84,8 +84,11 @@ namespace sahelIntegrationIA
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
-                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" && p.RequestSubmissionDateTime.HasValue &&
-                                            p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
+                                            (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" 
+                                            && p.RequestSubmissionDateTime.HasValue &&
+                                            p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) 
+                                            < currentDate)
+                                            ))
                                 .ToListAsync();
 
             var organizationRequestList = await _eServicesContext
@@ -364,6 +367,7 @@ namespace sahelIntegrationIA
             }
 
         }
+
         public async Task SendExpiredKmidNotification(List<ServiceRequest> serviceRequest)
         {
             var tasks = serviceRequest.Select(async request =>

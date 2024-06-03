@@ -84,6 +84,7 @@ public partial class Program
                    services.AddSingleton<SendMcActionNotificationService>();
                    services.AddSingleton<SahelNotificationService>();
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
+                   services.AddSingleton<VerificationServiceForBrokerServices>();
 
                    services.AddHostedService<Worker>();
                });

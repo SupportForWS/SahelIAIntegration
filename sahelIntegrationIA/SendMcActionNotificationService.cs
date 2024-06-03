@@ -56,8 +56,12 @@ namespace sahelIntegrationIA
                 "OrganizationRequestRejectedState",
                 "OrganizationRequestedForAdditionalInfoState",
                 "OrganizationRequestApprovedForUpdate",
-                "OrganizationRequestApprovedForCreate"
+                "OrganizationRequestApprovedForCreate",
 
+
+                 nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState),
+                "EServiceRequestIDPrintedState",
+                "EServiceRequestCompletedState"
             };
 
             int[] serviceIds = new int[]
@@ -71,7 +75,23 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.RemoveAuthorizedSignatoryRequest,
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
-                (int)ServiceTypesEnum.ConsigneeUndertakingRequest
+                (int)ServiceTypesEnum.ConsigneeUndertakingRequest,
+
+                //broker
+                (int)ServiceTypesEnum.BrsPrintingCancelCommercialLicense,
+                (int)ServiceTypesEnum.BrsPrintingIssueLicense,
+                (int)ServiceTypesEnum.BrsPrintingChangeLicenseAddress,
+                (int)ServiceTypesEnum.BrsPrintingChangeLicenseActivity,
+                (int)ServiceTypesEnum.BrsPrintingReleaseBankGuarantee,
+                (int)ServiceTypesEnum.BrsPrintingGoodBehave,
+                (int)ServiceTypesEnum.BrsPrintingRenewLicense,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleRenewResidency,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleTransferResidency,
+                (int)ServiceTypesEnum.BrsPrintingRenewResidency,
+                (int)ServiceTypesEnum.BrsPrintingTransferResidency,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitle,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleCivil,
+                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath
             };
 
             var statusJson = Newtonsoft.Json.JsonConvert.SerializeObject(statusEnums, Newtonsoft.Json.Formatting.None,
@@ -96,7 +116,8 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "0")
-                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue && !p.ServiceRequestsDetail.MCNotificationSent.Value))
+                                            && (p.ServiceRequestsDetail.MCNotificationSent.HasValue &&
+                                            !p.ServiceRequestsDetail.MCNotificationSent.Value))
                                .AsNoTracking()
                                .ToListAsync();
 
@@ -109,6 +130,7 @@ namespace sahelIntegrationIA
                                            && (p.OrganizationRequest.ReadyForSahelSubmission == "0")
                                             && (p.OrganizationRequest.MCNotificationSent.HasValue && !p.OrganizationRequest.MCNotificationSent.Value))
                                .ToListAsync();
+
             //var organizationRequetNumbers = organizationRequests.Select(a => a.EserviceRequestNumber).ToList();
             //if (organizationRequests.Any())
             //{
@@ -122,16 +144,19 @@ namespace sahelIntegrationIA
             //                    .ToListAsync();
             //    organizationRequests.Where(a => organizationRequestNeedMcnotification.Contains(a.EserviceRequestNumber));
             //}
+
             requestList.AddRange(organizationRequests);
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
                         {
                             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         });
+
             _logger.LogInformation(message: "{1} - ShaleNotificationMC - Sahel MC Notifications {0}", new object[] { log, _jobCycleId });
 
             return requestList;
         }
+
         public async Task SendNotification()
         {
             _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start send mc action notification service");
@@ -164,6 +189,7 @@ namespace sahelIntegrationIA
             });
             await Task.WhenAll(tasks);
         }
+
         private async Task ProcessServiceRequest(ServiceRequest serviceRequest)
         {
             if (serviceRequest.ServiceId is null or 0)
@@ -190,18 +216,18 @@ namespace sahelIntegrationIA
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
             _logger.LogInformation("{1} - ShaleNotificationMC - start Notification creation process - {0}",
-                propertyValues: new object[] { reqJson , _jobCycleId });
+                propertyValues: new object[] { reqJson, _jobCycleId });
 
             string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
 
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
-                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID , _jobCycleId });
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID, _jobCycleId });
 
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
             string msgEn = string.Empty;
             string stateId = string.Empty;
-            if(serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
+            if (serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
             {
                 stateId = serviceRequest.StateId;
 
@@ -210,7 +236,7 @@ namespace sahelIntegrationIA
             {
                 stateId = serviceRequest.OrganizationRequest.StateId;
             }
-           
+
             switch (stateId)
             {
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState):
@@ -241,6 +267,21 @@ namespace sahelIntegrationIA
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
+                case nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    break;
+
+                case "EServiceRequestIDPrintedState":
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.IdPrintedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.IdPrintedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    break;
+
+                case "EServiceRequestCompletedState":
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    break;
             }
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
@@ -259,7 +300,7 @@ namespace sahelIntegrationIA
                 });
 
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Preparing notification {0} - {1}",
-                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log , _jobCycleId });
+                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, log, _jobCycleId });
 
             var sendNotificationResult = PostNotification(notficationResponse,
                 serviceRequest.EserviceRequestNumber,
@@ -270,7 +311,7 @@ namespace sahelIntegrationIA
             {
                 _logger.LogInformation(message: " {1} - ShaleNotificationMC - notification sent successfully: {0}",
                         propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
-                if(serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
+                if (serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
                 {
                     await _eServicesContext
                                    .Set<ServiceRequestsDetail>()
@@ -284,12 +325,12 @@ namespace sahelIntegrationIA
                                    .Where(a => a.RequestNumber == serviceRequest.EserviceRequestNumber)
                                    .ExecuteUpdateAsync<OrganizationRequests>(a => a.SetProperty(b => b.MCNotificationSent, true));
                 }
-               
+
             }
             else
             {
                 _logger.LogInformation(message: "{1} - ShaleNotificationMC - notification sent faild: {0}",
-                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber , _jobCycleId });
+                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
             }
             _logger.LogInformation(message: "{1} - ShaleNotificationMC - end notification: {0}",
                     propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
@@ -299,33 +340,64 @@ namespace sahelIntegrationIA
         #region Private Methods
         public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
         {
-            switch (service)
+            return service switch
             {
-                case ServiceTypesEnum.AddNewAuthorizedSignatoryRequest:
-                    return SahelNotficationTypesEnum.AddNewAuthorizedSignatory;
-                case ServiceTypesEnum.RemoveAuthorizedSignatoryRequest:
-                    return SahelNotficationTypesEnum.RemoveAuthorizedSignatory;
-                case ServiceTypesEnum.RenewAuthorizedSignatoryRequest:
-                    return SahelNotficationTypesEnum.RenewAuthorizedSignatory;
-                case ServiceTypesEnum.ImportLicenseRenewalRequest:
-                    return SahelNotficationTypesEnum.RenewImportLicense;
-                case ServiceTypesEnum.NewImportLicenseRequest:
-                    return SahelNotficationTypesEnum.AddNewImportLicense;
-                case ServiceTypesEnum.ChangeCommercialAddressRequest:
-                    return SahelNotficationTypesEnum.ChangeCommercialAddress;
-                case ServiceTypesEnum.IndustrialLicenseRenewalRequest:
-                    return SahelNotficationTypesEnum.RenewIndustrialLicense;
-                case ServiceTypesEnum.CommercialLicenseRenewalRequest:
-                    return SahelNotficationTypesEnum.RenewCommercialLicense;
-                case ServiceTypesEnum.OrgNameChangeReqServiceId:
-                    return SahelNotficationTypesEnum.OrganizationNameChange;
-                case ServiceTypesEnum.ConsigneeUndertakingRequest:
-                    return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
-                    case ServiceTypesEnum.OrganizationRegistrationService:
-                    return SahelNotficationTypesEnum.OrganizationRegistrationService;
-                default:
-                    return SahelNotficationTypesEnum.RenewImportLicense;
-            }
+                ServiceTypesEnum.AddNewAuthorizedSignatoryRequest => SahelNotficationTypesEnum.AddNewAuthorizedSignatory,
+                ServiceTypesEnum.RemoveAuthorizedSignatoryRequest => SahelNotficationTypesEnum.RemoveAuthorizedSignatory,
+                ServiceTypesEnum.RenewAuthorizedSignatoryRequest => SahelNotficationTypesEnum.RenewAuthorizedSignatory,
+                ServiceTypesEnum.ImportLicenseRenewalRequest => SahelNotficationTypesEnum.RenewImportLicense,
+                ServiceTypesEnum.NewImportLicenseRequest => SahelNotficationTypesEnum.AddNewImportLicense,
+                ServiceTypesEnum.ChangeCommercialAddressRequest => SahelNotficationTypesEnum.ChangeCommercialAddress,
+                ServiceTypesEnum.IndustrialLicenseRenewalRequest => SahelNotficationTypesEnum.RenewIndustrialLicense,
+                ServiceTypesEnum.CommercialLicenseRenewalRequest => SahelNotficationTypesEnum.RenewCommercialLicense,
+                ServiceTypesEnum.OrgNameChangeReqServiceId => SahelNotficationTypesEnum.OrganizationNameChange,
+                ServiceTypesEnum.ConsigneeUndertakingRequest => SahelNotficationTypesEnum.UnderTakingConsigneeRequest,
+                ServiceTypesEnum.OrganizationRegistrationService => SahelNotficationTypesEnum.OrganizationRegistrationService,
+
+                //broker
+                ServiceTypesEnum.BrsPrintingCancelCommercialLicense =>
+           SahelNotficationTypesEnum.BrsPrintingCancelCommercialLicense,
+
+                ServiceTypesEnum.BrsPrintingIssueLicense =>
+                SahelNotficationTypesEnum.BrsPrintingIssueLicense,
+
+                ServiceTypesEnum.BrsPrintingChangeLicenseAddress =>
+                SahelNotficationTypesEnum.BrsPrintingChangeLicenseAddress,
+
+                ServiceTypesEnum.BrsPrintingChangeLicenseActivity =>
+                SahelNotficationTypesEnum.BrsPrintingChangeLicenseActivity,
+
+                ServiceTypesEnum.BrsPrintingReleaseBankGuarantee =>
+                SahelNotficationTypesEnum.BrsPrintingReleaseBankGuarantee,
+
+                ServiceTypesEnum.BrsPrintingGoodBehave =>
+                SahelNotficationTypesEnum.BrsPrintingGoodBehave,
+
+                ServiceTypesEnum.BrsPrintingRenewLicense =>
+                SahelNotficationTypesEnum.BrsPrintingRenewLicense,
+
+                ServiceTypesEnum.BrsPrintingChangeJobTitleRenewResidency =>
+                SahelNotficationTypesEnum.BrsPrintingChangeJobTitleRenewResidency,
+
+                ServiceTypesEnum.BrsPrintingChangeJobTitleTransferResidency =>
+                SahelNotficationTypesEnum.BrsPrintingChangeJobTitleTransferResidency,
+
+                ServiceTypesEnum.BrsPrintingRenewResidency =>
+                SahelNotficationTypesEnum.BrsPrintingRenewResidency,
+
+                ServiceTypesEnum.BrsPrintingTransferResidency =>
+                SahelNotficationTypesEnum.BrsPrintingTransferResidency,
+
+                ServiceTypesEnum.BrsPrintingChangeJobTitle =>
+                SahelNotficationTypesEnum.BrsPrintingChangeJobTitle,
+
+                ServiceTypesEnum.BrsPrintingChangeJobTitleCivil =>
+                SahelNotficationTypesEnum.BrsPrintingChangeJobTitleCivil,
+
+                ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath =>
+                SahelNotficationTypesEnum.BrsPrintingDeActivateLicenseDeath,
+                _ => SahelNotficationTypesEnum.RenewImportLicense,
+            };
         }
 
         public bool PostNotification(Notification notification, string requestNumber, string SahelOption = "Business")
@@ -333,7 +405,7 @@ namespace sahelIntegrationIA
             if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyEn))
             {
                 _logger.LogInformation(message: "{1} - ShaleNotificationMC - Can't send notification because the body is empty - {0}",
-                    propertyValues: new object[] { requestNumber , _jobCycleId });
+                    propertyValues: new object[] { requestNumber, _jobCycleId });
                 return false;
             }
 

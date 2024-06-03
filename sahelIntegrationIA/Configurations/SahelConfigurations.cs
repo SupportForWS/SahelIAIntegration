@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+
 namespace sahelIntegrationIA.Configurations
 {
     public class SahelConfigurations
@@ -12,7 +14,7 @@ namespace sahelIntegrationIA.Configurations
         public bool IsSendMcActionNotificationServiceEnable { get; set; }
         public int TryCountForMCNotification { get; set; }
         public int TryCountForeServiceNotification { get; set; }
-
+        public int BrokerKMIDCallingTimer { get; set; }
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -37,7 +39,7 @@ namespace sahelIntegrationIA.Configurations
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
         public string OrganizationRegistrationUrl { get; set; }
-
+        public string BrokerAffairsUrl { get; set; }
 
     }
 
@@ -55,5 +57,18 @@ namespace sahelIntegrationIA.Configurations
         public string VisiNotificationEn { get; set; }
         public string KmidExpiredAr { get; set; }
         public string KmidExpiredEn { get; set; }
+
+        public string BrokerKmidExpiredAr { get; set; }
+        public string BrokerKmidExpiredEn { get; set; }
+
+        public string AcceptedNotificationAr { get; set; }
+        public string AcceptedNotificationEn { get; set; }
+
+        public string IdPrintedNotificationAr { get; set; }
+        public string IdPrintedNotificationEn { get; set; }
+
+        public string CompletedNotificationAr { get; set; }
+        public string CompletedNotificationEn { get; set; }
+
     }
 }

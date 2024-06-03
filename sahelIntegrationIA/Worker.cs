@@ -13,6 +13,7 @@ namespace IndividualAuthorizationSahelWorker
         private readonly SendMcActionNotificationService sendMcActionNotificationService;
         private readonly SahelNotificationService sahelNotificationService;
         private readonly SahelConfigurations _sahelConfigurations;
+        private readonly VerificationServiceForBrokerServices _verificationServiceForBrokerServices;
 
 
         private TimeSpan period;
@@ -25,7 +26,7 @@ namespace IndividualAuthorizationSahelWorker
             IBaseConfiguration configuration,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
-            SahelConfigurations sahelConfigurations)
+            SahelConfigurations sahelConfigurations, VerificationServiceForBrokerServices verificationServiceForBrokerServices)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
@@ -34,6 +35,7 @@ namespace IndividualAuthorizationSahelWorker
             _configuration = configuration;
             this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
+            _verificationServiceForBrokerServices = verificationServiceForBrokerServices;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,6 +51,7 @@ namespace IndividualAuthorizationSahelWorker
                 //Console.WriteLine("ssss");
                 await varificationService.VarifyRequests();
                 await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
+                await _verificationServiceForBrokerServices.CheckBrokerRequests();
 
                 if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
                 {
