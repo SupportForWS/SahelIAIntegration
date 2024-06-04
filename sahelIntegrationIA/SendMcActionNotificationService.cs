@@ -12,6 +12,7 @@ using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using sahelIntegrationIA.Models;
 using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
+using eServices.APIs.UserApp.OldApplication.Models;
 
 namespace sahelIntegrationIA
 {
@@ -25,10 +26,14 @@ namespace sahelIntegrationIA
         private readonly IRequestLogger _requestLogger;
         private readonly IDapper _dapper;
         private readonly SahelConfigurations _sahelConfigurations;
-        Dictionary<int, string> requestedCivilIds = new Dictionary<int, string>();
+        Dictionary<int, string> _requestedCivilIds = new();
+        List<int> _brokerServices = new();
+
+
 
         public SendMcActionNotificationService(IRequestLogger logger,
-            IBaseConfiguration configuration, eServicesContext eServicesContext, IRequestLogger requestLogger, IDapper dapper, SahelConfigurations sahelConfigurations)
+            IBaseConfiguration configuration, eServicesContext eServicesContext, IRequestLogger requestLogger,
+            IDapper dapper, SahelConfigurations sahelConfigurations)
         {
             _logger = logger;
             _configurations = configuration;
@@ -36,6 +41,24 @@ namespace sahelIntegrationIA
             _requestLogger = requestLogger;
             _dapper = dapper;
             _sahelConfigurations = sahelConfigurations;
+
+
+            _brokerServices = new List<int>(){
+                (int)ServiceTypesEnum.BrsPrintingCancelCommercialLicense,
+                (int)ServiceTypesEnum.BrsPrintingIssueLicense,
+                (int)ServiceTypesEnum.BrsPrintingChangeLicenseAddress,
+                (int)ServiceTypesEnum.BrsPrintingChangeLicenseActivity,
+                (int)ServiceTypesEnum.BrsPrintingReleaseBankGuarantee,
+                (int)ServiceTypesEnum.BrsPrintingGoodBehave,
+                (int)ServiceTypesEnum.BrsPrintingRenewLicense,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleRenewResidency,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleTransferResidency,
+                (int)ServiceTypesEnum.BrsPrintingRenewResidency,
+                (int)ServiceTypesEnum.BrsPrintingTransferResidency,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitle,
+                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleCivil,
+                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath
+               };
 
         }
 
@@ -64,7 +87,7 @@ namespace sahelIntegrationIA
                 "EServiceRequestCompletedState"
             };
 
-            int[] serviceIds = new int[]
+            List<int> serviceIds = new()
             {
                 (int)ServiceTypesEnum.NewImportLicenseRequest,
                 (int)ServiceTypesEnum.ImportLicenseRenewalRequest,
@@ -78,21 +101,11 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest,
 
                 //broker
-                (int)ServiceTypesEnum.BrsPrintingCancelCommercialLicense,
-                (int)ServiceTypesEnum.BrsPrintingIssueLicense,
-                (int)ServiceTypesEnum.BrsPrintingChangeLicenseAddress,
-                (int)ServiceTypesEnum.BrsPrintingChangeLicenseActivity,
-                (int)ServiceTypesEnum.BrsPrintingReleaseBankGuarantee,
-                (int)ServiceTypesEnum.BrsPrintingGoodBehave,
-                (int)ServiceTypesEnum.BrsPrintingRenewLicense,
-                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleRenewResidency,
-                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleTransferResidency,
-                (int)ServiceTypesEnum.BrsPrintingRenewResidency,
-                (int)ServiceTypesEnum.BrsPrintingTransferResidency,
-                (int)ServiceTypesEnum.BrsPrintingChangeJobTitle,
-                (int)ServiceTypesEnum.BrsPrintingChangeJobTitleCivil,
-                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath
+                
             };
+
+
+            serviceIds.AddRange(_brokerServices);
 
             var statusJson = Newtonsoft.Json.JsonConvert.SerializeObject(statusEnums, Newtonsoft.Json.Formatting.None,
                         new JsonSerializerSettings()
@@ -161,14 +174,41 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation($"{_jobCycleId} - ShaleNotificationMC - start send mc action notification service");
 
-            var serviceRequests = await GetRequestList();
-            var requestedIds = serviceRequests.Select(a => a.RequesterUserId).ToList();
 
-            requestedCivilIds = await _eServicesContext
-                              .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
-                              .Where(p => requestedIds.Contains(p.UserId))
-                              .Select(a => new { a.UserId, a.CivilId })
-                              .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
+            var serviceRequests = await GetRequestList();
+
+            //todo check
+            var requestedIds = serviceRequests
+                .Where(a => !_brokerServices.Contains((int)a.ServiceId))
+                .Select(a => a.RequesterUserId)
+                .ToList();
+
+            var brokerRequest = serviceRequests
+                .Where(a => _brokerServices.Contains((int)a.ServiceId))
+                .ToList();
+
+            _requestedCivilIds = await _eServicesContext
+                     .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                     .Where(p => requestedIds.Contains(p.UserId))
+                     .Select(a => new { a.UserId, a.CivilId })
+                     .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
+
+            if (brokerRequest.Any())
+            {
+                var tmpRequestedCivilIds = brokerRequest
+                            .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+                            .ToDictionary(a => (int)a.EserviceRequestDetailsId, a => a.CivilId);
+
+                foreach (var kvp in tmpRequestedCivilIds)
+                {
+                    _requestedCivilIds[kvp.Key] = kvp.Value; // This will update the value if the key already exists
+                }
+
+            }
+
+
+
+
 
             var exceptions = new List<Exception>();
 
@@ -218,7 +258,17 @@ namespace sahelIntegrationIA
             _logger.LogInformation("{1} - ShaleNotificationMC - start Notification creation process - {0}",
                 propertyValues: new object[] { reqJson, _jobCycleId });
 
-            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+            string civilID = string.Empty;
+            if (_brokerServices.Contains((int)serviceRequest.ServiceId))
+            {
+                //for broker we need civil id in request details for each broker
+                //not the account civil id
+                civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
+            }
+            else
+            {
+                civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+            }
 
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
                 propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID, _jobCycleId });
@@ -268,19 +318,14 @@ namespace sahelIntegrationIA
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
 
-                case nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState):
-                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
-                    break;
-
                 case "EServiceRequestIDPrintedState":
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.IdPrintedNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.IdPrintedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.IdPrintedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
 
                 case "EServiceRequestCompletedState":
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
             }
 
@@ -293,6 +338,7 @@ namespace sahelIntegrationIA
             notficationResponse.dataTableAr = null;
             notficationResponse.subscriberCivilId = civilID;
             notficationResponse.notificationType = ((int)notificationType).ToString();
+
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(notficationResponse, Newtonsoft.Json.Formatting.None,
                 new JsonSerializerSettings()
                 {

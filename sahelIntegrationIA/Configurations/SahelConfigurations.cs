@@ -61,9 +61,6 @@ namespace sahelIntegrationIA.Configurations
         public string BrokerKmidExpiredAr { get; set; }
         public string BrokerKmidExpiredEn { get; set; }
 
-        public string AcceptedNotificationAr { get; set; }
-        public string AcceptedNotificationEn { get; set; }
-
         public string IdPrintedNotificationAr { get; set; }
         public string IdPrintedNotificationEn { get; set; }
 

@@ -28,7 +28,7 @@ namespace sahelIntegrationIA
         private readonly IBaseConfiguration _configurations;
         private readonly eServicesContext _eServicesContext;
         private readonly SahelConfigurations _sahelConfigurations;
-        private Dictionary<long?, string?> requestedCivilIds = new();
+        private Dictionary<long, string> requestedCivilIds = new();
 
         public VerificationServiceForBrokerServices(IRequestLogger logger,
                                                           IBaseConfiguration configuration,
@@ -145,8 +145,8 @@ namespace sahelIntegrationIA
 
                 //todo check
                 requestedCivilIds = requestList
-                             .Select(a => new { a.RequesterUserId, a.ServiceRequestsDetail.CivilId })
-                             .ToDictionary(a => a.RequesterUserId, a => a.CivilId);
+                             .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+                             .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
 
                 var expiredRequest = requestList
                     .Where(a => expiredKmidRequests.Contains(Convert.ToInt32(a.ServiceRequestsDetail.KMIDToken)))
@@ -189,13 +189,14 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation("Start Broker Verification Service");
 
+            
             var serviceRequest = await GetRequestList();
             //todo check
             //var requestedIds = serviceRequest.Select(a => a.RequesterUserId).ToList();
 
             requestedCivilIds = serviceRequest
-                              .Select(a => new { a.RequesterUserId, a.ServiceRequestsDetail.CivilId })
-                              .ToDictionary(a => a.RequesterUserId, a => a.CivilId);
+                              .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+                              .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
 
             var tasks = serviceRequest.Select(async serviceRequest =>
             {
@@ -333,8 +334,8 @@ namespace sahelIntegrationIA
             string msgEn = string.Empty;
             _logger.LogInformation("Create Notification message for broker expired KMID");
 
-            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
-
+            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
+                
             _logger.LogInformation("Get broker civil Id{0}", civilID);
 
             msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.BrokerKmidExpiredAr,
@@ -582,14 +583,14 @@ namespace sahelIntegrationIA
             requestDto.BrokerEnglishName = details.RequesterEnglishName;
             requestDto.CivilId = details.CivilId;
             requestDto.PassportNumber = details.PassportNo;
-            requestDto.MobileNumber = details.MobileNumber;
+            requestDto.MobileNumber = details.MobileNo;
             requestDto.MailAddress = details.RequestForEmail;
             requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
 
             requestDto.EServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
 
             requestDto.ChangeJobTitleTo = details.ChangeJobTitleTo.HasValue ?
-                CommonFunctions.CsUploadDecrypt(details.ChangeJobTitleTo.ToString()) : string.Empty;
+                CommonFunctions.CsUploadEncrypt(details.ChangeJobTitleTo.ToString()) : string.Empty;
 
             requestDto.ChangeJobTitleFrom = details.ChangeJobTitleFrom;
 
