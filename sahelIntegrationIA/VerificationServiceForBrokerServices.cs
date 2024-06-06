@@ -582,8 +582,8 @@ namespace sahelIntegrationIA
             requestDto.BrokerArabicName = details.RequesterArabicName;
             requestDto.BrokerEnglishName = details.RequesterEnglishName;
             requestDto.CivilId = details.CivilId;
-            requestDto.PassportNumber = details.PassportNo;
-            requestDto.MobileNumber = details.MobileNo;
+            requestDto.PassportNumber = details.PassportNo;//
+            requestDto.MobileNumber = details.MobileNo;//
             requestDto.MailAddress = details.RequestForEmail;
             requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
 
@@ -594,14 +594,14 @@ namespace sahelIntegrationIA
 
             requestDto.ChangeJobTitleFrom = details.ChangeJobTitleFrom;
 
-            requestDto.CivilIdExpiryDate = details.CivilIdexpiryDate.HasValue?
-                details.CivilIdexpiryDate.Value : DateTime.Now;
+            //requestDto.CivilIdExpiryDate = details.CivilIdexpiryDate.HasValue?
+            //    details.CivilIdexpiryDate.Value : DateTime.Now;//
 
             requestDto.PassportExpiryDate = details.PassportExpiryDate.HasValue?
-                details.PassportExpiryDate.Value:null;
+                details.PassportExpiryDate.Value:null;//
 
-            requestDto.TradeLicenseExpiryDate = details.LicenseExpiryDate.HasValue?
-                details.LicenseExpiryDate:null;
+            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue?
+                details.LicenseExpiryDate:null;//
 
             requestDto.ServiceId = CommonFunctions.CsUploadEncrypt(serviceRequest.ServiceId.ToString());
             requestDto.FromBusiness = details.FromBusiness;
