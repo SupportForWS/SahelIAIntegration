@@ -57,7 +57,16 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.BrsPrintingTransferResidency,
                 (int)ServiceTypesEnum.BrsPrintingChangeJobTitle,
                 (int)ServiceTypesEnum.BrsPrintingChangeJobTitleCivil,
-                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath
+                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath,
+
+                (int)ServiceTypesEnum.ExamService,
+                 (int)ServiceTypesEnum.DeActivateService,
+                 (int)ServiceTypesEnum.RenewalService,
+                 (int)ServiceTypesEnum.IssuanceService,
+                 (int)ServiceTypesEnum.BrsPrintingCancelLicense,
+                 (int)ServiceTypesEnum.WhomItConcernsLetterService,
+                 (int)ServiceTypesEnum.PrintLostIdCard,
+
                };
 
         }
@@ -333,7 +342,7 @@ namespace sahelIntegrationIA
             notficationResponse.bodyEn = msgEn;
             notficationResponse.bodyAr = msgAr;
             notficationResponse.isForSubscriber = "true";
-            notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
+            //  notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
             notficationResponse.dataTableEn = null;
             notficationResponse.dataTableAr = null;
             notficationResponse.subscriberCivilId = civilID;
@@ -442,6 +451,33 @@ namespace sahelIntegrationIA
 
                 ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath =>
                 SahelNotficationTypesEnum.BrsPrintingDeActivateLicenseDeath,
+
+                ServiceTypesEnum.ExamService =>
+              SahelNotficationTypesEnum.ExamService,
+
+                ServiceTypesEnum.IssuanceService =>
+                  SahelNotficationTypesEnum.IssuanceService,
+
+
+                ServiceTypesEnum.RenewalService =>
+                  SahelNotficationTypesEnum.RenewalService,
+
+
+                ServiceTypesEnum.BrsPrintingCancelLicense =>
+                 SahelNotficationTypesEnum.BrsPrintingCancelLicense,
+
+
+                ServiceTypesEnum.DeActivateService =>
+                 SahelNotficationTypesEnum.DeActivateService,
+
+
+                ServiceTypesEnum.WhomItConcernsLetterService =>
+                 SahelNotficationTypesEnum.WhomItConcernsLetterService,
+
+
+                ServiceTypesEnum.PrintLostIdCard =>
+                  SahelNotficationTypesEnum.PrintLostIdCard,
+
                 _ => SahelNotficationTypesEnum.RenewImportLicense,
             };
         }

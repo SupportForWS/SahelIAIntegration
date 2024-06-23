@@ -40,7 +40,8 @@ namespace sahelIntegrationIA.Configurations
         public string EPaymentRequestUrl { get; set; }
         public string OrganizationRegistrationUrl { get; set; }
         public string BrokerAffairsUrl { get; set; }
-
+        public string BrokerExamUrl { get; set; }
+        public string BrokerSharedUrl { get; set; }
     }
 
     public class MCNotificationConfiguration

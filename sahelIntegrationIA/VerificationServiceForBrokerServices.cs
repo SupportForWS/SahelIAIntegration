@@ -73,7 +73,15 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.BrsPrintingTransferResidency,
                 (int)ServiceTypesEnum.BrsPrintingChangeJobTitle,
                 (int)ServiceTypesEnum.BrsPrintingChangeJobTitleCivil,
-                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath
+                (int)ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath,
+
+                (int)ServiceTypesEnum.ExamService,
+                 (int)ServiceTypesEnum.DeActivateService,
+                 (int)ServiceTypesEnum.RenewalService,
+                 (int)ServiceTypesEnum.IssuanceService,
+                 (int)ServiceTypesEnum.BrsPrintingCancelLicense,
+                 (int)ServiceTypesEnum.WhomItConcernsLetterService,
+                 (int)ServiceTypesEnum.PrintLostIdCard,
             };
 
 
@@ -96,10 +104,6 @@ namespace sahelIntegrationIA
                                             < currentDate)
                                             ))
                                 .ToListAsync();
-
-
-
-
 
 
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
@@ -189,7 +193,7 @@ namespace sahelIntegrationIA
         {
             _logger.LogInformation("Start Broker Verification Service");
 
-            
+
             var serviceRequest = await GetRequestList();
             //todo check
             //var requestedIds = serviceRequest.Select(a => a.RequesterUserId).ToList();
@@ -260,6 +264,21 @@ namespace sahelIntegrationIA
                 case ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath:
                     url = _sahelConfigurations.EservicesUrlsConfigurations.BrokerAffairsUrl;
                     await CallServiceAPI(GetBrokerArrairsRequestDto(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.ExamService:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.BrokerExamUrl;
+                    await CallServiceAPI(GetBrokerExamRequestDto(serviceRequest), url);
+                    break;
+
+                case ServiceTypesEnum.DeActivateService:
+                case ServiceTypesEnum.RenewalService:
+                case ServiceTypesEnum.IssuanceService:
+                case ServiceTypesEnum.BrsPrintingCancelLicense:
+                case ServiceTypesEnum.WhomItConcernsLetterService:
+                case ServiceTypesEnum.PrintLostIdCard:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.BrokerSharedUrl;
+                    await CallServiceAPI(GetBrokerSharedServicesDto(serviceRequest), url);
                     break;
 
                 default:
@@ -335,7 +354,7 @@ namespace sahelIntegrationIA
             _logger.LogInformation("Create Notification message for broker expired KMID");
 
             string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
-                
+
             _logger.LogInformation("Get broker civil Id{0}", civilID);
 
             msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.BrokerKmidExpiredAr,
@@ -597,11 +616,11 @@ namespace sahelIntegrationIA
             //requestDto.CivilIdExpiryDate = details.CivilIdexpiryDate.HasValue?
             //    details.CivilIdexpiryDate.Value : DateTime.Now;//
 
-            requestDto.PassportExpiryDate = details.PassportExpiryDate.HasValue?
-                details.PassportExpiryDate.Value:null;//
+            requestDto.PassportExpiryDate = details.PassportExpiryDate.HasValue ?
+                details.PassportExpiryDate.Value : null;//
 
-            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue?
-                details.LicenseExpiryDate:null;//
+            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue ?
+                details.LicenseExpiryDate : null;//
 
             requestDto.ServiceId = CommonFunctions.CsUploadEncrypt(serviceRequest.ServiceId.ToString());
             requestDto.FromBusiness = details.FromBusiness;
@@ -614,6 +633,67 @@ namespace sahelIntegrationIA
             // requestDto.BankGuaranteeIssuanceDate = details.BankGuaranteeDate;
             // requestDto.BankGuaranteeExpiryDate = details.BankGuaranteeExpiryDate;
             // requestDto.BankGuaranteeStatus = details.bank;
+
+            return requestDto;
+        }
+
+        private AgentExamRequestDTO GetBrokerExamRequestDto(ServiceRequest serviceRequest)
+        {
+            var details = serviceRequest.ServiceRequestsDetail;
+
+            var requestDto = new AgentExamRequestDTO();
+            requestDto.BrokerType = CommonFunctions.CsUploadEncrypt(details.RequestForUserType.ToString());
+            requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
+            requestDto.Gender = string.IsNullOrEmpty(details.Gender) ? GenderEnum.Male : (GenderEnum)int.Parse(details.Gender);
+            requestDto.BrokerArabicFirstName = details.ArabicFirstName;
+            requestDto.BrokerArabicSecondName = details.ArabicSecondName;
+            requestDto.BrokerArabicThirdName = details.ArabicThirdName;
+            requestDto.BrokerArabicLastName = details.ArabicLastName;
+            requestDto.BrokerEnglishFirstName = details.EnglishFirstName;
+            requestDto.BrokerEnglishSecondName = details.EnglishSecondName;
+            requestDto.BrokerEnglishThirdName = details.EnglishThirdName;
+            requestDto.BrokerEnglishLastName = details.EnglishLastName;
+            requestDto.Nationality = details.Nationality.HasValue ? details.Nationality.Value : 5051;
+            requestDto.CivilId = details.CivilId;
+            requestDto.EServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
+            requestDto.MobileNumber = details.MobileNumber;
+            requestDto.Email = details.Email;
+            requestDto.OfficialAddress = details.Address;
+            requestDto.Remarks = details.Remarks;
+            requestDto.PassportNumber = details.PassportNo;
+            requestDto.PassportNumberExpiryDate = details.PassportExpiryDate;
+
+            requestDto.GeneralBrokerLicenceNo = details.RequesterLicenseNumber;
+            requestDto.GeneralBrokerName = details.RequesterArabicName;
+            requestDto.GeneralBrokerMobileNo = details.MobileNumber;
+            requestDto.CommercialRegistrationNo = details.RequesterLicenseNumber;
+            requestDto.CompanyName = details.RequesterArabicName;
+
+
+
+            return requestDto;
+        }
+
+        private BrokerSharedServicesDto GetBrokerSharedServicesDto(ServiceRequest serviceRequest)
+        {
+            var details = serviceRequest.ServiceRequestsDetail;
+
+            var requestDto = new BrokerSharedServicesDto();
+            // requestDto.BrokerType = CommonFunctions.CsUploadEncrypt(details.RequestForUserType.ToString()); todo get broker type name
+            requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
+            requestDto.CivilIdNumber = details.CivilId;
+            requestDto.EServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
+            requestDto.MobileNumber = details.MobileNumber;
+            requestDto.MailAddress = details.Email;
+            requestDto.PassportNumber = details.PassportNo;
+            requestDto.PassportExpiryDate = details.PassportExpiryDate;
+            //  requestDto.ParentBrokerName = details.par;
+            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate;
+            requestDto.BrokerArabicName = details.RequesterArabicName;
+            requestDto.BrokerEnglishName = details.RequesterEnglishName;
+            requestDto.ServiceId = serviceRequest.ServiceId.ToString();
+            // requestDto.CivilIdExpiryDate = details.CivilIdexpiryDate;
+
 
             return requestDto;
         }
@@ -651,6 +731,54 @@ namespace sahelIntegrationIA
             public string BankGuaranteeStatus { get; set; }
         }
 
+        public class AgentExamRequestDTO
+        {
+            public string BrokerType { get; set; }
+            public string RequestNumber { get; set; }
+            public GenderEnum Gender { get; set; }
+            public string BrokerArabicFirstName { get; set; }
+            public string BrokerArabicSecondName { get; set; }
+            public string BrokerArabicThirdName { get; set; }
+            public string BrokerArabicLastName { get; set; }
+            public string BrokerEnglishFirstName { get; set; }
+            public string BrokerEnglishSecondName { get; set; }
+            public string BrokerEnglishThirdName { get; set; }
+            public string BrokerEnglishLastName { get; set; }
+            public int Nationality { get; set; }
+            public string CivilId { get; set; }
+            public DateTime? CivilIdExpiryDate { get; set; }
+            public string EServiceRequestId { get; set; }
+            public string MobileNumber { get; set; }
+            public string Email { get; set; }
+            public string OfficialAddress { get; set; }
+            public string Remarks { get; set; }
+            public string PassportNumber { get; set; }
+            public DateTime? PassportNumberExpiryDate { get; set; }
+            public string GeneralBrokerLicenceNo { get; set; }
+            public string GeneralBrokerName { get; set; }
+            public string GeneralBrokerMobileNo { get; set; }
+            public string CommercialRegistrationNo { get; set; }
+            public string CompanyName { get; set; }
+        }
+
+        public class BrokerSharedServicesDto
+        {
+            public string BrokerType { get; set; }
+            public string ParentBrokerName { get; set; }
+            public string BrokerArabicName { get; set; }
+            public string BrokerEnglishName { get; set; }
+            public string CivilIdNumber { get; set; }
+            public DateTime CivilIdExpiryDate { get; set; }
+            public DateTime? PassportExpiryDate { get; set; }
+            public DateTime? TradeLicenseExpiryDate { get; set; }
+            public string? PassportNumber { get; set; }
+            public string MobileNumber { get; set; }
+            public string MailAddress { get; set; }
+            public string RequestNumber { get; set; }
+            public string EServiceRequestId { get; set; }
+            public string ServiceId { get; set; }
+            //   public string PersonalId { get; set; }
+        }
         #endregion
 
     }
