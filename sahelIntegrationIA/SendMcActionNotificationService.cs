@@ -67,6 +67,7 @@ namespace sahelIntegrationIA
                  (int)ServiceTypesEnum.BrsPrintingCancelLicense,
                  (int)ServiceTypesEnum.WhomItConcernsLetterService,
                  (int)ServiceTypesEnum.PrintLostIdCard,
+                 (int)ServiceTypesEnum.TransferService,
 
                };
 
@@ -94,7 +95,18 @@ namespace sahelIntegrationIA
 
                  nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState),
                 "EServiceRequestIDPrintedState",
-                "EServiceRequestCompletedState"
+                "EServiceRequestCompletedState",
+
+
+                //add tran state id
+                nameof(ServiceRequestStatesEnum.EservTranReqInitRejectedState),
+                nameof(ServiceRequestStatesEnum.EservTranReqFinalRejectedState),
+                nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState),
+                "EservTranReqAcceptedState", //For Broker Transfer Requests Has been Approved
+
+               // EservTranReqInitSubmittedState
+               //EservTranReqProceedState
+              //EservTranReqSubmittedState
             };
 
             List<int> serviceIds = new()
@@ -305,12 +317,13 @@ namespace sahelIntegrationIA
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.VisiNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForAdditionalInfo):
                 case "OrganizationRequestedForAdditionalInfoState":
-
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState):
                 case nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState):
                 case "OrganizationRequestRejectedState":
@@ -318,14 +331,18 @@ namespace sahelIntegrationIA
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
                 case nameof(ServiceRequestStatesEnum.EServiceRequestFinalRejectedState):
+                case nameof(ServiceRequestStatesEnum.EservTranReqFinalRejectedState):
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState):
                 case "EServiceRequestApprovedState":
                 case "OrganizationRequestApprovedForUpdate":
                 case "OrganizationRequestApprovedForCreate":
+                case "EservTranReqAcceptedState":
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ApproveNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
@@ -339,6 +356,18 @@ namespace sahelIntegrationIA
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
+
+                case nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+
+                case nameof(ServiceRequestStatesEnum.EservTranReqInitRejectedState):
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitRejectedNotificationAr, serviceRequest.EserviceRequestNumber);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitRejectedNotificationEn, serviceRequest.EserviceRequestNumber);
+                    break;
+
+              
             }
             List<actionButtonRequestList> actionButtons = null;
 
@@ -502,6 +531,10 @@ namespace sahelIntegrationIA
 
                 ServiceTypesEnum.PrintLostIdCard =>
                   SahelNotficationTypesEnum.PrintLostIdCard,
+
+                ServiceTypesEnum.TransferService =>
+               SahelNotficationTypesEnum.TransferService,
+
 
                 _ => SahelNotficationTypesEnum.RenewImportLicense,
             };

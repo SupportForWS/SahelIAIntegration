@@ -55,6 +55,13 @@ namespace sahelIntegrationIA
                 "OrganizationRequestRejectedState",
                 "OrganizationRequestedForAdditionalInfoState",
 
+               nameof(ServiceRequestStatesEnum.EservTranReqCreatedState),
+               nameof(ServiceRequestStatesEnum.EservTranReqInitRejectedState),
+
+
+                nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState),
+                nameof(ServiceRequestStatesEnum.EservTranReqProceedState),
+
 
             };
 
@@ -82,6 +89,9 @@ namespace sahelIntegrationIA
                  (int)ServiceTypesEnum.BrsPrintingCancelLicense,
                  (int)ServiceTypesEnum.WhomItConcernsLetterService,
                  (int)ServiceTypesEnum.PrintLostIdCard,
+
+                 (int)ServiceTypesEnum.TransferService,
+
             };
 
 
@@ -281,6 +291,11 @@ namespace sahelIntegrationIA
                     await CallServiceAPI(GetBrokerSharedServicesDto(serviceRequest), url);
                     break;
 
+                case ServiceTypesEnum.TransferService:
+                    url = _sahelConfigurations.EservicesUrlsConfigurations.TransferServiceUrl;
+                    await CallServiceAPI(GetBrokerTransferRequestDto(serviceRequest), url);
+                    break;
+
                 default:
                     var errorMessage = $"Invalid service ID: {serviceRequest.ServiceId}";
                     _logger.LogException(new ArgumentException(errorMessage), "Sahel-Windows-Service");
@@ -289,6 +304,8 @@ namespace sahelIntegrationIA
             }
 
         }
+
+
 
         private async Task CallServiceAPI<T>(T serviceDTO, string apiUrl)
         {
@@ -445,6 +462,35 @@ namespace sahelIntegrationIA
                 ServiceTypesEnum.BrsPrintingDeActivateLicenseDeath =>
                 SahelNotficationTypesEnum.BrsPrintingDeActivateLicenseDeath,
 
+                ServiceTypesEnum.ExamService =>
+               SahelNotficationTypesEnum.ExamService,
+
+
+                ServiceTypesEnum.IssuanceService =>
+                 SahelNotficationTypesEnum.IssuanceService,
+
+
+                ServiceTypesEnum.RenewalService =>
+                 SahelNotficationTypesEnum.RenewalService,
+
+
+                ServiceTypesEnum.BrsPrintingCancelLicense =>
+                 SahelNotficationTypesEnum.BrsPrintingCancelLicense,
+
+
+                ServiceTypesEnum.DeActivateService =>
+                 SahelNotficationTypesEnum.DeActivateService,
+
+
+                ServiceTypesEnum.WhomItConcernsLetterService =>
+                 SahelNotficationTypesEnum.WhomItConcernsLetterService,
+
+
+                ServiceTypesEnum.PrintLostIdCard =>
+                 SahelNotficationTypesEnum.PrintLostIdCard,
+
+                ServiceTypesEnum.TransferService =>
+               SahelNotficationTypesEnum.TransferService,
                 _ => 0
             };
         }
@@ -698,6 +744,27 @@ namespace sahelIntegrationIA
             return requestDto;
         }
 
+
+        private CreateRequestTransferDTO GetBrokerTransferRequestDto(ServiceRequest serviceRequest)
+        {
+            var details = serviceRequest.ServiceRequestsDetail;
+
+            var requestDto = new CreateRequestTransferDTO();
+            requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
+            requestDto.CivilIdNumber = details.CivilId;
+            requestDto.ServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
+            requestDto.MobileNumber = details.MobileNumber;
+            requestDto.MailAddress = details.Email;
+            requestDto.PassportNumber = details.PassportNo;
+            requestDto.PassportExpiryDate = details.PassportExpiryDate;
+            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue ? details.LicenseNumberExpiryDate.Value : DateTime.Now;//check
+            requestDto.OrganizationId = CommonFunctions.CsUploadEncrypt(details.OrganizationId.ToString());
+            requestDto.BrokerLicenseNumber = details.LicenseNumber;
+            return requestDto;
+        }
+
+
+
         #endregion
 
 
@@ -778,6 +845,29 @@ namespace sahelIntegrationIA
             public string EServiceRequestId { get; set; }
             public string ServiceId { get; set; }
             //   public string PersonalId { get; set; }
+        }
+
+        public class CreateRequestTransferDTO
+        {
+            public string ServiceRequestId { get; set; }
+            public string BrokerTypeId { get; set; }
+            public string CivilIdNumber { get; set; }
+            public string BrokerLicenseNumber { get; set; }
+            public string RequestNumber { get; set; }
+            public string OrganizationId { get; set; }
+            public DateTime CivilIdExpiryDate { get; set; }
+            public DateTime TradeLicenseExpiryDate { get; set; }
+            public DateTime? PassportExpiryDate { get; set; }
+            public string PassportNumber { get; set; }
+            public string MobileNumber { get; set; }
+            public string MailAddress { get; set; }
+            public string OfficialAddress { get; set; }
+            public string Nationality { get; set; }
+            public string SelectedOrgidForIssuance { get; set; }
+            public string FromBusiness { get; set; }
+            public string ChangeJobTitleFrom { get; set; }
+            public string ChangeJobTitleTo { get; set; }
+            public bool RequestForPay { get; set; }
         }
         #endregion
 
