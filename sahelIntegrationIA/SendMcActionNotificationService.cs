@@ -1,4 +1,4 @@
-using eServicesV2.Kernel.Core.Configurations;
+﻿using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
@@ -13,6 +13,7 @@ using sahelIntegrationIA.Models;
 using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServices.APIs.UserApp.OldApplication.Models;
+using Elasticsearch.Net;
 
 namespace sahelIntegrationIA
 {
@@ -108,6 +109,7 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest,
+                (int)ServiceTypesEnum.WhomItConcernsLetterService
 
                 //broker
                 
@@ -296,6 +298,7 @@ namespace sahelIntegrationIA
                 stateId = serviceRequest.OrganizationRequest.StateId;
             }
 
+        
             switch (stateId)
             {
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGForVisitState):
@@ -337,14 +340,36 @@ namespace sahelIntegrationIA
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
             }
+            List<actionButtonRequestList> actionButtons = null;
 
+
+            if (serviceRequest.ServiceId == (int)ServiceTypesEnum.WhomItConcernsLetterService && stateId == "EServiceRequestCompletedState")
+            {
+                var requestNumber =CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestNumber.ToString());
+
+                msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationToWhomAr, serviceRequest.EserviceRequestNumber);
+                msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationToWhomEn, serviceRequest.EserviceRequestNumber);
+                var redirectUrl = string.Format(_sahelConfigurations.ToWhomPrintableFormRedirectUrl, requestNumber);
+                 actionButtons = new List<actionButtonRequestList>
+                                    {
+                                        new actionButtonRequestList
+                                        {
+                                            actionType = "details",
+                                            LabelAr = "تفاصيل",
+                                            LabelEn = "Details",
+                                            actionUrl = redirectUrl
+                                        }
+                                    };
+
+            }
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
             notficationResponse.bodyEn = msgEn;
             notficationResponse.bodyAr = msgAr;
-            notficationResponse.isForSubscriber = "true";
+            notficationResponse.isForSubscriber = "true"; 
             //  notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
             notficationResponse.dataTableEn = null;
             notficationResponse.dataTableAr = null;
+            notficationResponse.actionButtonRequestList = actionButtons;
             notficationResponse.subscriberCivilId = civilID;
             notficationResponse.notificationType = ((int)notificationType).ToString();
 

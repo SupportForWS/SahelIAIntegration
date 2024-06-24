@@ -15,6 +15,7 @@ namespace sahelIntegrationIA.Configurations
         public int TryCountForMCNotification { get; set; }
         public int TryCountForeServiceNotification { get; set; }
         public int BrokerKMIDCallingTimer { get; set; }
+        public string ToWhomPrintableFormRedirectUrl { get; set; }
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -67,6 +68,7 @@ namespace sahelIntegrationIA.Configurations
 
         public string CompletedNotificationAr { get; set; }
         public string CompletedNotificationEn { get; set; }
-
+        public string CompletedNotificationToWhomAr { get; set; }
+        public string CompletedNotificationToWhomEn { get; set; }
     }
 }
