@@ -383,9 +383,9 @@ namespace sahelIntegrationIA
                                     {
                                         new actionButtonRequestList
                                         {
-                                            actionType = "details",
-                                            LabelAr = "تفاصيل",
-                                            LabelEn = "Details",
+                                            actionType = "download",
+                                            LabelAr = "تحميل الشهادة",
+                                            LabelEn = "Download Letter",
                                             actionUrl = redirectUrl
                                         }
                                     };
