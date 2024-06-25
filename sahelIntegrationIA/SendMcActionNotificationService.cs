@@ -202,13 +202,12 @@ namespace sahelIntegrationIA
 
             //todo check
             var requestedIds = serviceRequests
-                .Where(a => !_brokerServices.Contains((int)a.ServiceId))
                 .Select(a => a.RequesterUserId)
                 .ToList();
 
-            var brokerRequest = serviceRequests
-                .Where(a => _brokerServices.Contains((int)a.ServiceId))
-                .ToList();
+            //var brokerRequest = serviceRequests
+            //    .Where(a => _brokerServices.Contains((int)a.ServiceId))
+            //    .ToList();
 
             _requestedCivilIds = await _eServicesContext
                      .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
@@ -216,18 +215,18 @@ namespace sahelIntegrationIA
                      .Select(a => new { a.UserId, a.CivilId })
                      .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
 
-            if (brokerRequest.Any())
-            {
-                var tmpRequestedCivilIds = brokerRequest
-                            .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
-                            .ToDictionary(a => (int)a.EserviceRequestDetailsId, a => a.CivilId);
+            //if (brokerRequest.Any())
+            //{
+            //    var tmpRequestedCivilIds = brokerRequest
+            //                .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+            //                .ToDictionary(a => (int)a.EserviceRequestDetailsId, a => a.CivilId);
 
-                foreach (var kvp in tmpRequestedCivilIds)
-                {
-                    _requestedCivilIds[kvp.Key] = kvp.Value; // This will update the value if the key already exists
-                }
+            //    foreach (var kvp in tmpRequestedCivilIds)
+            //    {
+            //        _requestedCivilIds[kvp.Key] = kvp.Value; // This will update the value if the key already exists
+            //    }
 
-            }
+            //}
 
 
 
@@ -282,16 +281,19 @@ namespace sahelIntegrationIA
                 propertyValues: new object[] { reqJson, _jobCycleId });
 
             string civilID = string.Empty;
-            if (_brokerServices.Contains((int)serviceRequest.ServiceId))
-            {
-                //for broker we need civil id in request details for each broker
-                //not the account civil id
-                civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
-            }
-            else
-            {
-                civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
-            }
+            //if (_brokerServices.Contains((int)serviceRequest.ServiceId))
+            //{
+            //    //for broker we need civil id in request details for each broker
+            //    //not the account civil id
+            //    civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
+            //}
+            //else
+            //{
+            //    civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+            //}
+
+            civilID = _requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
+
 
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
                 propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID, _jobCycleId });

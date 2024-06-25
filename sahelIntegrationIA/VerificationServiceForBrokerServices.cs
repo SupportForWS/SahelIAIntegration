@@ -28,7 +28,7 @@ namespace sahelIntegrationIA
         private readonly IBaseConfiguration _configurations;
         private readonly eServicesContext _eServicesContext;
         private readonly SahelConfigurations _sahelConfigurations;
-        private Dictionary<long, string> requestedCivilIds = new();
+        private Dictionary<int, string> requestedCivilIds = new();
 
         public VerificationServiceForBrokerServices(IRequestLogger logger,
                                                           IBaseConfiguration configuration,
@@ -155,12 +155,17 @@ namespace sahelIntegrationIA
 
             if (expiredKmidRequests.Count > 0)
             {
-                // var requestedIds = requestList.Select(a => a.RequesterUserId).ToList();
+                 var requestedIds = requestList.Select(a => a.RequesterUserId).ToList();
 
                 //todo check
-                requestedCivilIds = requestList
-                             .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
-                             .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
+                //requestedCivilIds = requestList
+                //             .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+                //             .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
+                requestedCivilIds = await _eServicesContext
+                          .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                          .Where(p => requestedIds.Contains(p.UserId))
+                          .Select(a => new { a.UserId, a.CivilId })
+                          .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
 
                 var expiredRequest = requestList
                     .Where(a => expiredKmidRequests.Contains(Convert.ToInt32(a.ServiceRequestsDetail.KMIDToken)))
@@ -208,10 +213,17 @@ namespace sahelIntegrationIA
             //todo check
             //var requestedIds = serviceRequest.Select(a => a.RequesterUserId).ToList();
 
-            requestedCivilIds = serviceRequest
-                              .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
-                              .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
+            //requestedCivilIds = serviceRequest
+            //                  .Select(a => new { a.ServiceRequestsDetail.EserviceRequestDetailsId, a.ServiceRequestsDetail.CivilId })
+            //                  .ToDictionary(a => a.EserviceRequestDetailsId, a => a.CivilId);
 
+            var requestedIds = serviceRequest.Select(a => a.RequesterUserId).ToList();
+
+            requestedCivilIds = await _eServicesContext
+                              .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                              .Where(p => requestedIds.Contains(p.UserId))
+                              .Select(a => new { a.UserId, a.CivilId })
+                              .ToDictionaryAsync(a => a.UserId, a => a.CivilId);
             var tasks = serviceRequest.Select(async serviceRequest =>
             {
                 try
@@ -370,7 +382,8 @@ namespace sahelIntegrationIA
             string msgEn = string.Empty;
             _logger.LogInformation("Create Notification message for broker expired KMID");
 
-            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
+           // string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.ServiceRequestsDetail.EserviceRequestDetailsId).Value;
+            string civilID = requestedCivilIds.First(a => a.Key == serviceRequest.RequesterUserId).Value;
 
             _logger.LogInformation("Get broker civil Id{0}", civilID);
 
