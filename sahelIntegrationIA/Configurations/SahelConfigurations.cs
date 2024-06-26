@@ -16,6 +16,7 @@ namespace sahelIntegrationIA.Configurations
         public int TryCountForeServiceNotification { get; set; }
         public int BrokerKMIDCallingTimer { get; set; }
         public string ToWhomPrintableFormRedirectUrl { get; set; }
+        public string ExamAttendanceRedirectUrl { get; set; }
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -77,6 +78,9 @@ namespace sahelIntegrationIA.Configurations
 
         public string InitRejectedNotificationAr { get; set; }
         public string InitRejectedNotificationEn { get; set; }
+
+        public string ConfirmExamAttendanceAr { get; set; }
+        public string ConfirmExamAttendanceEn { get; set; }
 
     }
 }
