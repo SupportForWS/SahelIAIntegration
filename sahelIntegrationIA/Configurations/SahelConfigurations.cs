@@ -1,5 +1,7 @@
 ﻿
+using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using sahelIntegrationIA.Configurations;
 
 namespace sahelIntegrationIA.Configurations
 {
@@ -81,6 +83,18 @@ namespace sahelIntegrationIA.Configurations
 
         public string ConfirmExamAttendanceAr { get; set; }
         public string ConfirmExamAttendanceEn { get; set; }
+
+        public string PassExamNotificationAr { get; set; }
+        public string PassExamNotificationEn { get; set; }
+
+        public string FailedExamNotificationEn { get; set; }
+        public string FailedExamNotificationAr { get; set; }
+
+        public string NotAttendExamNotificationAr { get; set; }
+        public string NotAttendExamNotificationEn { get; set; }
+
+
+
 
     }
 }

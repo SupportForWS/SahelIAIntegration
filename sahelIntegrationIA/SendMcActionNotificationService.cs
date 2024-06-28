@@ -14,7 +14,6 @@ using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServices.APIs.UserApp.OldApplication.Models;
 using ExamCandidateInfo = eServicesV2.Kernel.Domain.Entities.BrokerEntities.ExamCandidateInfo;
-using System.Linq;
 namespace sahelIntegrationIA
 {
     public class SendMcActionNotificationService
@@ -168,7 +167,7 @@ namespace sahelIntegrationIA
                                             && !p.OrganizationRequest.MCNotificationSent.Value))
                                .ToListAsync();
 
-            //request for exam
+            //requests for exam
             var examRequests = await _eServicesContext
                              .Set<ServiceRequest>()
                              .Include(p => p.ServiceRequestsDetail)
@@ -186,19 +185,20 @@ namespace sahelIntegrationIA
                 .Select(p => p.EserviceRequestId)
                 .ToList();
 
-            //todo add state for pass or fail exam
-            //todo what if exam accept without user confirm attend??
-            //you can add more stateid to retrieve exams passed or failed
             var filteredExamRequestsId = await _eServicesContext.Set<ExamCandidateInfo>()
                     .Where(x => examRequestsId.Contains(x.EServiceRequestId.Value)
-                    && x.StateId == "ExamCandidateInfoExamSentState")
-                    .Select(x => (long)x.EServiceRequestId)
+                                && (x.StateId == "ExamCandidateInfoExamSentState"
+                                || x.StateId == "ExamCandidateInfoApprovedState"))
+                    .Select(x => new ExamCandidateInfo
+                    {
+                        StateId = x.StateId,
+                        ExamResult = x.ExamResult,
+                        EServiceRequestId = x.EServiceRequestId.Value
+                    })
                     .ToListAsync();
 
-            //here we need to check if not notification was sent for attendance before
             examRequests = examRequests
-                .Where(x => filteredExamRequestsId.Contains(x.EserviceRequestId)
-                && !x.ServiceRequestsDetail.ExamNotification.HasValue)
+                .Where(x => IsMatchingStateAndNotification(x, filteredExamRequestsId))
                 .ToList();
 
 
@@ -421,34 +421,40 @@ namespace sahelIntegrationIA
 
 
             string examStateId = string.Empty;
+            int examNotificationValue = 0;
             if (serviceRequest.ServiceId == (int)ServiceTypesEnum.ExamService
                 && stateId == nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState))
             {
-                examStateId = await _eServicesContext.Set<ExamCandidateInfo>()
+                var examInfo = await _eServicesContext.Set<ExamCandidateInfo>()
                    .Where(x => x.EServiceRequestId == serviceRequest.EserviceRequestId)
-                   .Select(x => x.StateId)
+                   .Select(x => new ExamCandidateInfo
+                   {
+                       StateId = x.StateId,
+                       ExamResult = x.ExamResult
+                   })
                    .FirstOrDefaultAsync();
 
-
-                if (examStateId == "ExamCandidateInfoExamSentState")
+                if (examInfo != null)
                 {
-                    var requestNumber = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestNumber.ToString());
+                    examStateId = examInfo.StateId;
 
-                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ConfirmExamAttendanceAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ConfirmExamAttendanceEn, serviceRequest.EserviceRequestNumber);
-
-                    var redirectUrl = string.Format(_sahelConfigurations.ExamAttendanceRedirectUrl, requestNumber);
-                    actionButtons = new List<actionButtonRequestList>
-                                    {
-                                        new actionButtonRequestList
-                                        {
-                                            actionType = "details",
-                                            LabelAr = "تأكيد حضور الاختبار",
-                                            LabelEn = "Confirm Exam Attandance",
-                                            actionUrl = redirectUrl
-                                        }
-                                    };
+                    if (examStateId == "ExamCandidateInfoExamSentState")
+                    {
+                        var result = HandleExamAttendNotification(serviceRequest.EserviceRequestNumber);
+                        examNotificationValue = result.NotificationExamValue;
+                        msgAr = result.MessageAr;
+                        msgEn = result.MessageEn;
+                        actionButtons = result.ActionButtons;
+                    }
+                    else if (examStateId == "ExamCandidateInfoApprovedState")
+                    {
+                        var result = HandleExamApprovedNotification(examInfo, serviceRequest);
+                        examNotificationValue = result.NotificationExamValue;
+                        msgAr = result.MessageAr;
+                        msgEn = result.MessageEn;
+                    }
                 }
+
             }
 
 
@@ -458,7 +464,6 @@ namespace sahelIntegrationIA
             notficationResponse.bodyEn = msgEn;
             notficationResponse.bodyAr = msgAr;
             notficationResponse.isForSubscriber = "true";
-            //  notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
             notficationResponse.dataTableEn = null;
             notficationResponse.dataTableAr = null;
             notficationResponse.actionButtonRequestList = actionButtons;
@@ -483,23 +488,23 @@ namespace sahelIntegrationIA
             if (sendNotificationResult)
             {
                 _logger.LogInformation(message: " {1} - ShaleNotificationMC - notification sent successfully: {0}",
-                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
+                         serviceRequest.EserviceRequestNumber, _jobCycleId);
+
                 if (serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
                 {
-                    if (examStateId == "ExamCandidateInfoExamSentState")
+                    if (examStateId == "ExamCandidateInfoApprovedState" || examStateId == "ExamCandidateInfoExamSentState")
                     {
-                       // ExamNotification 1 for sent exam attendance, 2 for pass exam 3 for fail exam
                         await _eServicesContext
-             .Set<ServiceRequestsDetail>()
-             .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
-             .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.ExamNotification, 1));
+                             .Set<ServiceRequestsDetail>()
+                             .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
+                             .ExecuteUpdateAsync(a => a.SetProperty(b => b.ExamNotification, examNotificationValue));
                     }
                     else
                     {
                         await _eServicesContext
-               .Set<ServiceRequestsDetail>()
-               .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
-               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
+                               .Set<ServiceRequestsDetail>()
+                               .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
+                               .ExecuteUpdateAsync<ServiceRequestsDetail>(a => a.SetProperty(b => b.MCNotificationSent, true));
                     }
 
                 }
@@ -515,12 +520,13 @@ namespace sahelIntegrationIA
             else
             {
                 _logger.LogInformation(message: "{1} - ShaleNotificationMC - notification sent faild: {0}",
-                        propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
+                        serviceRequest.EserviceRequestNumber, _jobCycleId);
             }
             _logger.LogInformation(message: "{1} - ShaleNotificationMC - end notification: {0}",
-                    propertyValues: new object[] { serviceRequest.EserviceRequestNumber, _jobCycleId });
+                   serviceRequest.EserviceRequestNumber, _jobCycleId);
 
         }
+
 
         #region Private Methods
         public SahelNotficationTypesEnum GetNotificationType(ServiceTypesEnum service)
@@ -755,6 +761,111 @@ namespace sahelIntegrationIA
             await _eServicesContext.SaveChangesAsync();
         }
 
+        private bool IsMatchingStateAndNotification(ServiceRequest request, List<ExamCandidateInfo> filteredExamRequestsId)
+        {
+            var examInfo = filteredExamRequestsId.Find(z => z.EServiceRequestId == request.EserviceRequestId);
+            if (examInfo == null)
+                return false;
+
+            bool isExamSentStateWithNoNotification = examInfo.StateId == "ExamCandidateInfoExamSentState"
+                && request.ServiceRequestsDetail.ExamNotification != 1;
+
+            bool isApprovedStateWithNoNotificationAndExamPassed = examInfo.StateId == "ExamCandidateInfoApprovedState"
+                && request.ServiceRequestsDetail.ExamNotification != 2
+                && examInfo.ExamResult == 332294364;
+
+            bool isApprovedStateWithNoNotificationAndExamFailed = examInfo.StateId == "ExamCandidateInfoApprovedState"
+                && request.ServiceRequestsDetail.ExamNotification != 3
+                && examInfo.ExamResult == 332294365;
+
+            bool isApprovedStateWithNoNotificationAndExamNotAttend = examInfo.StateId == "ExamCandidateInfoApprovedState"
+               && request.ServiceRequestsDetail.ExamNotification != 4
+               && examInfo.ExamResult == 332294366;
+
+            return isExamSentStateWithNoNotification
+                || isApprovedStateWithNoNotificationAndExamFailed
+                || isApprovedStateWithNoNotificationAndExamPassed
+                || isApprovedStateWithNoNotificationAndExamNotAttend;
+
+
+            //"ExamPassed": "332294364",
+            //"ExamFailed": "332294365",
+            //"NotAttend": "332294366",
+        }
+
+        private ExamNotificationResult HandleExamApprovedNotification(ExamCandidateInfo examInfo, ServiceRequest serviceRequest)
+        {
+            var result = new ExamNotificationResult();
+
+            bool isExamPassed = examInfo.StateId == "ExamCandidateInfoApprovedState"
+                       && serviceRequest.ServiceRequestsDetail.ExamNotification != 2
+                       && examInfo.ExamResult == 332294364;
+
+            bool isExamFailed = examInfo.StateId == "ExamCandidateInfoApprovedState"
+                && serviceRequest.ServiceRequestsDetail.ExamNotification != 3
+                && examInfo.ExamResult == 332294365;
+
+            bool isExamNotAttend = examInfo.StateId == "ExamCandidateInfoApprovedState"
+               && serviceRequest.ServiceRequestsDetail.ExamNotification != 4
+               && examInfo.ExamResult == 332294366;
+
+            if (isExamPassed)
+            {
+                result.NotificationExamValue = 2;
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationAr, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationEn, serviceRequest.EserviceRequestNumber);
+            }
+            else if (isExamFailed)
+            {
+                result.NotificationExamValue = 3;
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationAr, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationEn, serviceRequest.EserviceRequestNumber);
+            }
+            else if (isExamNotAttend)
+            {
+                result.NotificationExamValue = 4;
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationAr, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationEn, serviceRequest.EserviceRequestNumber);
+            }
+
+
+            return result;
+
+        }
+
+        private ExamNotificationResult HandleExamAttendNotification(string eServiceRequestNumber)
+        {
+            var result = new ExamNotificationResult();
+            result.NotificationExamValue = 1;
+            var requestNumber = CommonFunctions.CsUploadEncrypt(eServiceRequestNumber);
+
+            result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.ConfirmExamAttendanceAr, eServiceRequestNumber);
+            result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.ConfirmExamAttendanceEn, eServiceRequestNumber);
+
+            var redirectUrl = string.Format(_sahelConfigurations.ExamAttendanceRedirectUrl, requestNumber);
+            var actionButtons = new List<actionButtonRequestList>
+                                    {
+                                        new actionButtonRequestList
+                                        {
+                                            actionType = "details",
+                                            LabelAr = "تأكيد حضور الاختبار",
+                                            LabelEn = "Confirm Exam Attandance",
+                                            actionUrl = redirectUrl
+                                        }
+                                    };
+            result.ActionButtons = actionButtons;
+            return result;
+
+        }
+
         #endregion
+    }
+
+    class ExamNotificationResult
+    {
+        public string MessageAr { get; set; }
+        public string MessageEn { get; set; }
+        public int NotificationExamValue { get; set; }
+        public List<actionButtonRequestList> ActionButtons { get; set; }
     }
 }

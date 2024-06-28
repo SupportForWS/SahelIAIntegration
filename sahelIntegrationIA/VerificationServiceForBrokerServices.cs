@@ -63,6 +63,10 @@ namespace sahelIntegrationIA
                 nameof(ServiceRequestStatesEnum.EservTranReqProceedState),
 
 
+
+
+
+
             };
 
             int[] serviceIds = new int[]
@@ -100,7 +104,7 @@ namespace sahelIntegrationIA
             _logger.LogInformation("Start fetching data for Broker verification service");
 
 
-            var requestList = await _eServicesContext
+             var requestList = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.ServiceRequestsDetail)
                                .Where(p => statusEnums.Contains(p.StateId)
