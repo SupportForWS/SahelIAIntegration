@@ -203,6 +203,7 @@ namespace sahelIntegrationIA
 
 
             requestList.AddRange(examRequests);
+
             requestList.AddRange(organizationRequests);
 
             string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
@@ -280,13 +281,13 @@ namespace sahelIntegrationIA
             if (serviceRequest.ServiceId is null or 0)
             {
                 _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; //log the error
+                return; 
             }
 
             if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
             {
                 _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; //log the error
+                return; 
             }
 
             await CreateNotification(serviceRequest);
@@ -301,7 +302,7 @@ namespace sahelIntegrationIA
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
             _logger.LogInformation("{1} - ShaleNotificationMC - start Notification creation process - {0}",
-                propertyValues: new object[] { reqJson, _jobCycleId });
+              reqJson, _jobCycleId );
 
             string civilID = string.Empty;
             //if (_brokerServices.Contains((int)serviceRequest.ServiceId))
@@ -319,7 +320,7 @@ namespace sahelIntegrationIA
 
 
             _logger.LogInformation(message: "{2} - ShaleNotificationMC - Get organization civil Id - {0} - {1}",
-                propertyValues: new object[] { serviceRequest.EserviceRequestNumber, civilID, _jobCycleId });
+              serviceRequest.EserviceRequestNumber, civilID, _jobCycleId);
 
             Notification notficationResponse = new Notification();
             string msgAr = string.Empty;
@@ -423,7 +424,9 @@ namespace sahelIntegrationIA
             string examStateId = string.Empty;
             int examNotificationValue = 0;
             if (serviceRequest.ServiceId == (int)ServiceTypesEnum.ExamService
-                && stateId == nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState))
+                && stateId == nameof(ServiceRequestStatesEnum.EServiceRequestAcceptedState)
+                && serviceRequest.ServiceRequestsDetail.MCNotificationSent.HasValue
+                && serviceRequest.ServiceRequestsDetail.MCNotificationSent.Value)
             {
                 var examInfo = await _eServicesContext.Set<ExamCandidateInfo>()
                    .Where(x => x.EServiceRequestId == serviceRequest.EserviceRequestId)
