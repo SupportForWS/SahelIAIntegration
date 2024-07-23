@@ -47,6 +47,7 @@ namespace sahelIntegrationIA.Configurations
         public string BrokerExamUrl { get; set; }
         public string BrokerSharedUrl { get; set; }
         public string TransferServiceUrl { get; set; }
+        public string SubmitBrokerSignUpUrl { get; set; }
     }
 
     public class MCNotificationConfiguration
@@ -66,6 +67,8 @@ namespace sahelIntegrationIA.Configurations
 
         public string BrokerKmidExpiredAr { get; set; }
         public string BrokerKmidExpiredEn { get; set; }
+        public string SignUpKmidExpiredEn { get; set; }
+        public string SignUpKmidExpiredAr { get; set; }
 
         public string IdPrintedNotificationAr { get; set; }
         public string IdPrintedNotificationEn { get; set; }
