@@ -537,7 +537,7 @@ namespace sahelIntegrationIA
         private bool PostNotification(Notification notification, string SahelOption = "Business")
         {
 
-            if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
+            if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyEn))
             {
                 return false;
             }
