@@ -85,6 +85,8 @@ public partial class Program
                    services.AddSingleton<SahelNotificationService>();
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
                    services.AddSingleton<VerificationServiceForBrokerServices>();
+                   services.AddSingleton<VerificationServiceForSignUp>();
+
 
                    services.AddHostedService<Worker>();
                });

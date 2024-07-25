@@ -363,7 +363,7 @@ namespace sahelIntegrationIA
             }
         }
 
-        public async Task<SignUpDetailsDto> CreateRequestObject(SahelPreSignUpDetails request)
+        private  SignUpDetailsDto CreateRequestObject(SahelPreSignUpDetails request)
         {
             SignUpDetailsDto signUpObj = new SignUpDetailsDto();
             signUpObj.KMIDToken = request.KMIDToken;
