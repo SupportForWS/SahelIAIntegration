@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
-using eServicesV2.Kernel.Core.Persistence;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
-using eServicesV2.Kernel.Domain.Enums;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Models;
 using System.Data;
@@ -16,8 +12,6 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
-using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
-using static sahelIntegrationIA.VerificationServiceForOrganizationServices;
 using eServices.APIs.UserApp.OldApplication.Models;
 namespace sahelIntegrationIA
 {
