@@ -18,12 +18,14 @@ namespace IndividualAuthorizationSahelWorker
 
         private TimeSpan period;
         IBaseConfiguration _configuration;
+        private readonly VerificationServiceForSignUp _verificationServiceForSignUp;
 
         public Worker(
             IRequestLogger logger,
             VarificationService varificationService,
             SendMcActionNotificationService sendMcActionNotificationService,
             IBaseConfiguration configuration,
+            VerificationServiceForSignUp verificationServiceForSignUp,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
             SahelConfigurations sahelConfigurations, VerificationServiceForBrokerServices verificationServiceForBrokerServices)
@@ -33,6 +35,7 @@ namespace IndividualAuthorizationSahelWorker
             this.varificationService = varificationService;
             this.sendMcActionNotificationService = sendMcActionNotificationService;
             _configuration = configuration;
+            _verificationServiceForSignUp = verificationServiceForSignUp;
             this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
             _verificationServiceForBrokerServices = verificationServiceForBrokerServices;
@@ -48,10 +51,11 @@ namespace IndividualAuthorizationSahelWorker
             {
                 _logger.LogInformation("New Worker running at: {time}", DateTimeOffset.Now);
                 Console.WriteLine("Sahel integration with individual authorization Worker running at: {time}" + DateTimeOffset.Now);
-                //Console.WriteLine("ssss");
+                Console.WriteLine("ssss");
                 await varificationService.VarifyRequests();
                 await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
                 await _verificationServiceForBrokerServices.CheckBrokerRequests();
+                await _verificationServiceForSignUp.CheckBrokerRequests();
 
                 if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
                 {
