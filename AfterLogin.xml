@@ -1,0 +1,64 @@
+<servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="11:55:59:9" period=""/>
+		<stage id="processing" startedat="11:55:59:9" completedat="11:57:19:839" period="1:20:830"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="11:57:22:959" period="1722243442959"/>
+	</PerformanceAnalysis> 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="broker.slb" password="" authenticated="1" roleid="" pageid="LatestUpdatesVwPg" profileid="" templateid="" actionid="ShowLatestUpdate" actiontype="X" actioncriteria="[LatestUpdates].[StateId]='LatestUpdatesActivatedState'" nextactionid="" nextactioncriteria="" continue="0" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="LatestUpdatesVwPg" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice> 
+-   <user RowNumber="1" OwnerLocId="8998" LogInPortName="SULAIBIYA" LogInPortId="7050808" DepartmentId="350" ThemeId="Green" UserType="0" StateId="PeopleCreatedState" selected="" OrganizationId="44676" UserId="broker.slb" LanguageId="eng" LastLogOnTime="2024-07-29T11:29:53+03:00" Password="" LogInPortNameAra="الجمرك البري" CreatedBy="mn.narayanan" Direction="ltr" PersonalId="161926" OrganizationType="Clearing Agents" CultureId="ara" FirstName="FirstName 161926" Roles="" message="" AccountStatus="y" StdLocationTypeTypeId="33223960" MenuType="vm" AllowMenuAccess="1" OpenTime="2024-07-29T11:57:00.113+03:00" UnitId="" SectionId="" Groups="" Token="" TimeZone="" FileNo="" TwoFactorAuth="" PortSites="" RestrictAccess="" IsEmailVerified="0" IsFirstLogin="0" UserCustDepartmentId="" MenuOrder="" MenuFavourites="" AllowedBrowsers="" IsMobileVerified="0" LatestUpdates="y" PWDPolicyEnable="Y" PWDPolicyEnabledDate="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="LatestUpdatesVwPg" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="LatestUpdatesVwPg" BaseFormCtrlIndex=""/>
+	</pagelets> 
+-   <data>-   <LatestUpdatesrecords PageSize="1" PageCount="208" PageNumber="1" TotalRecordsFetched="208" SortBy="[LatestUpdates].[UpdateDate]" SortType="DESC">
+			<LatestUpdates RowNumber="1" UpdateDateDESC="2023-03-16T13:13:47+03:00" UserNotificationNo="UN/338" OwnerLocId="7050808" Message="<P class=MsoNormal style=" unicode-bidi: embed; DIRECTION: rtl; TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" dir=rtl align=center><B><U><SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: red; mso-bidi-language: AR-KW' dir=ltr>Customs System Maintenance Activities< SPAN>< U>< B><SPAN dir=ltr><?xml:namespace prefix="o" ns="urn:schemas-microsoft-com:office:office"/>
+			<o:p/>
+		</SPAN>
+	</P>
+	<P class=MsoNormal style="unicode-bidi: embed; DIRECTION: rtl; TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" dir=rtl align=center><SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN><SPAN lang=AR-SA><SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN>&nbsp;<o:p></o:p></SPAN></P>
+	<P class=MsoNormal style="TEXT-ALIGN: justify; MARGIN: 0in 0in 0pt">
+		<SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: black; mso-bidi-language: AR-KW'>Dear User,<SPAN lang=AR-KW dir=rtl><o:p></o:p></SPAN></SPAN></P>
+			<P class=MsoNormal style="TEXT-ALIGN: justify; MARGIN: 0in 0in 0pt">
+				<SPAN dir=ltr></SPAN><SPAN dir=ltr></SPAN><SPAN style="COLOR: black; mso-bidi-language: AR-KW">
+					<SPAN dir=ltr></SPAN><SPAN dir=ltr></SPAN>&nbsp;<o:p></o:p></SPAN></P>
+					<P class=MsoNormal style="TEXT-ALIGN: justify; MARGIN: 0in 0in 0pt">
+						<SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: black; mso-bidi-language: AR-KW'>Kuwait Customs is always keep to upgrade the quality of services provided, so as to ensure reaching the highest level in the quality of the inputs and outputs of automated customs system.</SPAN>
+						<SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: red; mso-bidi-language: AR-KW'>
+							<o:p/>
+						</SPAN>
+					</P>
+					<P class=MsoNormal style="unicode-bidi: embed; DIRECTION: rtl; TEXT-ALIGN: center; MARGIN: 0in 0in 0pt" dir=rtl align=center><SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN><SPAN lang=AR-KW style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: red; mso-bidi-language: AR-KW'>
+						<SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN>&nbsp;</SPAN><SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: red; mso-bidi-language: AR-KW' dir=ltr><o:p></o:p></SPAN></P>
+						<P class=MsoNormal style="TEXT-ALIGN: justify; MARGIN: 0in 0in 0pt">
+							<B>
+								<U>
+									<SPAN style='FONT-SIZE: 14pt; FONT-FAMILY: "Calibri",sans-serif; COLOR: red; mso-bidi-language: AR-KW'>Kindly be noted that Customs system will be down in all Kuwait customs ports on Friday <SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN><SPAN lang=AR-KW dir=rtl><SPAN dir=rtl></SPAN><SPAN dir=rtl></SPAN>17</SPAN><SUP>th</SUP> Mar 2023, from 03:00 AM till 07:00 AM, due to the system Maintenance Activities<SPAN lang=AR-KW dir=rtl><o:p></o:p></SPAN></SPAN></U></B></P>
+										<P class=MsoHeader style="unicode-bidi: embed; DIRECTION: rtl; TEXT-ALIGN: left; MARGIN: 3pt 0in" dir=rtl align=right><SPAN lang=AR-KW style="mso-bidi-language: AR-KW; mso-ansi-font-size: 11.0pt">
+											<o:p>
+												<FONT size=2 face=Arial><STRONG>&nbsp;</STRONG></FONT></o:p></SPAN></P>
+												<P class=MsoHeader style="unicode-bidi: embed; DIRECTION: rtl; TEXT-ALIGN: left; MARGIN: 3pt 0in" dir=rtl align=right><SPAN style='FONT-SIZE: 12pt; FONT-FAMILY: "Calibri",sans-serif; mso-bidi-language: AR-KW; mso-bidi-font-family: "Times New Roman"' dir=ltr><STRONG>In case there is any clarification, please contact the customs system support are available 24 7 at 24955337 , or please contact the IT support team who are available in customs ports.< STRONG><o:p>< o:p>< SPAN>< P>" EffectiveTo="6000-12-31T00:00:00+03:00" EffectiveFrom="2023-03-16T00:00:00+03:00" UpdateNumber="UN/338" UpdateDate="2023-03-16T13:13:47+03:00" Subject="Customs System Maintenance Activities" CreatedBy="Ma.Rateb" LatestUpdateId="606" OwnerOrgId="29588" selected="" AutoActivate="0" NotificationType="33224647" StateId="LatestUpdatesActivatedState" OpenTime="2024-07-29T11:58:16.24+03:00" ShowAgain="" ApprovalDate="" DateOfIssue="" LatestUpdatesGroup=""/>
+											</LatestUpdatesrecords>
+										</data> 
+-   <domaindata>-   <select id="NotificationType">
+												<option RowNumber="1" TypeId="33224644" LocalDescription="دوران الجمارك" OwnerLocId="8998" CreatedBy="MicroClear" Code="" OwnerOrgId="29588" ParentId="" Description="Customs Circulation" selected="" Name="Customs Circulation" DataProfileClassId="" TypeTypeId="33223305" StateId="NotificationTypeModifiedState" OpenTime="2024-07-29T11:58:19.257+03:00" NotificationType_Id=""/>
+												<option RowNumber="2" TypeId="33224645" LocalDescription="تعليمات الجمارك" OwnerLocId="8998" CreatedBy="MicroClear" Code="" OwnerOrgId="29588" ParentId="" Description="Customs Instruction" selected="" Name="Customs Instruction" DataProfileClassId="" TypeTypeId="33223305" StateId="NotificationTypeModifiedState" OpenTime="2024-07-29T11:58:19.257+03:00" NotificationType_Id=""/>
+												<option RowNumber="3" TypeId="33224646" LocalDescription="التغيرات الجديدة" OwnerLocId="8998" CreatedBy="MicroClear" Code="" OwnerOrgId="29588" ParentId="" Description="New Changes" selected="" Name="New Changes" DataProfileClassId="" TypeTypeId="33223305" StateId="NotificationTypeCreatedState" OpenTime="2024-07-29T11:58:19.257+03:00" NotificationType_Id=""/>
+												<option RowNumber="4" TypeId="33224647" LocalDescription="أخرى”" OwnerLocId="8998" CreatedBy="MicroClear" Code="" OwnerOrgId="29588" ParentId="" Description="Others" selected="" Name="Others" DataProfileClassId="" TypeTypeId="33223305" StateId="NotificationTypeCreatedState" OpenTime="2024-07-29T11:58:19.257+03:00" NotificationType_Id=""/>
+												<option RowNumber="5" TypeId="33224648" LocalDescription="تحديثات النظام" OwnerLocId="8998" CreatedBy="MicroClear" Code="" OwnerOrgId="29588" ParentId="" Description="System Updates" selected="" Name="System Updates" DataProfileClassId="" TypeTypeId="33223305" StateId="NotificationTypeCreatedState" OpenTime="2024-07-29T11:58:19.257+03:00" NotificationType_Id=""/>
+											</select>
+										</domaindata> 
+-   <Languages>
+											<Language id="ara" Name="Arabic" Direction="rtl"/>
+											<Language id="eng" Name="English" Direction="ltr"/>
+										</Languages>
+										<Insts LastSDOptions="0" SDStamp="(ca0d60a6-4ddd-41d0-88b0-0f920771ad5e)" IgnoreCache="0"/>
+									</servicedocument>

@@ -1,0 +1,30 @@
+<servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="11:54:20:18" period=""/>
+		<stage id="processing" startedat="11:54:20:18" completedat="11:54:24:973" period="0:4:955"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="11:54:27:502" period="1722243267502"/>
+	</PerformanceAnalysis> 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="broker.slb" password="mt23c" authenticated="0" roleid="" pageid="ListInbox" profileid="" templateid="" actionid="LogOn" actiontype="X" actioncriteria="" nextactionid="ListInbox" nextactioncriteria="" continue="0" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="Log003" type="business" message="" context_value="" sourcecode="" stack="" exceptionTime="2024-07-29T11:54:24">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice> 
+-   <user UserId="" Name="" Type="" Roles="" RoleId="" LanguageId="eng" Direction="ltr" DepartmentId="" SectionId="" UnitId="" parentid="" message="" ContractId="" IsTeamLead="" WorkOrderId="" PortSites="" UserCustDepartmentID="" ThemeId="" TimeZone="" SmartClientToken="" TokenExpiry="" OrganizationId="" OwnerLocId="" passwordlastresetdate="" passworddaystoexpire="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="ListInbox" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="" BaseFormCtrlIndex=""/>
+	</pagelets>
+	<data/>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(1e55de1b-155f-4842-a79b-7f7956c9cfc9)" IgnoreCache="0"/>
+</servicedocument> 

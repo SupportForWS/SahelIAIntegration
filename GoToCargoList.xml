@@ -1,0 +1,30 @@
+<servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="14:22:58:779" period=""/>
+		<stage id="processing" startedat="14:22:58:779" completedat="14:23:24:688" period="0:25:909"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="14:23:27:931" period="1722252207931"/>
+	</PerformanceAnalysis> 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="broker.slb" password="" authenticated="1" roleid="" pageid="ListBill" profileid="" templateid="" actionid="SearchHouseBills" actiontype="X" actioncriteria="[HouseBills].[HouseBillDate] between '2024-7-15 00:00:00' and '2024-7-15 23:59:59.997'" nextactionid="" nextactioncriteria="" continue="" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="ListBill" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice> 
+-   <user RowNumber="1" OwnerLocId="8998" LogInPortName="SULAIBIYA" LogInPortId="7050808" DepartmentId="350" ThemeId="Green" UserType="0" StateId="PeopleCreatedState" selected="" OrganizationId="44676" UserId="broker.slb" LanguageId="eng" LastLogOnTime="2024-07-29T14:19:31+03:00" Password="" LogInPortNameAra="الجمرك البري" CreatedBy="mn.narayanan" Direction="ltr" PersonalId="161926" OrganizationType="Clearing Agents" CultureId="ara" FirstName="FirstName 161926" Roles="" message="" AccountStatus="y" StdLocationTypeTypeId="33223960" MenuType="vm" AllowMenuAccess="1" OpenTime="2024-07-29T14:22:14.843+03:00" UnitId="" SectionId="" Groups="" Token="" TimeZone="" FileNo="" TwoFactorAuth="" PortSites="" RestrictAccess="" IsEmailVerified="0" IsFirstLogin="0" UserCustDepartmentId="" MenuOrder="" MenuFavourites="" AllowedBrowsers="" IsMobileVerified="0" LatestUpdates="y" PWDPolicyEnable="Y" PWDPolicyEnabledDate="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="ListBill" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="LatestUpdatesVwPg" BaseFormCtrlIndex=""/>
+	</pagelets>
+	<data X=""/>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(c7ccaf3e-4825-429a-af16-f4cc70000976)" IgnoreCache="0"/>
+</servicedocument>
