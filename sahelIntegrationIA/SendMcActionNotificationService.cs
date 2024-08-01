@@ -281,13 +281,13 @@ namespace sahelIntegrationIA
             if (serviceRequest.ServiceId is null or 0)
             {
                 _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; 
+                return;
             }
 
             if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
             {
                 _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
-                return; 
+                return;
             }
 
             await CreateNotification(serviceRequest);
@@ -302,7 +302,7 @@ namespace sahelIntegrationIA
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });
             _logger.LogInformation("{1} - ShaleNotificationMC - start Notification creation process - {0}",
-              reqJson, _jobCycleId );
+              reqJson, _jobCycleId);
 
             string civilID = string.Empty;
             //if (_brokerServices.Contains((int)serviceRequest.ServiceId))
@@ -486,6 +486,17 @@ namespace sahelIntegrationIA
                 serviceRequest.EserviceRequestNumber,
                 "Business");
 
+
+            //if sendNotificationResult is failed will try to send it from InsertNotification service again.
+            if (serviceRequest.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService
+                && (examStateId == "ExamCandidateInfoApprovedState" || examStateId == "ExamCandidateInfoExamSentState"))
+            {
+                await _eServicesContext
+                     .Set<ServiceRequestsDetail>()
+                     .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
+                     .ExecuteUpdateAsync(a => a.SetProperty(b => b.ExamNotification, examNotificationValue));
+            }
+
             await InsertNotification(notficationResponse, sendNotificationResult);
 
             if (sendNotificationResult)
@@ -497,10 +508,7 @@ namespace sahelIntegrationIA
                 {
                     if (examStateId == "ExamCandidateInfoApprovedState" || examStateId == "ExamCandidateInfoExamSentState")
                     {
-                        await _eServicesContext
-                             .Set<ServiceRequestsDetail>()
-                             .Where(a => a.EserviceRequestId == serviceRequest.EserviceRequestId)
-                             .ExecuteUpdateAsync(a => a.SetProperty(b => b.ExamNotification, examNotificationValue));
+                        //...
                     }
                     else
                     {

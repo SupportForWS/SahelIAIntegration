@@ -702,6 +702,8 @@ namespace sahelIntegrationIA
             requestDto.BrokerType = CommonFunctions.CsUploadEncrypt(details.RequestForUserType.ToString());
             requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
             requestDto.Gender = string.IsNullOrEmpty(details.Gender) ? GenderEnum.Male : (GenderEnum)int.Parse(details.Gender);
+
+            //from moci
             requestDto.BrokerArabicFirstName = details.ArabicFirstName;
             requestDto.BrokerArabicSecondName = details.ArabicSecondName;
             requestDto.BrokerArabicThirdName = details.ArabicThirdName;
@@ -711,6 +713,7 @@ namespace sahelIntegrationIA
             requestDto.BrokerEnglishThirdName = details.EnglishThirdName;
             requestDto.BrokerEnglishLastName = details.EnglishLastName;
             requestDto.Nationality = details.Nationality.HasValue ? details.Nationality.Value : 5051;
+
             requestDto.CivilId = details.CivilId;
             requestDto.EServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
             requestDto.MobileNumber = details.MobileNumber;
