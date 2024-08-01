@@ -1,0 +1,30 @@
+-   <servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="" period=""/>
+		<stage id="processing" startedat="" completedat="" period=""/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="11:52:41:329" period="1722243161329"/>
+	</PerformanceAnalysis> 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="" password="" authenticated="0" roleid="" pageid="homepage" profileid="" templateid="" actionid="" actiontype="" actioncriteria="" nextactionid="" nextactioncriteria="" continue="" listpagesizes="" listpage="" previouspageid="" previousactionid="LogOut" previousactioncriteria="" previousprofileid="" actionpageid="" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice> 
+-   <user UserId="" Name="" Type="" Roles="" RoleId="" LanguageId="eng" Direction="ltr" DepartmentId="" SectionId="" UnitId="" parentid="" message="" ContractId="" IsTeamLead="" WorkOrderId="" PortSites="" UserCustDepartmentID="" ThemeId="" TimeZone="" SmartClientToken="" TokenExpiry="" OrganizationId="" OwnerLocId="" passwordlastresetdate="" passworddaystoexpire="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="homepage" Classes="Form[@id='HomePage']" type="" cultureid="en-US" LanguageId="eng" charset="windows-1256" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="" BaseFormCtrlIndex=""/>
+	</pagelets>
+	<data/>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(17067618-8579-4147-aec0-141580fe7fde)" IgnoreCache="0"/>
+</servicedocument> 

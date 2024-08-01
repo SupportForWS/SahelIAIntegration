@@ -1,0 +1,34 @@
+Click here to close-   <servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="14:35:57:884" period=""/>
+		<stage id="processing" startedat="14:35:57:884" completedat="14:36:0:524" period="0:2:640"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="14:36:4:289" period="1722252964289"/>
+	</PerformanceAnalysis> 
+-   <user RowNumber="1" OwnerLocId="8998" LogInPortName="SHUWAIKH" LogInPortId="712360" DepartmentId="8483001" ThemeId="Blue" UserType="0" StateId="PeopleCreatedState" selected="" OrganizationId="29588" UserId="ma.ali" LanguageId="eng" LastLogOnTime="2024-07-29T14:26:34+03:00" Password="" LogInPortNameAra="ميناء الشويخ" CreatedBy="rn.rajagopalan" Direction="ltr" PersonalId="52216" OrganizationType="HOST" CultureId="eng" FirstName="FirstName 52216" Roles="" message="" AccountStatus="y" StdLocationTypeTypeId="33223961" IsEmailVerified="0" IsFirstLogin="0" MenuType="vm" AllowMenuAccess="1" OpenTime="2024-07-29T14:29:25.087+03:00" UnitId="" SectionId="" Groups="" Token="" TimeZone="" FileNo="" TwoFactorAuth="" PortSites="" RestrictAccess="" UserCustDepartmentId="" MenuOrder="" MenuFavourites="" AllowedBrowsers="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="Role" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="" BaseFormCtrlIndex=""/>
+	</pagelets> 
+-   <data>-   <Rolesrecords PageSize="-1" PageCount="1" PageNumber="1" TotalRecordsFetched="0">
+			<Roles CreatedBy="" Description="" Name="" RoleId="" selected="" StateId="RolesStartState" AllowedIps="" OwnerLocId="712360" OwnerOrgId="29588" OpenTime=""/>
+		</Rolesrecords>
+	</data>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(d5c2e966-9f4e-4f40-b01d-4f7423a7e211)" IgnoreCache="0"/>
+ 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="ma.ali" password="" authenticated="1" roleid="" pageid="Role" profileid="" templateid="" actionid="NewRoles" actiontype="X" actioncriteria="" nextactionid="" nextactioncriteria="" continue="0" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="Role" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice>
+</servicedocument> 

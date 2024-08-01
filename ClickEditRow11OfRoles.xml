@@ -1,0 +1,47 @@
+<servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="14:33:38:664" period=""/>
+		<stage id="processing" startedat="14:33:38:665" completedat="14:33:52:991" period="0:14:326"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="14:33:57:485" period="1722252837485"/>
+	</PerformanceAnalysis> 
+-   <user RowNumber="1" OwnerLocId="8998" LogInPortName="SHUWAIKH" LogInPortId="712360" DepartmentId="8483001" ThemeId="Blue" UserType="0" StateId="PeopleCreatedState" selected="" OrganizationId="29588" UserId="ma.ali" LanguageId="eng" LastLogOnTime="2024-07-29T14:26:34+03:00" Password="" LogInPortNameAra="ميناء الشويخ" CreatedBy="rn.rajagopalan" Direction="ltr" PersonalId="52216" OrganizationType="HOST" CultureId="eng" FirstName="FirstName 52216" Roles="" message="" AccountStatus="y" StdLocationTypeTypeId="33223961" IsEmailVerified="0" IsFirstLogin="0" MenuType="vm" AllowMenuAccess="1" OpenTime="2024-07-29T14:29:25.087+03:00" UnitId="" SectionId="" Groups="" Token="" TimeZone="" FileNo="" TwoFactorAuth="" PortSites="" RestrictAccess="" UserCustDepartmentId="" MenuOrder="" MenuFavourites="" AllowedBrowsers="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="Role" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="" BaseFormCtrlIndex=""/>
+	</pagelets> 
+-   <data>-   <Rolesrecords PageSize="10" PageCount="1" PageNumber="1" TotalRecordsFetched="1">-   <Roles RowNumber="1" CreatedBy="MicroClear" Description="AssessmentOfficeInstructor" Name="AssessmentOfficeInstructor" RoleId="AssessmentOfficeInstructor" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:34:41.933+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId="" OldRoleId="AssessmentOfficeInstructor">
+				<RoleGroupsrecords PageSize="30" PageCount="0" PageNumber="1" TotalRecordsFetched="0"/>
+ 
+-   <RoleUsersrecords PageSize="10" PageCount="1" PageNumber="1" TotalRecordsFetched="3">
+					<RoleUsers RowNumber="1" PrincipalType="u" CreatedBy="Qy.Hakim" selected="" OwnerOrgId="29588" OwnerLocId="712360" RolePrincipalId="58745" StateId="RoleUsersCreateState" RoleId="AssessmentOfficeInstructor" PrincipalId="hanan.alazmi" OpenTime="2024-07-29T14:34:48.233+03:00" SecurityId=""/>
+					<RoleUsers RowNumber="2" PrincipalType="u" CreatedBy="Ma.Rateb" selected="" OwnerOrgId="29588" OwnerLocId="712358" RolePrincipalId="77569" StateId="RoleUsersCreateState" RoleId="AssessmentOfficeInstructor" PrincipalId="az.aldwisan" OpenTime="2024-07-29T14:34:48.233+03:00" SecurityId=""/>
+					<RoleUsers RowNumber="3" PrincipalType="u" CreatedBy="Ma.Rateb" selected="" OwnerOrgId="29588" OwnerLocId="712358" RolePrincipalId="77594" StateId="RoleUsersCreateState" RoleId="AssessmentOfficeInstructor" PrincipalId="ad.alkndry" OpenTime="2024-07-29T14:34:48.233+03:00" SecurityId=""/>
+ 
+-   <UserDetailsrecords PageSize="30" PageCount="-1" PageNumber="1" TotalRecordsFetched="3">
+						<UserDetails OwnerLocId="8998" PrincipalId="ad.alkndry" FirstName="FirstName 433771" CreatedBy="Mousa.Mohsen" OrganizationName="KUWAIT CUSTOMS" OrganizationalUnitId="835" selected="" Roles="AssessmentOfficeInstructor,AssessmentUser,BayanReadOnly,BlockVehicleRegistrationInvDept,BWAuditor,CmanifestReadOnly,DDArchivingDept,DeclarationDocumentViewer,DeclXRayViewer,InspectorWriter,InvestigationOfficer,InvestigationSupervisor,InvestigationWriter,JrnXRayViewer,ReadOnly,ReadOnlyConfiscate,RiskAnalyst,RMSAdmin,RMSComplexAnalysisUser,SecureBayanBlocking,SysCustoms,TariffReadOnly,VRMReadOnly,VRS Manager,XrayViewer,RMSAdmin," StateId="PeopleCreatedState" UserId="ad.alkndry" AccountStatus="y" UnitName="Statistics Dept" LoginPortId="712360" CultureId="ara" LanguageId="ara" OrganizationId="29590" PersonalId="433771" OpenTime="2024-07-29T14:34:49.763+03:00" ParentId="" Name="" LastName="" DateOfBirth="" PlaceOfBirth=""/>
+						<UserDetails OwnerLocId="8998" PrincipalId="az.aldwisan" FirstName="FirstName 667924" CreatedBy="Qy.Hakim" OrganizationName="KUWAIT CUSTOMS" OrganizationalUnitId="358" selected="" Roles="AssessmentOfficeInstructor,AssessmentUser,BayanReadOnly,BlockVehicleRegistrationInvDept,BWAuditor,CmanifestReadOnly,DDArchivingDept,DeclarationDocumentViewer,DeclXRayViewer,InspectorWriter,InvestigationOfficer,InvestigationSupervisor,InvestigationWriter,JrnXRayViewer,ReadOnly,ReadOnlyConfiscate,RiskAnalyst,RMSComplexAnalysisUser,SecureBayanBlocking,SysCustoms,TariffReadOnly,VRMReadOnly,VRS Manager,XrayViewer,RMSAdmin," StateId="PeopleCreatedState" UserId="az.aldwisan" AccountStatus="y" UnitName="SHUWAIKH PORT" LoginPortId="8998" LanguageId="ara" OrganizationId="29590" PersonalId="667924" OpenTime="2024-07-29T14:34:49.763+03:00" ParentId="" Name="" LastName="" DateOfBirth="" PlaceOfBirth="" CultureId=""/>
+						<UserDetails OwnerLocId="8998" PrincipalId="hanan.alazmi" FirstName="FirstName 157800" CreatedBy="Manar.AboAbeed" OrganizationName="KUWAIT CUSTOMS" OrganizationalUnitId="835" selected="" Roles="PhysicalFlieRequester,NotifyBlockingUsersAdmin,SysCustoms,ReadOnly,InvestigationOfficer,BWAuditor,Customs Land Report,StatisticalModule,ViewMOCIInfo,OrgReadOnly,DeclarationDocumentViewer,SecureBayanBlocking,VRMReadOnly,InvestigationSupervisor,InvestigationWriter,ReadOnlyConfiscate,VRS Manager,DeclXRayViewer,InspectorWriter,JrnXRayViewer,XrayViewer,AssessmentOfficeInstructor,AssessmentUser,RiskAnalyst,RMSAdmin,RMSComplexAnalysisUser,AddlSearchInvOfficer,ViewArchivedData,DDArchivingDept,BaitAlMal,BayanReadOnly,BlockVehicleRegistrationInvDept,CmanifestReadOnly,ConfiscateDashBoard,Customs Operation,Customs Report,CustomsExit Gate,CustomsStatReports,Inspector,InspectorSupervisor,ReExportRequests,SeenOnExitInspector,TariffReadOnly,ViewMOJFinReports,ViewMOJLegalReports,BRSModuleReadOnlyRole,ContainerTerminalReadOnly,RMSAdmin," StateId="PeopleCreatedState" UserId="hanan.alazmi" AccountStatus="y" UnitName="Statistics Dept" LoginPortId="89981302" CultureId="eng" LanguageId="eng" OrganizationId="29590" PersonalId="157800" OpenTime="2024-07-29T14:34:49.763+03:00" ParentId="" Name="" LastName="" DateOfBirth="" PlaceOfBirth=""/>
+					</UserDetailsrecords>
+				</RoleUsersrecords>
+			</Roles>
+		</Rolesrecords>
+	</data>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(bde5f827-e55a-4489-b845-bd97bef7a18a)" IgnoreCache="0"/>
+ 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="ma.ali" password="" authenticated="1" roleid="" pageid="Role" profileid="" templateid="" actionid="OpenRoles" actiontype="X" actioncriteria="[Roles].[RoleId]=N'AssessmentOfficeInstructor'" nextactionid="" nextactioncriteria="" continue="0" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="Role" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="2" searchnode="Rolesrecords" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice>
+</servicedocument> 

@@ -1,0 +1,43 @@
+<servicedocument>-   <PerformanceAnalysis>
+		<stage id="submit" startedat="" completedat="14:29:17:178" period=""/>
+		<stage id="processing" startedat="14:29:17:178" completedat="14:29:25:965" period="0:8:787"/>
+		<stage id="transformation" startedat="" completedat="" period=""/>
+		<stage id="loading" startedat="0" completedat="14:29:32:356" period="1722252572356"/>
+	</PerformanceAnalysis> 
+-   <user RowNumber="1" OwnerLocId="8998" LogInPortName="SHUWAIKH" LogInPortId="712360" DepartmentId="8483001" ThemeId="Blue" UserType="0" StateId="PeopleCreatedState" selected="" OrganizationId="29588" UserId="ma.ali" LanguageId="eng" LastLogOnTime="2024-07-29T14:26:34+03:00" Password="" LogInPortNameAra="ميناء الشويخ" CreatedBy="rn.rajagopalan" Direction="ltr" PersonalId="52216" OrganizationType="HOST" CultureId="eng" FirstName="FirstName 52216" Roles="" message="" AccountStatus="y" StdLocationTypeTypeId="33223961" IsEmailVerified="0" IsFirstLogin="0" MenuType="vm" AllowMenuAccess="1" OpenTime="2024-07-29T14:29:25.087+03:00" UnitId="" SectionId="" Groups="" Token="" TimeZone="" FileNo="" TwoFactorAuth="" PortSites="" RestrictAccess="" UserCustDepartmentId="" MenuOrder="" MenuFavourites="" AllowedBrowsers="">
+		<AllowedMenuActions/>
+		<AllowedPageActions/>
+	</user> 
+-   <pagelets>
+		<xpagelet id="ListRoles" Classes="Form[@id='HomePage']" type="" cultureid="" LanguageId="eng" dir="ltr" availHeight="" availWidth="" MinAcceptableYear="1900" user_dateformat="dmy" user_dateseparator="-" user_decimalchar="." xml_dateformat="ymd" xml_dateseparator="-" xml_decimalchar="." xml_date="longdate" WindowStamp="" BaseFormName="" BaseFormCtrlIndex=""/>
+	</pagelets> 
+-   <data>-   <Rolesrecords PageSize="10" PageCount="34" PageNumber="1" TotalRecordsFetched="337">
+			<Roles RowNumber="1" CreatedBy="kd.alenezi" RoleId="2" selected="" StateId="RolesCreatedState" OwnerLocId="7050846" OwnerOrgId="29590" OpenTime="2024-07-29T14:30:21.7+03:00" Description="" Name="" RoleUsers="" RoleGroups="" AllowedIps=""/>
+			<Roles RowNumber="2" CreatedBy="MicroClear" Description="AddlSearchInvOfficer" Name="AddlSearchInvOfficer" RoleId="AddlSearchInvOfficer" selected="" StateId="RolesCreatedState" OwnerLocId="8998" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps=""/>
+			<Roles RowNumber="3" CreatedBy="MicroClear" Description="Advance Transactions Detail Report" Name="Advance Transactions Detail Report" RoleId="AdvTransDtlRpt" selected="" StateId="RolesCreatedState" OwnerLocId="8998" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps=""/>
+			<Roles RowNumber="4" CreatedBy="gh.mani" Description="To close HB in Air by Inspectors" Name="AirManifestforClosing" RoleId="AirManifestforClosing" selected="" StateId="RolesCreatedState" OwnerLocId="8998" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps=""/>
+			<Roles RowNumber="5" CreatedBy="rn.rajagopalan" Description="AirportGHA" Name="AirportGHA" RoleId="AirportGHA" selected="" StateId="RolesCreatedState" OwnerLocId="8998" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps=""/>
+			<Roles RowNumber="6" CreatedBy="MicroClear" Description="AssessmentAuditor" Name="AssessmentAuditor" RoleId="AssessmentAuditor" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId=""/>
+			<Roles RowNumber="7" CreatedBy="MicroClear" Description="AssessmentAuditorSupervisor" Name="AssessmentAuditorSupervisor" RoleId="AssessmentAuditorSupervisor" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId=""/>
+			<Roles RowNumber="8" CreatedBy="MicroClear" Description="AssessmentCManifest" Name="AssessmentCManifest" RoleId="AssessmentCManifest" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId=""/>
+			<Roles RowNumber="9" CreatedBy="MicroClear" Description="AssessmentInspector" Name="AssessmentInspector" RoleId="AssessmentInspector" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId=""/>
+			<Roles RowNumber="10" CreatedBy="MicroClear" Description="AssessmentInspectorSupervisor" Name="AssessmentInspectorSupervisor" RoleId="AssessmentInspectorSupervisor" selected="" StateId="FixedRoleState" OwnerOrgId="29588" OpenTime="2024-07-29T14:30:21.7+03:00" RoleUsers="" RoleGroups="" AllowedIps="" OwnerLocId=""/>
+		</Rolesrecords>
+	</data>
+	<domaindata/>
+ 
+-   <Languages>
+		<Language id="ara" Name="Arabic" Direction="rtl"/>
+		<Language id="eng" Name="English" Direction="ltr"/>
+	</Languages>
+	<Insts LastSDOptions="0" SDStamp="(964cfbb3-4e86-4b8d-a2ff-fce37121c89f)" IgnoreCache="0"/>
+ 
+-   <actionservice>
+		<actioncontrol fingerprinttoken="" userid="ma.ali" password="" authenticated="1" roleid="" pageid="ListRoles" profileid="" templateid="" actionid="ListRoles" actiontype="X" actioncriteria="" nextactionid="" nextactioncriteria="" continue="0" listpagesizes="" listpage="" previouspageid="" previousactionid="" previousactioncriteria="" previousprofileid="" actionpageid="ListRoles" passwordreset="" passwordlastresetdate="" passworddaystoexpire="" actioncallfilter="" smartclient="" twofactorauthcode="" searchpageid="" searchactioncriteria="" searchactionid="" searchpagenumber="" searchnode="" searchsorttype="" searchsortby=""/>
+ 
+-   <exception code="" type="" message="" context_value="" sourcecode="" stack="">
+			<details/>
+			<actorexceptions/>
+		</exception>
+	</actionservice>
+</servicedocument>
