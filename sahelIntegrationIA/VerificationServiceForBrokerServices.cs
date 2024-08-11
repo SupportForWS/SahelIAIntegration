@@ -694,6 +694,15 @@ namespace sahelIntegrationIA
             return requestDto;
         }
 
+
+        private GenderEnum GetGender(string gender)
+        {
+            if (string.IsNullOrEmpty(gender)) return GenderEnum.Male;
+
+            if (gender.ToUpper() == "F") return GenderEnum.Female;
+
+            return GenderEnum.Male;
+        }
         private AgentExamRequestDTO GetBrokerExamRequestDto(ServiceRequest serviceRequest)
         {
             var details = serviceRequest.ServiceRequestsDetail;
@@ -701,7 +710,7 @@ namespace sahelIntegrationIA
             var requestDto = new AgentExamRequestDTO();
             requestDto.BrokerType = CommonFunctions.CsUploadEncrypt(details.RequestForUserType.ToString());
             requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
-            requestDto.Gender = string.IsNullOrEmpty(details.Gender) ? GenderEnum.Male : (GenderEnum)int.Parse(details.Gender);
+            requestDto.Gender = GetGender(details.Gender);
 
             //from moci
             requestDto.BrokerArabicFirstName = details.ArabicFirstName;
