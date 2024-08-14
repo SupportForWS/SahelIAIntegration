@@ -84,7 +84,12 @@ namespace sahelIntegrationIA
 
 
             }
-            return requestList;
+
+            var filteredRequests = requestList
+                .Where(request => !expiredKmidRequests.Contains(int.Parse(request.KMIDToken)))
+                .ToList();
+
+            return filteredRequests;
 
         }
         public async Task CheckBrokerRequests()
