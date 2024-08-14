@@ -98,7 +98,8 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && p.ServiceId ==(int)ServiceTypesEnum.OrganizationRegistrationService
                                            && !string.IsNullOrEmpty(p.OrganizationRequest.KMIDToken)
-                                           && p.OrganizationRequest.StateId != "OrganizationRequestForCreateState" && p.OrganizationRequest.StateId != "OrganizationRequestForUpdateState"
+                                           && p.OrganizationRequest.StateId != "OrganizationRequestForCreateState" 
+                                           && p.OrganizationRequest.StateId != "OrganizationRequestForUpdateState"
 
                                && (p.OrganizationRequest.ReadyForSahelSubmission == "1" || (p.OrganizationRequest.ReadyForSahelSubmission == "2" &&
                                p.RequestSubmissionDateTime.HasValue &&
@@ -605,6 +606,10 @@ namespace sahelIntegrationIA
                     return SahelNotficationTypesEnum.OrganizationNameChange;
                 case ServiceTypesEnum.ConsigneeUndertakingRequest:
                     return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
+
+                case ServiceTypesEnum.OrganizationRegistrationService:
+                    return SahelNotficationTypesEnum.OrganizationRegistrationService;
+
                 default:
                     return SahelNotficationTypesEnum.RenewImportLicense;
             }
