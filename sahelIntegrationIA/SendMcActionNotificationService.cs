@@ -120,10 +120,7 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest,
-                (int)ServiceTypesEnum.WhomItConcernsLetterService
-
-                //broker
-                
+                (int)ServiceTypesEnum.WhomItConcernsLetterService                
             };
 
 
@@ -156,6 +153,8 @@ namespace sahelIntegrationIA
                                .AsNoTracking()
                                .ToListAsync();
 
+            LogRequestList(requestList, "Eservices Requests");
+
             var organizationRequests = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.OrganizationRequest)
@@ -167,7 +166,10 @@ namespace sahelIntegrationIA
                                             && !p.OrganizationRequest.MCNotificationSent.Value))
                                .ToListAsync();
 
-            //requests for exam
+            //OrganizationRequestCreatedState
+
+            LogRequestList(organizationRequests, "Organization Reg Requests");
+
             var examRequests = await _eServicesContext
                              .Set<ServiceRequest>()
                              .Include(p => p.ServiceRequestsDetail)
@@ -201,18 +203,14 @@ namespace sahelIntegrationIA
                 .Where(x => IsMatchingStateAndNotification(x, filteredExamRequestsId))
                 .ToList();
 
+            LogRequestList(examRequests, "Exam Requests");
+
 
             requestList.AddRange(examRequests);
 
             requestList.AddRange(organizationRequests);
 
-            string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
-                        new JsonSerializerSettings()
-                        {
-                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                        });
-
-            _logger.LogInformation(message: "{1} - ShaleNotificationMC - Sahel MC Notifications {0}", new object[] { log, _jobCycleId });
+            LogRequestList(requestList, "AllRequests");
 
             return requestList;
         }
@@ -869,6 +867,17 @@ namespace sahelIntegrationIA
 
         }
 
+
+        private void LogRequestList(List<ServiceRequest> requestList, string source)
+        {
+            string log = Newtonsoft.Json.JsonConvert.SerializeObject(requestList, Newtonsoft.Json.Formatting.None,
+                      new JsonSerializerSettings()
+                      {
+                          ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                      });
+
+            _logger.LogInformation("{2} - ShaleNotificationMC - Sahel MC Notifications-{0} {1}", source, log, _jobCycleId);
+        }
         #endregion
     }
 
