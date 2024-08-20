@@ -13,6 +13,7 @@ using System.Net;
 using System.Text;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using eServices.APIs.UserApp.OldApplication.Models;
+using Microsoft.Data.SqlClient;
 namespace sahelIntegrationIA
 {
 
@@ -112,6 +113,11 @@ namespace sahelIntegrationIA
                                             < currentDate)
                                             ))
                                 .ToListAsync();
+
+           var testrequestList =  GetServiceRequests();
+            string testrequestListjson = JsonConvert.SerializeObject(testrequestList);
+
+            _logger.LogInformation("Serialized testrequestList: {testrequestList}", testrequestListjson);
 
 
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();
@@ -787,7 +793,45 @@ namespace sahelIntegrationIA
         }
 
 
+        private DataTable GetServiceRequests()
+        {
+            string query = @"
+            SELECT [e].[EServiceRequestId], [e].[ApprovedBy], [e].[ApprovedDate], [e].[CreatedBy], [e].[DateCreated], [e].[DateModified], [e].[DeliveredBy], [e].[DeliveredDate], [e].[DeliveryRemarks], [e].[EServiceRequestNumber], [e].[KNetReceiptNo], [e].[ModifiedBy], [e].[OwnerLocId], [e].[OwnerOrgId], [e].[RequestCompletionDateTime], [e].[RequestSource], [e].[RequestSubmissionDateTime], [e].[RequesterUserId], [e].[RequesterUserType], [e].[RevokeActionDate], [e].[ServiceId], [e].[StateId], [e].[SubscriberCivilId], [e].[UTFExpDate], [e0].[EserviceRequestDetailsId], [e0].[AdditionalInfoRemarks], [e0].[Address], [e0].[AirCustomsDepartment], [e0].[ApartmentNumber], [e0].[ApartmentType], [e0].[ArabicFirstName], [e0].[ArabicLastName], [e0].[ArabicSecondName], [e0].[ArabicThirdName], [e0].[AssociatedOrgIds], [e0].[AuthorizedPerson], [e0].[AuthorizedSignatoryCivilIdExpiryDate], [e0].[BankGuaranteeAmount], [e0].[BankGuaranteeBankId], [e0].[BankGuaranteeCustomsBusinessActivityId], [e0].[BankGuaranteeCustomsSystemUserId], [e0].[BankGuaranteeDate], [e0].[BankGuaranteeExpiryDate], [e0].[BankGuaranteeNumber], [e0].[BankGuranteeFor], [e0].[BankTransactionExpiryDate], [e0].[BgId], [e0].[Block], [e0].[BrokFileNo], [e0].[BusiFaxNo], [e0].[BusiNo], [e0].[ChangeJobTitleFrom], [e0].[ChangeJobTitleTo], [e0].[City], [e0].[CivilID], [e0].[CivilIDExpiryDate], [e0].[CommercialLicenseNo], [e0].[CommercialLicenseType], [e0].[CommercialLicenseTypeDesc], [e0].[CompanyCivilId], [e0].[CountryId], [e0].[CreatedBy], [e0].[CreatedBySahel], [e0].[CustomsBusinessActivityId], [e0].[CustomsUserArabicName], [e0].[CustomsUserCivilId], [e0].[CustomsUserEnglishName], [e0].[CustomsUserResetPassword], [e0].[DateCreated], [e0].[DateModified], [e0].[DateOfBirth], [e0].[DeactivateReason], [e0].[Email], [e0].[EnglishFirstName], [e0].[EnglishLastName], [e0].[EnglishSecondName], [e0].[EnglishThirdName], [e0].[EserviceRequestId], [e0].[ExamAddmissionId], [e0].[ExamDetailsId], [e0].[ExamNotification], [e0].[ExistingCivilId], [e0].[ExistingEmailId], [e0].[ExistingFirstName], [e0].[ExistingGender], [e0].[ExistingLastName], [e0].[ExistingMobileNumber], [e0].[ExpiryDate], [e0].[Floor], [e0].[FromBusiness], [e0].[Gender], [e0].[ImporterLicenseNo], [e0].[ImporterLicenseType], [e0].[ImporterLicenseTypeDesc], [e0].[IndustrialLicenseNo], [e0].[IsBankGuaranteeRequiredForCustomsUser], [e0].[IsDelivered], [e0].[IssueDate], [e0].[KMIDToken], [e0].[LandCustomsDepartment], [e0].[LicenseExpiryDate], [e0].[LicenseIssueDate], [e0].[LicenseNumber], [e0].[LicenseNumberExpiryDate], [e0].[LicenseNumberIssueDate], [e0].[MCNotificationSent], [e0].[MCPersonalId], [e0].[MobileNo], [e0].[MobileNumber], [e0].[ModifiedBy], [e0].[Nationality], [e0].[NewOrgAraName], [e0].[NewOrgEngName], [e0].[OldOrgAraName], [e0].[OldOrgEngName], [e0].[OperatorCode], [e0].[OrganizationId], [e0].[OwnerLocId], [e0].[OwnerOrgId], [e0].[PassportExpiryDate], [e0].[PassportNo], [e0].[POBoxNo], [e0].[PostalCode], [e0].[PreferredLanguage], [e0].[ReadyForSahelSubmission], [e0].[RecipientCivilId], [e0].[RecipientsMobileNo], [e0].[RejectionReason], [e0].[RejectionRemarks], [e0].[Remarks], [e0].[ReqCompletionDate], [e0].[RequestForEmail], [e0].[RequestForName], [e0].[RequestForUserId], [e0].[RequestForUserType], [e0].[RequestForVisit], [e0].[RequestForVisitRemarks], [e0].[RequestServicesId], [e0].[RequesterArabicName], [e0].[RequesterEmailId], [e0].[RequesterEnglishName], [e0].[RequesterLicenseNumber], [e0].[RequesterUserId], [e0].[ResidenceNo], [e0].[SahelToken1], [e0].[SahelToken2], [e0].[SeaCustomsDepartment], [e0].[SelectedAuthorizer], [e0].[State], [e0].[StateId], [e0].[status], [e0].[Street], [e0].[UpdatePassword], [e0].[UpdateReason], [e0].[UserComment], [e0].[UserDetailsReceivedby], [e0].[UserId], [e0].[UTFBrokerPersonalId], [e0].[WebPageAddress]
+            FROM [etrade].[EServiceRequests] AS [e]
+            LEFT JOIN [etrade].[EServiceRequestsDetails] AS [e0] ON [e].[EServiceRequestId] = [e0].[EserviceRequestId]
+            WHERE [e].[StateId] IN ('EServiceRequestORGCreatedState', 'EServiceRequestORGForAdditionalInfo', 'EServiceRequestORGRejectedState', 'EServiceRequestCreatedState', 'EServiceRequestRejectedState', 'EServiceOrganizationRequestCreatedState', 'OrganizationRequestCreatedState', 'OrganizationRequestRejectedState', 'OrganizationRequestedForAdditionalInfoState', 'EservTranReqCreatedState', 'EservTranReqInitRejectedState', 'EservTranReqInitAcceptedState', 'EservTranReqProceedState') 
+            AND [e].[RequestSource] = N'Sahel' 
+            AND ([e0].[KMIDToken] IS NOT NULL) 
+            AND NOT ([e0].[KMIDToken] LIKE N'') 
+            AND CAST([e].[ServiceId] AS int) IN (20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 7, 12, 2, 17, 13, 15, 16, 14) 
+            AND ([e0].[ReadyForSahelSubmission] = N'1' 
+            OR ([e0].[ReadyForSahelSubmission] = N'2' 
+            AND ([e].[RequestSubmissionDateTime] IS NOT NULL) 
+            AND DATEADD(minute, @parameterValue, [e].[RequestSubmissionDateTime]) < @currentDate))";
 
+            using (SqlConnection connection = new SqlConnection(_configurations.ConnectionStrings.Default))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@parameterValue", _sahelConfigurations.SahelSubmissionTimer);
+                command.Parameters.AddWithValue("@currentDate", DateTime.Now);
+
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                DataTable dataTable = new DataTable();
+
+                try
+                {
+                    connection.Open();
+                    adapter.Fill(dataTable);
+                }
+                catch (Exception ex)
+                {
+                    // Handle exception (e.g., log it)
+                    Console.WriteLine("An error occurred: " + ex.Message);
+                }
+
+                return dataTable;
+            }
+        }
         #endregion
 
 

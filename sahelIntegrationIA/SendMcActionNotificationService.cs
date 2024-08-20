@@ -14,6 +14,8 @@ using eServicesV2.Kernel.Domain.Entities.OrganizationEntities;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServices.APIs.UserApp.OldApplication.Models;
 using ExamCandidateInfo = eServicesV2.Kernel.Domain.Entities.BrokerEntities.ExamCandidateInfo;
+using Microsoft.Data.SqlClient;
+
 namespace sahelIntegrationIA
 {
     public class SendMcActionNotificationService
@@ -120,7 +122,7 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest,
-                (int)ServiceTypesEnum.WhomItConcernsLetterService                
+                (int)ServiceTypesEnum.WhomItConcernsLetterService
             };
 
 
@@ -155,10 +157,18 @@ namespace sahelIntegrationIA
 
             LogRequestList(requestList, "Eservices Requests");
 
+
+            var orgStateId = new List<string>()
+            {
+                 "OrganizationRequestRejectedState",
+                "OrganizationRequestedForAdditionalInfoState",
+                "OrganizationRequestApprovedForUpdate",
+                "OrganizationRequestApprovedForCreate",
+            };
             var organizationRequests = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.OrganizationRequest)
-                               .Where(p => statusEnums.Contains(p.OrganizationRequest.StateId)
+                               .Where(p => orgStateId.Contains(p.OrganizationRequest.StateId)
                                            && p.RequestSource == "Sahel"
                                            && p.ServiceId == (int)ServiceTypesEnum.OrganizationRegistrationService
                                            && (p.OrganizationRequest.ReadyForSahelSubmission == "0")
@@ -166,9 +176,21 @@ namespace sahelIntegrationIA
                                             && !p.OrganizationRequest.MCNotificationSent.Value))
                                .ToListAsync();
 
-            //OrganizationRequestCreatedState
+
 
             LogRequestList(organizationRequests, "Organization Reg Requests");
+
+
+
+            organizationRequests = organizationRequests.Where(x => orgStateId.Contains(x.OrganizationRequest.StateId)).ToList();
+            LogRequestList(organizationRequests, "Organization Reg Requests2");
+            organizationRequests = organizationRequests.Where(x => x.OrganizationRequest.StateId != "OrganizationRequestCreatedState").ToList();
+            LogRequestList(organizationRequests, "Organization Reg Requests not equal OrganizationRequestCreatedState");
+
+
+            var tempRequests = await GetOrganizationRequests(orgStateId);
+            LogRequestList(tempRequests, "Organization tempRequests Requests");
+
 
             var examRequests = await _eServicesContext
                              .Set<ServiceRequest>()
@@ -214,6 +236,7 @@ namespace sahelIntegrationIA
 
             return requestList;
         }
+
 
         public async Task SendNotification()
         {
@@ -878,6 +901,82 @@ namespace sahelIntegrationIA
 
             _logger.LogInformation("{2} - ShaleNotificationMC - Sahel MC Notifications-{0} {1}", source, log, _jobCycleId);
         }
+
+        private async Task<List<ServiceRequest>> GetOrganizationRequests(List<string> orgStateId)
+        {
+            var organizationRequests = new List<ServiceRequest>();
+
+            using (var connection = new SqlConnection(_configurations.ConnectionStrings.Default))
+            {
+                await connection.OpenAsync();
+
+                var query = @"
+           SELECT sr.RequesterUserId ,
+           sr.EserviceRequestId ,
+           sr.ServiceId ,
+           sr.StateId ,
+           sr.EserviceRequestNumber ,
+           org.OrganizationId AS OrgOrganizationId,
+           org.OrganizationRequestId AS OrgOrganizationRequestId,
+           org.StateId AS OrgStateId,
+           org.RequestNumber AS OrgRequestNumber,
+           org.KMIDToken AS OrgKMIDToken,
+           org.ReadyForSahelSubmission AS OrgReadyForSahelSubmission,
+           org.MCNotificationSent AS OrgMCNotificationSent,
+           org.CivilId AS OrgCivilId
+        FROM etrade.[EServiceRequests] sr
+        INNER JOIN etrade.OrganizationRequests org ON sr.eServiceRequestNumber = org.RequestNumber
+        WHERE org.StateId IN (@state1, @state2, @state3, @state4)
+            AND sr.RequestSource = @requestSource
+            AND sr.ServiceId = @serviceId
+            AND org.ReadyForSahelSubmission = '0'
+            AND org.MCNotificationSent IS NOT NULL
+            AND org.MCNotificationSent = 0";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@state1", orgStateId[0]);
+                    command.Parameters.AddWithValue("@state2", orgStateId[1]);
+                    command.Parameters.AddWithValue("@state3", orgStateId[2]);
+                    command.Parameters.AddWithValue("@state4", orgStateId[3]);
+                    command.Parameters.AddWithValue("@requestSource", "Sahel");
+                    command.Parameters.AddWithValue("@serviceId", (int)ServiceTypesEnum.OrganizationRegistrationService);
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var eServiceRequest = new ServiceRequest
+                            {
+                                RequesterUserId = reader["RequesterUserId"] != DBNull.Value ? reader.GetInt64(reader.GetOrdinal("RequesterUserId")) : 0,
+                                EserviceRequestId = reader["EserviceRequestId"] != DBNull.Value ? reader.GetInt64(reader.GetOrdinal("EserviceRequestId")) : 0,
+                                ServiceId = reader["ServiceId"] != DBNull.Value ? reader.GetInt64(reader.GetOrdinal("ServiceId")) : 0,
+                                StateId = reader["StateId"] != DBNull.Value ? reader["StateId"].ToString() : null,
+                                EserviceRequestNumber = reader["EserviceRequestNumber"] != DBNull.Value ? reader["EserviceRequestNumber"].ToString() : null,
+
+                                OrganizationRequest = new OrganizationRequests
+                                {
+                                    OrganizationId = reader["OrgOrganizationId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("OrgOrganizationId")) : 0,
+                                    OrganizationRequestId = reader["OrgOrganizationRequestId"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("OrgOrganizationRequestId")) : 0,
+
+                                    StateId = reader["OrgStateId"] != DBNull.Value ? reader["OrgStateId"].ToString() : null,
+                                    RequestNumber = reader["OrgRequestNumber"] != DBNull.Value ? reader["OrgRequestNumber"].ToString() : null,
+                                    KMIDToken = reader["OrgKMIDToken"] != DBNull.Value ? reader["OrgKMIDToken"].ToString() : null,
+                                    ReadyForSahelSubmission = reader["OrgReadyForSahelSubmission"] != DBNull.Value ? reader["OrgReadyForSahelSubmission"].ToString() : null,
+                                    MCNotificationSent = reader["OrgMCNotificationSent"] != DBNull.Value ? reader.GetBoolean(reader.GetOrdinal("OrgMCNotificationSent")) : false,
+                                    CivilId = reader["OrgCivilId"] != DBNull.Value ? reader["OrgCivilId"].ToString() : null
+                                }
+                            };
+
+                            organizationRequests.Add(eServiceRequest);
+                        }
+                    }
+                }
+            }
+
+            return organizationRequests;
+        }
+
         #endregion
     }
 
