@@ -48,6 +48,7 @@ namespace sahelIntegrationIA
                                            && !p.OTPSent.Value
                                            && !p.NotificationSent
                                             )
+                                .AsNoTracking()
                                 .ToListAsync();
 
 

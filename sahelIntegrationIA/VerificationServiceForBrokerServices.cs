@@ -112,12 +112,13 @@ namespace sahelIntegrationIA
                                             p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer)
                                             < currentDate)
                                             ))
+                               .AsNoTracking()
                                 .ToListAsync();
 
-           var testrequestList =  GetServiceRequests();
-            string testrequestListjson = JsonConvert.SerializeObject(testrequestList);
+           //var testrequestList =  GetServiceRequests();
+           // string testrequestListjson = JsonConvert.SerializeObject(testrequestList);
 
-            _logger.LogInformation("Serialized testrequestList: {testrequestList}", testrequestListjson);
+           // _logger.LogInformation("Serialized testrequestList: {testrequestList}", testrequestListjson);
 
 
             var requestNumbers = requestList.Select(p => p.EserviceRequestNumber).ToList();

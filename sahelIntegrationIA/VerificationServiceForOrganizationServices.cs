@@ -89,6 +89,7 @@ namespace sahelIntegrationIA
                                             p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) 
                                             < currentDate)
                                             ))
+                                .AsNoTracking()
                                 .ToListAsync();
 
             var organizationRequestList = await _eServicesContext
@@ -104,6 +105,7 @@ namespace sahelIntegrationIA
                                && (p.OrganizationRequest.ReadyForSahelSubmission == "1" || (p.OrganizationRequest.ReadyForSahelSubmission == "2" &&
                                p.RequestSubmissionDateTime.HasValue &&
                                             p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
+                               .AsNoTracking()
                                 .ToListAsync();
                                    
 

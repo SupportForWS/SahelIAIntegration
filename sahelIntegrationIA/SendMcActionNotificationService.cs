@@ -165,6 +165,11 @@ namespace sahelIntegrationIA
                 "OrganizationRequestApprovedForUpdate",
                 "OrganizationRequestApprovedForCreate",
             };
+
+
+           // var organizationRequests =  await GetOrganizationRequests(orgStateId);
+         //   LogRequestList(organizationRequests, "Organization Register Requests ADO");
+
             var organizationRequests = await _eServicesContext
                                .Set<ServiceRequest>()
                                .Include(p => p.OrganizationRequest)
@@ -174,10 +179,8 @@ namespace sahelIntegrationIA
                                            && (p.OrganizationRequest.ReadyForSahelSubmission == "0")
                                             && (p.OrganizationRequest.MCNotificationSent.HasValue
                                             && !p.OrganizationRequest.MCNotificationSent.Value))
+                               .AsNoTracking()
                                .ToListAsync();
-
-
-
             LogRequestList(organizationRequests, "Organization Reg Requests");
 
 
@@ -186,10 +189,6 @@ namespace sahelIntegrationIA
             LogRequestList(organizationRequests, "Organization Reg Requests2");
             organizationRequests = organizationRequests.Where(x => x.OrganizationRequest.StateId != "OrganizationRequestCreatedState").ToList();
             LogRequestList(organizationRequests, "Organization Reg Requests not equal OrganizationRequestCreatedState");
-
-
-            var tempRequests = await GetOrganizationRequests(orgStateId);
-            LogRequestList(tempRequests, "Organization tempRequests Requests");
 
 
             var examRequests = await _eServicesContext
