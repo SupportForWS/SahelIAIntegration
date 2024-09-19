@@ -692,13 +692,13 @@ namespace sahelIntegrationIA
         {
             return new AuthorizedSignatoryDto
             {
-                AuthorizedSignatoryCivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                //AuthorizedSignatoryCivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
                 CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
                 EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
-                AuthPerson = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                //AuthPerson = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
                 ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
                 IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-                NationalityId = serviceRequest.ServiceRequestsDetail.Nationality,
+               // NationalityId = serviceRequest.ServiceRequestsDetail.Nationality,
                 OrganizationId = serviceRequest.ServiceRequestsDetail.OrganizationId.Value.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
@@ -734,10 +734,10 @@ namespace sahelIntegrationIA
                 {
                     //TODO: check
                     CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
-                    CivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                   // CivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
                     ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
                     IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-                    Name = serviceRequest.ServiceRequestsDetail.AuthorizedPerson
+                    //Name = serviceRequest.ServiceRequestsDetail.AuthorizedPerson
                 },
                 EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,
