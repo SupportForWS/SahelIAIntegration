@@ -11,6 +11,7 @@ namespace sahelIntegrationIA.Configurations
         public int OrganizationKMIDCallingTimer { get; set; }
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
+        public KMIDVerificationNotification KMIDVerificationNotification { get; set; }
         public int SahelSubmissionTimer { get; set; }
         public bool IsSahelNotificationServiceEnable { get; set; }
         public bool IsSendMcActionNotificationServiceEnable { get; set; }
@@ -98,6 +99,19 @@ namespace sahelIntegrationIA.Configurations
 
 
 
+
+    }
+
+    public class KMIDVerificationNotification
+    {
+        public string KMIDSuccessAr { get; set; }
+        public string KMIDSuccessEn { get; set; }
+        public string SomethingErrorEn { get; set; }
+        public string SomethingErrorAr { get; set; }
+        public string CivilIdExpiredEn { get; set; }
+        public string CivilIdExpiredAr { get; set; }
+        public string VerificationRequestRejectedByAuthorizedSignatoryAr { get; set; }
+        public string VerificationRequestRejectedByAuthorizedSignatoryEn { get; set; }
 
     }
 }

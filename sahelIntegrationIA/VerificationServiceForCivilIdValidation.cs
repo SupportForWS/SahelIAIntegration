@@ -20,6 +20,8 @@ using static sahelIntegrationIA.VerificationServiceForCivilIdValidation;
 using eServicesV2.Kernel.Core.Infrastructure.Localization;
 using eServicesV2.Kernel.Core.Enums;
 using eServices.Kernel.Core.Extensions;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 
 
@@ -40,14 +42,12 @@ namespace sahelIntegrationIA
 
 
         //todo check
-        private readonly IeServicesLocalizer _localizer;
 
 
         public VerificationServiceForCivilIdValidation(IRequestLogger logger,
                                                           IBaseConfiguration configuration,
                                                           eServicesContext eServicesContext,
                                                           IDapper dapper,
-                                                          IeServicesLocalizer localizer,
         SahelConfigurations sahelConfigurations)
 
         {
@@ -56,7 +56,6 @@ namespace sahelIntegrationIA
             _eServicesContext = eServicesContext;
             _dapper = dapper;
             _sahelConfigurations = sahelConfigurations;
-            _localizer = localizer;
 
         }
         public async Task CreateRequestObjectDTO()
@@ -96,10 +95,10 @@ namespace sahelIntegrationIA
             var requestList = await _eServicesContext
                                .Set<AuthorizedPersonInfoForNewOrg>()
                                .Where(p => p.TokenId.HasValue
-                                           && p.KMIDStatus.HasValue &&
+                                           && (p.KMIDStatus.HasValue &&
                                            p.KMIDStatus == false
                                            && p.NotificationSent.HasValue
-                                           && p.NotificationSent == false
+                                           && p.NotificationSent == false) ||!p.NotificationSent.HasValue
                                           )
                                 .AsNoTracking()
                                 .ToListAsync();
@@ -377,7 +376,7 @@ namespace sahelIntegrationIA
             CivilIdCheckResult civilIdCheckDetails = new();
 
             //todo use sahel config
-            var verificationTimeout = DateTime.Now.AddMilliseconds(_configurations.LoaderExpirationTimer);
+            var verificationTimeout = DateTime.Now.AddSeconds(_sahelConfigurations.OrganizationKMIDCallingTimer);
 
             if (string.IsNullOrEmpty(token) || token == "0")
             {
@@ -470,7 +469,7 @@ namespace sahelIntegrationIA
         private async Task<string> KmidVerificationStatus(string token)
         {
             string kMIDStatus = string.Empty;
-            var data = MobileDataBase.GetKMIDVerificationStatusFromDB(token);
+            var data = GetKMIDVerificationStatusFromDB(token);
             if (data.Rows.Count == 1)
             {
                 string status = data.Rows[0]["KMIDStatusDetails"].ToString();
@@ -491,6 +490,35 @@ namespace sahelIntegrationIA
             }
             return kMIDStatus;
         }
+        public DataTable GetKMIDVerificationStatusFromDB(string sCSVTokens)
+        {
+            DataTable result = null;
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(sCSVTokens))
+                {
+                    using (SqlConnection connection = new SqlConnection(_configurations.ConnectionStrings.Default))
+                    {
+                        using SqlCommand sqlCommand = new SqlCommand("[etrade].[sp_GetKMIDVerificationStatus]", connection);
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.Add("@csvTokens", SqlDbType.NVarChar).Value = sCSVTokens;
+                        DataSet dataSet = new DataSet();
+                        SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+                        sqlDataAdapter.Fill(dataSet);
+                        result = dataSet.Tables[0];
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex, "Sahel-Service");
+                CommonFunctions.LogUserActivity("GetKMIDVerificationStatusFromDB", "", "", "", "", ex.Message.ToString());
+            }
+
+            return result;
+        }
 
         private async Task HandleErrorNotification(ResourcesEnum errorMessage, AuthorizedPersonInfoForNewOrg serviceRequest)
         {
@@ -508,12 +536,28 @@ namespace sahelIntegrationIA
         private (string msgAr, string msgEn) FormatNotificationMessage(ResourcesEnum errorMessage, string civilId)
         {
             var config = _sahelConfigurations.MCNotificationConfiguration;
-
+            string ar = string.Empty;
+            string en = string.Empty;
             //todo check can access _localizer
-            string ar = string.Format(_localizer.GetValueByLang(errorMessage, LanguageEnum.Arabic.GetEnumDescription().ToLower())
+            if(errorMessage == ResourcesEnum.SomethingWentWrong)
+            {
+                ar = _sahelConfigurations.KMIDVerificationNotification.SomethingErrorAr;
+                en = _sahelConfigurations.KMIDVerificationNotification.SomethingErrorEn;
+            }
+            else if (errorMessage == ResourcesEnum.VerificationRequestRejectedByAuthorizedSignatorySahel)
+            {
+                ar = _sahelConfigurations.KMIDVerificationNotification.VerificationRequestRejectedByAuthorizedSignatoryAr;
+                en = _sahelConfigurations.KMIDVerificationNotification.VerificationRequestRejectedByAuthorizedSignatoryEn;
+            }
+            else if(errorMessage == ResourcesEnum.CivilIdExpiredSahel)
+            {
+                ar = _sahelConfigurations.KMIDVerificationNotification.CivilIdExpiredAr; ;
+                en = _sahelConfigurations.KMIDVerificationNotification.CivilIdExpiredAr; ;
+            }
+            ar = string.Format(ar
                                              , civilId);
 
-            string en = string.Format(_localizer.GetValueByLang(errorMessage, LanguageEnum.English.GetEnumDescription().ToLower())
+             en = string.Format(en
                                   , civilId);
 
             //todo add error message
@@ -531,8 +575,8 @@ namespace sahelIntegrationIA
 
         private async Task HandleSuccessNotification(CivilIdCheckResult result, AuthorizedPersonInfoForNewOrg serviceRequest)
         {
-            string msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.SignUpKmidExpiredAr, serviceRequest.CivilId);
-            string msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.SignUpKmidExpiredEn, serviceRequest.CivilId);
+            string msgAr = string.Format(_sahelConfigurations.KMIDVerificationNotification.KMIDSuccessAr, serviceRequest.CivilId);
+            string msgEn = string.Format(_sahelConfigurations.KMIDVerificationNotification.KMIDSuccessEn, serviceRequest.CivilId);
 
             bool isSent = await CreateNotification(msgAr, msgEn, serviceRequest);
 
