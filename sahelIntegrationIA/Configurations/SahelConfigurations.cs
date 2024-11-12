@@ -97,6 +97,9 @@ namespace sahelIntegrationIA.Configurations
         public string NotAttendExamNotificationAr { get; set; }
         public string NotAttendExamNotificationEn { get; set; }
 
+        public string CustomizedSomethingWentWrongAr { get; set; }
+        public string CustomizedSomethingWentWrongEn { get; set; }
+
 
 
 

@@ -15,6 +15,9 @@ using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServices.APIs.UserApp.OldApplication.Models;
 using ExamCandidateInfo = eServicesV2.Kernel.Domain.Entities.BrokerEntities.ExamCandidateInfo;
 using Microsoft.Data.SqlClient;
+using System.Text;
+using static sahelIntegrationIA.VerificationServiceForBrokerServices;
+using System.Security.Policy;
 
 namespace sahelIntegrationIA
 {
@@ -374,14 +377,14 @@ namespace sahelIntegrationIA
                 case nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState):
                 case "OrganizationRequestRejectedState":
                 case "EServiceRequestRejectState":
-                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber);
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationAr, serviceRequest.EserviceRequestNumber, serviceRequest.ServiceRequestsDetail.RejectionRemarks);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.RejectNotificationEn, serviceRequest.EserviceRequestNumber, serviceRequest.ServiceRequestsDetail.RejectionRemarks);
                     break;
 
                 case nameof(ServiceRequestStatesEnum.EServiceRequestFinalRejectedState):
                 case nameof(ServiceRequestStatesEnum.EservTranReqFinalRejectedState):
-                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationAr, serviceRequest.EserviceRequestNumber);
-                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationEn, serviceRequest.EserviceRequestNumber);
+                    msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationAr, serviceRequest.EserviceRequestNumber, serviceRequest.ServiceRequestsDetail.RejectionRemarks);
+                    msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FinalRejectNotificationEn, serviceRequest.EserviceRequestNumber, serviceRequest.ServiceRequestsDetail.RejectionRemarks);
                     break;
 
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGApprovedState):
@@ -404,7 +407,7 @@ namespace sahelIntegrationIA
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
 
-                case nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState):
+                case nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState): 
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
@@ -480,7 +483,16 @@ namespace sahelIntegrationIA
 
             }
 
+            if(serviceRequest.ServiceId == (int)ServiceTypesEnum.TransferService && 
+                stateId == nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState))
+            {
+                string url = _sahelConfigurations.EservicesUrlsConfigurations.TransferServiceUrl;
+                var notification = await CallServiceAPI(GetBrokerTransferRequestDto(serviceRequest), url);
+                msgAr= notification is not null ?notification.bodyAr : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongAr, serviceRequest.EserviceRequestNumber);
+                msgEn= notification is not null ?notification.bodyEn : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongEn, serviceRequest.EserviceRequestNumber);
 
+                actionButtons = notification is not null ? notification.actionButtonRequestList : null;
+            }
 
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
@@ -976,6 +988,55 @@ namespace sahelIntegrationIA
             return organizationRequests;
         }
 
+        private async Task<Notification> CallServiceAPI<T>(T serviceDTO, string apiUrl)
+        {
+            try
+            {
+                _logger.LogInformation("Start calling eService API at URL: {ApiUrl}", apiUrl);
+
+                using (var httpClient = new HttpClient())
+                {
+                    string json = JsonConvert.SerializeObject(serviceDTO);
+
+                    _logger.LogInformation("Serialized DTO: {SerializedDTO}", json);
+
+                    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var httpResponse = await httpClient.PostAsync(apiUrl, httpContent);
+
+                    string responseContent = await httpResponse.Content.ReadAsStringAsync();
+
+                    _logger.LogInformation("eService Response content: {ResponseContent}", responseContent);
+
+                    return  JsonConvert.DeserializeObject<Notification>(responseContent);
+                   
+                }
+                
+            }
+            catch (Exception ex)
+            { //TO DO Add notification on failure
+                _logger.LogException(ex, "Error occurred while calling API at URL: {ApiUrl}", apiUrl);
+                return null;
+            }
+
+        }
+        private CreateRequestTransferDTO GetBrokerTransferRequestDto(ServiceRequest serviceRequest)
+        {
+            var details = serviceRequest.ServiceRequestsDetail;
+
+            var requestDto = new CreateRequestTransferDTO();
+            requestDto.RequestNumber = serviceRequest.EserviceRequestNumber;
+            requestDto.CivilIdNumber = details.CivilId;
+            requestDto.ServiceRequestId = CommonFunctions.CsUploadEncrypt(serviceRequest.EserviceRequestId.ToString());
+            requestDto.MobileNumber = details.MobileNumber;
+            requestDto.MailAddress = details.Email;
+            requestDto.PassportNumber = details.PassportNo;
+            requestDto.PassportExpiryDate = details.PassportExpiryDate;
+            requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue ? details.LicenseNumberExpiryDate.Value : DateTime.Now;//check
+            requestDto.OrganizationId = CommonFunctions.CsUploadEncrypt(details.OrganizationId.ToString());
+            requestDto.BrokerLicenseNumber = details.LicenseNumber;
+            return requestDto;
+        }
         #endregion
     }
 
