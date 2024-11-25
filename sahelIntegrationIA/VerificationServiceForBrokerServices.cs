@@ -684,7 +684,7 @@ namespace sahelIntegrationIA
                 details.PassportExpiryDate.Value : null;//
 
             requestDto.TradeLicenseExpiryDate = details.LicenseNumberExpiryDate.HasValue ?
-                details.LicenseExpiryDate : null;//
+                details.LicenseNumberExpiryDate : null;//
 
             requestDto.ServiceId = CommonFunctions.CsUploadEncrypt(serviceRequest.ServiceId.ToString());
             requestDto.FromBusiness = details.FromBusiness;
