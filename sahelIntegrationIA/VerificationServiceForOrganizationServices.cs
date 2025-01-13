@@ -71,6 +71,15 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.ChangeCommercialAddressRequest,
                 (int)ServiceTypesEnum.ConsigneeUndertakingRequest
             };
+
+            int[] serviceIdsForValidation = new int[]
+           {
+                
+                (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
+              
+           };
             DateTime currentDate = DateTime.Now;
 
             _logger.LogInformation("Start fetching data for organization verification service");
@@ -82,7 +91,9 @@ namespace sahelIntegrationIA
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
                                            && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
-                                           && serviceIds.Contains((int)p.ServiceId.Value)
+                                           && (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
+                                       ? !string.IsNullOrEmpty(p.ServiceRequestsDetail.kmidTokenForAuthorizer)
+                                       : true) && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
                                             (p.ServiceRequestsDetail.ReadyForSahelSubmission == "2" 
                                             && p.RequestSubmissionDateTime.HasValue &&
