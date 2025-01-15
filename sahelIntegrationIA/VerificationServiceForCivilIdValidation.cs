@@ -98,7 +98,7 @@ namespace sahelIntegrationIA
                                            && (p.KMIDStatus.HasValue &&
                                            p.KMIDStatus == false
                                            && p.NotificationSent.HasValue
-                                           && p.NotificationSent == false) ||!p.NotificationSent.HasValue
+                                           && p.NotificationSent == false) || !p.NotificationSent.HasValue
                                           )
                                 .AsNoTracking()
                                 .ToListAsync();
@@ -539,7 +539,7 @@ namespace sahelIntegrationIA
             string ar = string.Empty;
             string en = string.Empty;
             //todo check can access _localizer
-            if(errorMessage == ResourcesEnum.SomethingWentWrong)
+            if (errorMessage == ResourcesEnum.SomethingWentWrong)
             {
                 ar = _sahelConfigurations.KMIDVerificationNotification.SomethingErrorAr;
                 en = _sahelConfigurations.KMIDVerificationNotification.SomethingErrorEn;
@@ -549,7 +549,7 @@ namespace sahelIntegrationIA
                 ar = _sahelConfigurations.KMIDVerificationNotification.VerificationRequestRejectedByAuthorizedSignatoryAr;
                 en = _sahelConfigurations.KMIDVerificationNotification.VerificationRequestRejectedByAuthorizedSignatoryEn;
             }
-            else if(errorMessage == ResourcesEnum.CivilIdExpiredSahel)
+            else if (errorMessage == ResourcesEnum.CivilIdExpiredSahel)
             {
                 ar = _sahelConfigurations.KMIDVerificationNotification.CivilIdExpiredAr; ;
                 en = _sahelConfigurations.KMIDVerificationNotification.CivilIdExpiredAr; ;
@@ -557,13 +557,13 @@ namespace sahelIntegrationIA
             ar = string.Format(ar
                                              , civilId);
 
-             en = string.Format(en
-                                  , civilId);
+            en = string.Format(en
+                                 , civilId);
 
             //todo add error message
             return errorMessage switch
             {
-                ResourcesEnum.VerificationRequestRejectedByAuthorizedSignatorySahel =>("",""),
+                ResourcesEnum.VerificationRequestRejectedByAuthorizedSignatorySahel => ("", ""),
 
                 ResourcesEnum.CivilIdExpiredSahel => ("", ""),
 
