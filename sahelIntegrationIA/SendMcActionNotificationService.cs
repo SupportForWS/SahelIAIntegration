@@ -746,7 +746,7 @@ namespace sahelIntegrationIA
                     //catch exception
                     return null;
                 }
-                TokenResult tokenResult = JsonConvert.DeserializeObject<TokenResult>(result);
+                SahelIntegrationModels.TokenResult tokenResult = JsonConvert.DeserializeObject<SahelIntegrationModels.TokenResult>(result);
                 token = tokenResult.accessToken;
 
                 return token;

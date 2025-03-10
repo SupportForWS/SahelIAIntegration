@@ -15,6 +15,7 @@ namespace IndividualAuthorizationSahelWorker
         private readonly SahelConfigurations _sahelConfigurations;
         private readonly VerificationServiceForBrokerServices _verificationServiceForBrokerServices;
         private readonly VerificationServiceForCivilIdValidation _verificationServiceForCivilIdValidation;
+        private readonly InspectionAppointmentsSchedulingService _inspectionAppointmentsSchedulingService;
         private TimeSpan period;
         IBaseConfiguration _configuration;
         private readonly VerificationServiceForSignUp _verificationServiceForSignUp;
@@ -27,7 +28,10 @@ namespace IndividualAuthorizationSahelWorker
             VerificationServiceForSignUp verificationServiceForSignUp,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
-            SahelConfigurations sahelConfigurations, VerificationServiceForBrokerServices verificationServiceForBrokerServices, VerificationServiceForCivilIdValidation verificationServiceForCivilIdValidation)
+            SahelConfigurations sahelConfigurations,
+            VerificationServiceForBrokerServices verificationServiceForBrokerServices,
+            InspectionAppointmentsSchedulingService inspectionAppointmentsSchedulingService
+            /*,VerificationServiceForCivilIdValidation verificationServiceForCivilIdValidation*/)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
@@ -38,7 +42,9 @@ namespace IndividualAuthorizationSahelWorker
             this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
             _verificationServiceForBrokerServices = verificationServiceForBrokerServices;
-            _verificationServiceForCivilIdValidation = verificationServiceForCivilIdValidation;
+            _inspectionAppointmentsSchedulingService = inspectionAppointmentsSchedulingService;
+
+            //_verificationServiceForCivilIdValidation = verificationServiceForCivilIdValidation;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -52,11 +58,12 @@ namespace IndividualAuthorizationSahelWorker
                 _logger.LogInformation("New Worker running at: {time}", DateTimeOffset.Now);
                 Console.WriteLine("Sahel integration with individual authorization Worker running at: {time}" + DateTimeOffset.Now);
                 Console.WriteLine("ssss");
-                await varificationService.VarifyRequests();
-                await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
-                await _verificationServiceForBrokerServices.CheckBrokerRequests();
-                await _verificationServiceForSignUp.CheckBrokerRequests();
-                await _verificationServiceForCivilIdValidation.CreateRequestObjectDTO();
+                //await varificationService.VarifyRequests();
+                //await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
+                //await _verificationServiceForBrokerServices.CheckBrokerRequests();
+                //await _verificationServiceForSignUp.CheckBrokerRequests();
+                await _inspectionAppointmentsSchedulingService.ProcessInspectionAppointmentsQueue();
+                //await _verificationServiceForCivilIdValidation.CreateRequestObjectDTO();
                 if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
                 {
                     await sendMcActionNotificationService.SendNotification();

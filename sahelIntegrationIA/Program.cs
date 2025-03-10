@@ -86,7 +86,8 @@ public partial class Program
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
                    services.AddSingleton<VerificationServiceForBrokerServices>();
                    services.AddSingleton<VerificationServiceForSignUp>();
-                   services.AddSingleton<VerificationServiceForCivilIdValidation>();
+                   //services.AddSingleton<VerificationServiceForCivilIdValidation>();
+                   services.AddSingleton<InspectionAppointmentsSchedulingService>();
 
 
                    services.AddHostedService<Worker>();

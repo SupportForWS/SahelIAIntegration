@@ -32,7 +32,7 @@ namespace sahelIntegrationIA
 {
     public class VerificationServiceForCivilIdValidation
     {
-        private readonly IRequestLogger _logger;
+/*        private readonly IRequestLogger _logger;
         private TimeSpan period;
         private readonly IBaseConfiguration _configurations;
         private readonly eServicesContext _eServicesContext;
@@ -266,8 +266,8 @@ namespace sahelIntegrationIA
                     //HTTP POST //single to be modified as enum
                     //HTTP POST //single to be modified as enum
                     Task<HttpResponseMessage> postTask = client.PostAsJsonAsync<Notification>("single", notification);
-                    /*                    var notificationString = JsonConvert.SerializeObject(notification);
-                                        _logger.LogInformation(notificationString);*/
+                    *//*                    var notificationString = JsonConvert.SerializeObject(notification);
+                                        _logger.LogInformation(notificationString);*//*
                     return !string.IsNullOrEmpty(getResult(postTask));
                 }
             }
@@ -637,7 +637,7 @@ namespace sahelIntegrationIA
                 }
             }
         }
-
+*/
     }
 
 }

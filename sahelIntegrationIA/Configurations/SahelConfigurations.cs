@@ -117,4 +117,8 @@ namespace sahelIntegrationIA.Configurations
         public string VerificationRequestRejectedByAuthorizedSignatoryEn { get; set; }
 
     }
+    public class InspectionAppointmentsConfigurations
+    {
+        public bool EnablePenaltyCheckingForInspectionAppointments { get; set; }
+    }
 }
