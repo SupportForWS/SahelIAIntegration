@@ -1,30 +1,28 @@
-﻿using Azure.Core;
-using Dapper;
+﻿using Dapper;
 using eServices.APIs.UserApp.OldApplication.Models;
 using eServices.Kernel.Core.Extensions;
 using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Constants;
 using eServicesV2.Kernel.Core.Exceptions;
-using eServicesV2.Kernel.Core.Infrastructure.Localization;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
-using eServicesV2.Kernel.Core.Resources;
 using eServicesV2.Kernel.Domain.Entities;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities;
+using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServicesV2.Kernel.Domain.Entities.LookupEntities;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using eServicesV2.Kernel.Domain.Enums;
 using eServicesV2.Kernel.Domain.Helpers;
 using eServicesV2.Kernel.Infrastructure.Persistence.Constants;
+using eServicesV2.Kernel.Service.EmailQueueServices;
 using eServicesV2.Kernel.Service.IdentityServices.Models.IdentityService;
 using Microsoft.EntityFrameworkCore;
+using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Models;
 using System.Data;
 using System.Data.SqlClient;
-using static eServicesV2.Kernel.Infrastructure.Persistence.Constants.StoredProcedureNames.UpdateMigrationStatus.UpdateMigrationStatusParamerters;
-using System.Security.Policy;
-using System.Web.WebPages;
+using EinspectionsZones = eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities.EinspectionsZones;
 
 namespace sahelIntegrationIA
 {
@@ -35,410 +33,557 @@ namespace sahelIntegrationIA
         private readonly IBaseConfiguration _configurations;
         private readonly IRequestLogger _requestLogger;
         private readonly IDapper _dapper;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly SahelConfigurations _sahelConfigs;
+        private readonly EmailQueueService _emailService;
+        private string _jobCycleId = Guid.NewGuid().ToString();
 
 
         public InspectionAppointmentsSchedulingService(IRequestLogger logger,
             eServicesContext eServicesContext,
             IBaseConfiguration configuration,
             IRequestLogger requestLogger,
-            IDapper dapper)
+            IDapper dapper,
+            SahelConfigurations sahelConfigs)
         {
             _logger = logger;
             this._eServicesContext = eServicesContext;
             _configurations = configuration;
             _requestLogger = requestLogger;
             _dapper = dapper;
+            _sahelConfigs = sahelConfigs;
+
         }
         public async Task ProcessInspectionAppointmentsQueue()
         {
-            var inspectionAppointmentsQueues = await GetPendingInspectionAppointmentsRequests();
-
-            foreach (var q in inspectionAppointmentsQueues)
+            try
             {
+                var inspectionAppointmentsQueues = await GetPendingInspectionAppointmentsRequests();
 
-                var orgId = await GetOrganizationId(q.UserID);
-                var preventionModel = await CheckPreventedOrganization(orgId);
-                if (preventionModel != null && preventionModel.IsPrevented)
+                foreach (var q in inspectionAppointmentsQueues)
                 {
-                    //TODO: send notification
-                    return;
-                }
-                if(q.DeclarationVehiclesIds.Split(",").Count() == 0)
-                {
-                    return;
-                }
-                var declarationVehicleId = q.DeclarationVehiclesIds.Split(",").
-                                            Select(i => i).
-                                            First();
-                var zone = await _eServicesContext.Set<eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities.EinspectionsZones>().FirstOrDefaultAsync();
-                var terminal = await _eServicesContext.Set<eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities.Eterminals>().FirstOrDefaultAsync();
-                var declarationDetails = GetDeclarationDetailsForDeclarationVehicleId(declarationVehicleId);
-                var declarationVehicles = GetVehiclesListForDeclaration(q, declarationDetails);
-                var inspectionAppointmentsModel = await PrepareInspectionAppointmentsModels(q, declarationVehicles);
-                inspectionAppointmentsModel.DeclarationTypeId= inspectionAppointmentsModel.DeclarationVehicles[0].DeclarationTypeId;
-                if (!inspectionAppointmentsModel.IsHourlySet)
-                {
-                    var upcomingAppointments = await _eServicesContext.Set<InspectionAppointments>()
-                        .Where(i =>
-                            i.DeclarationPortId == inspectionAppointmentsModel.DeclarationPortId &&
-                            i.InspectionDate > DateTime.Now.Date &&
-                            i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId
-                        )
-                        .GroupBy(i => i.InspectionDate)
-                        .Select(g => new
-                        {
-                            InspectionDate = g.Key,
-                            InspectionCount = g.Count()
-                        })
-                        .ToListAsync();
-
-                    List<int> triedRandomNumbers = new List<int>();
-                    int minAddedDays = 1, maxAddedDays = 4;
-                    int randomNumber = 0;
-                    int portMaxCapacity = 0;
-                    while (inspectionAppointmentsModel.DeclarationVehicles.Any(v => v.InspectionDate is null))
+                    var orgId = await GetOrganizationId(q.UserID);
+                    if (_sahelConfigs.inspectionAppointmentsConfigurations.EnablePenaltyCheckingForInspectionAppointments)
                     {
-                        if (triedRandomNumbers.Count < (maxAddedDays - minAddedDays))
+                        var preventionModel = await CheckPreventedOrganization(orgId);
+                        if (preventionModel != null && preventionModel.IsPrevented)
                         {
-                            Random random = new Random();
-                            List<int> allowedNumbers = Enumerable.Range(minAddedDays, maxAddedDays - minAddedDays)
-                                 .Where(n => !triedRandomNumbers.Contains(n))
-                                 .ToList();
-                            randomNumber = allowedNumbers[random.Next(allowedNumbers.Count)];
-
-                            triedRandomNumbers.Add(randomNumber);
-                        }
-                        else
-                        {
-                            randomNumber = (randomNumber != maxAddedDays && randomNumber < maxAddedDays) ? maxAddedDays : ++randomNumber;
-                        }
-
-                        //TODO: Check Holidays here 
-                        var pickedDate = DateTime.Now.AddDays(randomNumber).Date;
-                        var randomDate = upcomingAppointments.Find(d => d.InspectionDate == DateTime.Now.AddDays(randomNumber).Date);
-                        var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
-                                           .Where(c =>
-                                                    c.portId == inspectionAppointmentsModel.DeclarationPortId &&
-                                                    c.StartDate <= pickedDate && c.EndDate >= pickedDate)
-                                           .Select(c => c.Capacity)
-                                           .FirstOrDefaultAsync();
-                        portMaxCapacity = portExceptionlCapacity != 0 ? portExceptionlCapacity : inspectionAppointmentsModel.PortMaximumCapacity;
-                        var availableDateSlots = randomDate != null ? portMaxCapacity - randomDate.InspectionCount
-                                                                 : portMaxCapacity;
-
-                        if (availableDateSlots >= inspectionAppointmentsModel.DeclarationVehicles.Count)
-                        {
-                            inspectionAppointmentsModel.DeclarationVehicles.ForEach(v =>
+                            var abortedDeclarationVehiclesList = q.DeclarationVehiclesIds
+                                .Split(",")
+                                .Select(v => "-" + v)
+                                .ToList();
+                            var abortedDeclarationVehiclesString = string.Join(",", abortedDeclarationVehiclesList);
+                            q.DeclarationVehiclesIds = string.Join(",", abortedDeclarationVehiclesString);
+                            q.IsPorcessed = true;
+                            _eServicesContext.Set<inspectionAppointmentsQueue>().Update(q);
+                            await _eServicesContext.Set<MobileNotification>().AddAsync(new MobileNotification
                             {
-                                v.InspectionDate = pickedDate;
+                                DateCreated = DateTime.Now,
+                                NotificationType = 158,
+                                ReadStatus = "0",
+                                ReffType = preventionModel.PreventionDate.Value.ToString("dd-MM-yyyy"),
+                                UserId = q.UserID,
+                                ReferenceId = 0
                             });
+                            await _eServicesContext.SaveChangesAsync();
+                            return;
                         }
-                        else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Count)
-                        {
-                            for (int i = 0; i < availableDateSlots; i++)
-                            {
-                                inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].InspectionDate = pickedDate;
-                            }
-                        }
-
                     }
-                    string type = inspectionAppointmentsModel.DeclarationTypeId == (int)BillTypesEnums.Export ? "E" : "I";
-                    DeclarationPortEnum port = (DeclarationPortEnum)Enum.Parse(typeof(DeclarationPortEnum), inspectionAppointmentsModel.DeclarationPortId.ToString());
-                    string portDesc = port.GetEnumDescription();
-                    var scheduledInspectionRequests = SplitByInspectionDate(inspectionAppointmentsModel);
-
-                    foreach (var appointment in scheduledInspectionRequests)
+                    if (q.DeclarationVehiclesIds.Split(",").Count() == 0)
                     {
-                        var bookedAppointments = await InititalReservceAppointments(date: (DateTime)appointment.InspectionDate,
-                            time: null,
-                            isHourly: appointment.IsHourlySet,
-                            vehicles: appointment.DeclarationVehicles.Select(v => v.VehicleId).ToList(),
-                            declarationNumber: appointment.DeclarationNumber,
-                            inspectionPortStartRampNumber: appointment.StartRampNumber,
-                            inspectionPortEndRampNumber: appointment.EndRampNumber,
-                            inspectionPortCapacity: appointment.PortCapacityPerRamp,
-                            inspectionPortSequanceType: appointment.SequenceType,
-                            inspectionPortId: appointment.InspectionPortId,
-                            declarationPortId: appointment.DeclarationPortId,
-                            portCode: appointment.LocationCode,
-                            portMaxCapacity: portMaxCapacity);
-
-                        if (bookedAppointments.Count == 0)
-                        {
-                            //TODO: check what to do 
-                        }
-                        var requestData = await GenerateIdForInspectionAppointment(type, portDesc);
-
-                        ServiceRequest serviceRequest = new ServiceRequest
-                        (
-                            eserviceRequestId: requestData[0].RequestId,
-                            eserviceRequestNumber: requestData[0].RequestNumber,
-                            createdBy: appointment.UserId.ToString(),
-                            stateId: nameof(ServiceRequestStatesEnum.EServiceRequestSubmittedState),
-                            serviceId: (int)ServiceTypesEnum.InspectionAppointments,
-                            requesterUserId: appointment.UserId
-                        );
-
-                        await _eServicesContext.Set<ServiceRequest>().AddAsync(serviceRequest);
-
-                        var requestDtaislsIds = await GenerateRequesDetailsId();
-                        ServiceRequestsDetail serviceRequestDetails = new ServiceRequestsDetail(
-                            eserviceRequestDetailsId: requestDtaislsIds[0],
-                            eserviceRequestId: serviceRequest.EserviceRequestId,
-                            requestForUserType: appointment.UserId,
-                            requestServicesId: (int)ServiceTypesEnum.InspectionAppointments,
-                            stateId: nameof(ServiceRequestDetailsStatesEnum.EServicesRequestDetailsSubmittedState),
-                            organizationId: declarationDetails.ConsigneeOrgId,
-                            createdBy: appointment.UserId.ToString(),
-                            requesterUserId: appointment.UserId,
-                            requestForUserId: appointment.UserId, //TODO: Check
-                            portId: appointment.DeclarationPortId,
-                            zoneId: zone.ZoneId,
-                            terminalId: terminal.TerminalId,
-                            declarationNumber: appointment.DeclarationNumber,
-                            inspectionAppointmentDate: appointment.InspectionDate,
-                            declarationTypeId: appointment.DeclarationTypeId,
-                            declarationId: appointment.DeclarationId);
-
-                        await _eServicesContext.Set<ServiceRequestsDetail>().AddAsync(serviceRequestDetails);
-
-                        var appointments = new List<InspectionAppointments>();
-                        List<int> bookedRamsForCurrnetRequest = new();
-                        foreach (var vehicle in appointment.DeclarationVehicles)
-                        {
-                            var res = bookedAppointments.First(a => a.VehicleId == vehicle.VehicleId);
-                            InspectionAppointments inspection = new InspectionAppointments();
-                            inspection.DeclarationVehicleId = Convert.ToInt32(vehicle.VehicleId);
-                            inspection.CreatedBy = appointment.UserId;
-                            inspection.DateCreated = DateTime.Now;
-                            inspection.EserviceRequestId = requestData[0].RequestId;
-                            inspection.StateId = (int)InspectionAppointmentStateEnum.Booked;
-                            inspection.Printed = false;
-                            inspection.OrganizationId = declarationDetails.ConsigneeOrgId;
-                            inspection.InspectionRampNumber = res.RampNumber;
-                            inspection.InspectionToken = res.InspectionToken;
-                            inspection.InspectionTokenDate = res.InspectionTokenDate;
-                            inspection.InspectionTokenCounter = res.InspectionTokenCounter;
-                            inspection.DeclarationNumber = declarationDetails.DeclarationNumber;
-                            inspection.DeclarationId = appointment.DeclarationId;
-                            inspection.DeclarationPortId = appointment.DeclarationPortId;
-                            inspection.InpsectionPortId = res.InpsectionPortId;
-                            inspection.InspectionDate = res.InspectionDate;
-                            inspection.InspectionTime = res.InspectionTime;
-                            inspection.DriverCivilId = vehicle.DriverCivilId;
-                            inspection.DriverPassportNumber = vehicle.DriverPassportNumber;
-                            inspection.VehiclePlateNumber = vehicle.PlateNo;
-                            inspection.Country = vehicle.Country;
-
-                            bookedRamsForCurrnetRequest.Add((int)inspection.InspectionRampNumber);
-                            appointments.Add(inspection);
-
-                            await _eServicesContext.Set<InspectionAppointments>().AddAsync(inspection);
-
-                        }
+                        _requestLogger.LogException(new BusinessRuleException($"no declaration vehicles - queueId ={q.id}"));
+                        return;
                     }
-                    q.IsPorcessed = true;
-                    _eServicesContext.Set<inspectionAppointmentsQueue>().Update(q);
-                    await _eServicesContext.SaveChangesAsync();
-                }
-                else
-                {
+                    var declarationVehicleId = q.DeclarationVehiclesIds.Split(",").
+                                                Select(i => i).
+                                                First();
+                    var userdetails = await _eServicesContext.Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                                            .Where(u => u.UserId == q.UserID)
+                                            .FirstOrDefaultAsync();
+                    if (userdetails == null)
+                    {
+                        _requestLogger.LogException(new BusinessRuleException("no user details - queueId ={q.id}"));
+                        return;
+                    }
+                    var zone = await _eServicesContext.Set<EinspectionsZones>().FirstOrDefaultAsync();
+                    var terminal = await _eServicesContext.Set<eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities.Eterminals>().FirstOrDefaultAsync();
+                    var declarationDetails = GetDeclarationDetailsForDeclarationVehicleId(declarationVehicleId);
+                    var declarationVehicles = GetVehiclesListForDeclaration(q, declarationDetails);
+                    declarationVehicles = await GetLastInspectionPointsForVehicles(declarationVehicles);
+                    var inspectionAppointmentsModel = await PrepareInspectionAppointmentsModels(q, declarationVehicles);
                     var portDetails = await _eServicesContext.Set<PortListsForInspectionAppointment>()
-                                        .Where(p => p.PortId == inspectionAppointmentsModel.DeclarationPortId)
-                                        .FirstOrDefaultAsync();
-                    var upcomingAppointments = await _eServicesContext.Set<InspectionAppointments>()
-                        .Where(i =>
-                            i.DeclarationPortId == inspectionAppointmentsModel.DeclarationPortId &&
-                            i.InspectionDate > DateTime.Now.Date &&
-                            i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId
-                        )
-                        .GroupBy(i => new
+                        .Where(p => p.PortId == inspectionAppointmentsModel.DeclarationPortId)
+                        .FirstOrDefaultAsync();
+                    inspectionAppointmentsModel.DeclarationTypeId = inspectionAppointmentsModel.DeclarationVehicles[0].DeclarationTypeId;
+                    var holidays = await _eServicesContext.Set<InspectionAppointmentsHolidaysConfigurations>().
+                                            Where(h => h.EndDate >= DateTime.Now)
+                                            .ToListAsync();
+                    var eserviceRequestsIds = new List<long>();
+                    if (!inspectionAppointmentsModel.IsHourlySet)
+                    {
+                        var upcomingAppointments = await _eServicesContext.Set<InspectionAppointments>()
+                            .Where(i =>
+                                i.DeclarationPortId == inspectionAppointmentsModel.DeclarationPortId &&
+                                i.InspectionDate > DateTime.Now.Date &&
+                                i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId
+                            )
+                            .GroupBy(i => i.InspectionDate)
+                            .Select(g => new
+                            {
+                                InspectionDate = g.Key,
+                                InspectionCount = g.Count()
+                            })
+                            .ToListAsync();
+
+                        List<int> triedRandomNumbers = new List<int>();
+                        int minAddedDays = 1, maxAddedDays = 4;
+                        int randomNumber = 0;
+                        int portMaxCapacity = 0;
+                        DateTime targetDropoffDateTime = DateTime.Now.AddDays(minAddedDays - 1)
+                            .Date // Get the date only (midnight)
+                            .AddHours(_sahelConfigs.inspectionAppointmentsConfigurations.VehicleDropOffWindowStart);
+
+                        // Calculate the difference in hours between now and the drop-off start time
+                        int dropoffWindowForNextDay = (int)(targetDropoffDateTime - DateTime.Now).TotalHours;
+
+                        // Adjust minAddedDays based on OperationalHoursGap
+                        if (dropoffWindowForNextDay < _sahelConfigs.inspectionAppointmentsConfigurations.OperationalHoursGap)
                         {
-                            i.InspectionDate,
-                            InspectionTime = i.InspectionTime
-                        })
-                        .Select(g => new
+                            minAddedDays++;
+                        }
+
+                        while (inspectionAppointmentsModel.DeclarationVehicles.Any(v => v.InspectionDate is null))
                         {
-                            InspectionDate = g.Key.InspectionDate,
-                            InspectionTime = g.Key.InspectionTime,
-                            InspectionCount = g.Count()
-                        })
-                        .ToListAsync();
+                            if (triedRandomNumbers.Count < (maxAddedDays - minAddedDays))
+                            {
+                                Random random = new Random();
+                                List<int> allowedNumbers = Enumerable.Range(minAddedDays, maxAddedDays - minAddedDays)
+                                     .Where(n => !triedRandomNumbers.Contains(n))
+                                     .ToList();
+                                randomNumber = allowedNumbers[random.Next(allowedNumbers.Count)];
+
+                                triedRandomNumbers.Add(randomNumber);
+                            }
+                            else
+                            {
+                                randomNumber = (randomNumber != maxAddedDays && randomNumber < maxAddedDays) ? maxAddedDays : ++randomNumber;
+                            }
+
+
+                            var pickedDate = DateTime.Now.AddDays(randomNumber).Date;
+                            if (holidays.Any(h => h.StartDate <= pickedDate && h.EndDate >= pickedDate))
+                            {
+                                continue;
+                            }
+                            var randomDate = upcomingAppointments.Find(d => d.InspectionDate == pickedDate);
+                            var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
+                                               .Where(c =>
+                                                        c.portId == inspectionAppointmentsModel.DeclarationPortId &&
+                                                        c.StartDate <= pickedDate && c.EndDate >= pickedDate)
+                                               .Select(c => c.Capacity)
+                                               .FirstOrDefaultAsync();
+                            portMaxCapacity = portExceptionlCapacity != 0 ? portExceptionlCapacity : inspectionAppointmentsModel.PortMaximumCapacity;
+                            var availableDateSlots = randomDate != null ? portMaxCapacity - randomDate.InspectionCount
+                                                                     : portMaxCapacity;
+
+                            if (availableDateSlots >= inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().Count)
+                            {
+                                inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().ForEach(v =>
+                                {
+                                    if (portDetails.CooldownPeriodCommitted &&
+                                       (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays))
+                                    {
+                                        v.InspectionDate = pickedDate;
+                                    }
+                                });
+                            }
+                            else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().Count)
+                            {
+                                for (int i = 0; i < availableDateSlots; i++)
+                                {
+                                    if (portDetails.CooldownPeriodCommitted &&
+                                           (inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate is null
+                                            ||
+                                           Math.Abs((pickedDate - inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays))
+                                    {
+                                        inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].InspectionDate = pickedDate;
+                                    }
+                                }
+                            }
+
+                        }
+                        string type = inspectionAppointmentsModel.DeclarationTypeId == (int)BillTypesEnums.Export ? "E" : "I";
+                        DeclarationPortEnum port = (DeclarationPortEnum)Enum.Parse(typeof(DeclarationPortEnum), inspectionAppointmentsModel.DeclarationPortId.ToString());
+                        string portDesc = port.GetEnumDescription();
+                        var scheduledInspectionRequests = SplitByInspectionDate(inspectionAppointmentsModel);
+
+                        foreach (var appointment in scheduledInspectionRequests)
+                        {
+                            var bookedAppointments = await InititalReservceAppointments(date: (DateTime)appointment.InspectionDate,
+                                time: null,
+                                isHourly: appointment.IsHourlySet,
+                                vehicles: appointment.DeclarationVehicles.Select(v => v.VehicleId).ToList(),
+                                declarationNumber: appointment.DeclarationNumber,
+                                inspectionPortStartRampNumber: appointment.StartRampNumber,
+                                inspectionPortEndRampNumber: appointment.EndRampNumber,
+                                inspectionPortCapacity: appointment.PortCapacityPerRamp,
+                                inspectionPortSequanceType: appointment.SequenceType,
+                                inspectionPortId: appointment.InspectionPortId,
+                                declarationPortId: appointment.DeclarationPortId,
+                                portCode: appointment.LocationCode,
+                                portMaxCapacity: portMaxCapacity);
+
+                            if (bookedAppointments.Count == 0)
+                            {
+                                _requestLogger.LogException(new BusinessRuleException($"bookedAppointments = 0 - queueId ={q.id}"));
+                                return;
+                            }
+                            var requestData = await GenerateIdForInspectionAppointment(type, portDesc);
+
+                            ServiceRequest serviceRequest = new ServiceRequest
+                            (
+                                eserviceRequestId: requestData[0].RequestId,
+                                eserviceRequestNumber: requestData[0].RequestNumber,
+                                createdBy: appointment.UserId.ToString(),
+                                stateId: nameof(ServiceRequestStatesEnum.EServiceRequestSubmittedState),
+                                serviceId: (int)ServiceTypesEnum.InspectionAppointments,
+                                requesterUserId: appointment.UserId
+                            );
+
+                            await _eServicesContext.Set<ServiceRequest>().AddAsync(serviceRequest);
+
+                            var requestDtaislsIds = await GenerateRequesDetailsId();
+                            ServiceRequestsDetail serviceRequestDetails = new ServiceRequestsDetail(
+                                eserviceRequestDetailsId: requestDtaislsIds[0],
+                                eserviceRequestId: serviceRequest.EserviceRequestId,
+                                requestForUserType: appointment.UserId,
+                                requestServicesId: (int)ServiceTypesEnum.InspectionAppointments,
+                                stateId: nameof(ServiceRequestDetailsStatesEnum.EServicesRequestDetailsSubmittedState),
+                                organizationId: declarationDetails.ConsigneeOrgId,
+                                createdBy: appointment.UserId.ToString(),
+                                requesterUserId: appointment.UserId,
+                                requestForUserId: appointment.UserId, //TODO: Check
+                                portId: appointment.DeclarationPortId,
+                                zoneId: zone.ZoneId,
+                                terminalId: terminal.TerminalId,
+                                declarationNumber: appointment.DeclarationNumber,
+                                inspectionAppointmentDate: appointment.InspectionDate,
+                                declarationTypeId: appointment.DeclarationTypeId,
+                                declarationId: appointment.DeclarationId);
+
+                            await _eServicesContext.Set<ServiceRequestsDetail>().AddAsync(serviceRequestDetails);
+
+                            var appointments = new List<InspectionAppointments>();
+                            List<int> bookedRamsForCurrnetRequest = new();
+                            foreach (var vehicle in appointment.DeclarationVehicles)
+                            {
+                                var res = bookedAppointments.First(a => a.VehicleId == vehicle.VehicleId);
+                                InspectionAppointments inspection = new InspectionAppointments();
+                                inspection.DeclarationVehicleId = Convert.ToInt32(vehicle.VehicleId);
+                                inspection.CreatedBy = appointment.UserId;
+                                inspection.DateCreated = DateTime.Now;
+                                inspection.EserviceRequestId = requestData[0].RequestId;
+                                inspection.StateId = (int)InspectionAppointmentStateEnum.Booked;
+                                inspection.Printed = false;
+                                inspection.OrganizationId = declarationDetails.ConsigneeOrgId;
+                                inspection.InspectionRampNumber = res.RampNumber;
+                                inspection.InspectionToken = res.InspectionToken;
+                                inspection.InspectionTokenDate = res.InspectionTokenDate;
+                                inspection.InspectionTokenCounter = res.InspectionTokenCounter;
+                                inspection.DeclarationNumber = declarationDetails.DeclarationNumber;
+                                inspection.DeclarationId = appointment.DeclarationId;
+                                inspection.DeclarationPortId = appointment.DeclarationPortId;
+                                inspection.InpsectionPortId = res.InpsectionPortId;
+                                inspection.InspectionDate = res.InspectionDate;
+                                inspection.InspectionTime = res.InspectionTime;
+                                inspection.DriverCivilId = vehicle.DriverCivilId;
+                                inspection.DriverPassportNumber = vehicle.DriverPassportNumber;
+                                inspection.VehiclePlateNumber = vehicle.PlateNo;
+                                inspection.Country = vehicle.Country;
+
+                                bookedRamsForCurrnetRequest.Add((int)inspection.InspectionRampNumber);
+                                appointments.Add(inspection);
+
+                                await _eServicesContext.Set<InspectionAppointments>().AddAsync(inspection);
+                            }
+                            await _eServicesContext.Set<KGACEmailOutSyncQueue>().AddAsync(new KGACEmailOutSyncQueue
+                            {
+                                UserId = userdetails.UserId.ToString(),
+                                TOEmailAddress = userdetails.EmailId,
+                                MsgType = "BPSubmit",
+                                MailPriority = "Normal",
+                                Status = "Created",
+                                Sync = 0,
+                                SampleRequestNo = requestData[0].RequestId.ToString()
+                            });
+                            eserviceRequestsIds.Add(serviceRequest.EserviceRequestId);
+                        }
+                        q.IsPorcessed = true;
+                        q.EservicerequestIds = string.Join(",", eserviceRequestsIds);
+                        _eServicesContext.Set<inspectionAppointmentsQueue>().Update(q);
+                        await _eServicesContext.Set<MobileNotification>().AddAsync(new MobileNotification
+                        {
+                            DateCreated = DateTime.Now,
+                            NotificationType = 157,
+                            ReadStatus = "0",
+                            ReffType = q.EservicerequestIds,
+                            UserId = q.UserID,
+                            ReferenceId = Convert.ToInt32(eserviceRequestsIds.First())
+                        });
+                        await _eServicesContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        portDetails = await _eServicesContext.Set<PortListsForInspectionAppointment>()
+                                            .Where(p => p.PortId == inspectionAppointmentsModel.DeclarationPortId)
+                                            .FirstOrDefaultAsync();
+                        var upcomingAppointments = await _eServicesContext.Set<InspectionAppointments>()
+                            .Where(i =>
+                                i.DeclarationPortId == inspectionAppointmentsModel.DeclarationPortId &&
+                                i.InspectionDate > DateTime.Now.Date &&
+                                i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId
+                            )
+                            .GroupBy(i => new
+                            {
+                                i.InspectionDate,
+                                InspectionTime = i.InspectionTime
+                            })
+                            .Select(g => new
+                            {
+                                InspectionDate = g.Key.InspectionDate,
+                                InspectionTime = g.Key.InspectionTime,
+                                InspectionCount = g.Count()
+                            })
+                            .ToListAsync();
 
                         List<DateTime> randomizedDateTimes = new List<DateTime>();
                         List<DateTime> triedDateTimes = new List<DateTime>();
                         int minAddedDays = 1, maxAddedDays = 4;
                         TimeSpan? fromTime = portDetails.FromTime, toTime = portDetails.ToTime;
-                        DateTime randomDateTime =DateTime.Now;
+                        DateTime randomDateTime = DateTime.Now;
                         int portMaxCapacity = 0;
+                        DateTime targetDropoffDateTime = DateTime.Now.AddDays(minAddedDays - 1)
+                            .Date // Get the date only (midnight)
+                            .AddHours(_sahelConfigs.inspectionAppointmentsConfigurations.VehicleDropOffWindowStart);
 
-                    for (DateTime dt = DateTime.Now.AddDays(minAddedDays); dt <= DateTime.Now.AddDays(maxAddedDays-1); dt = dt.AddDays(1))
-                    {
-                        for (int hour = fromTime.Value.Hours; hour <= toTime.Value.Hours; hour++)
+                        // Calculate the difference in hours between now and the drop-off start time
+                        int dropoffWindowForNextDay = (int)(targetDropoffDateTime - DateTime.Now).TotalHours;
+
+                        // Adjust minAddedDays based on OperationalHoursGap
+                        if (dropoffWindowForNextDay < _sahelConfigs.inspectionAppointmentsConfigurations.OperationalHoursGap)
                         {
-                            randomizedDateTimes.Add(new DateTime(dt.Year, dt.Month, dt.Day, hour, 0, 0));
+                            minAddedDays++;
                         }
-                    }
-                    while (inspectionAppointmentsModel.DeclarationVehicles.Any(v => v.InspectionDate is null || v.InspectionTime is null))
-                    {
-                       
-                        if (triedDateTimes.Count < randomizedDateTimes.Count)
+                        for (DateTime dt = DateTime.Now.AddDays(minAddedDays); dt <= DateTime.Now.AddDays(maxAddedDays - 1); dt = dt.AddDays(1))
                         {
-                            List<DateTime> availableDateTimes = randomizedDateTimes
-                                                    .Where(dt => !triedDateTimes.Contains(dt))
-                                                    .ToList();
-                            Random random = new Random();
-                            randomDateTime = availableDateTimes[random.Next(randomizedDateTimes.Count)];
-                            triedDateTimes.Add(randomDateTime);
-                        }
-                        else
-                        {
-                            var maxTriedDate = randomizedDateTimes.Max();
-                            if (maxTriedDate.TimeOfDay == toTime)
+                            for (int hour = fromTime.Value.Hours; hour <= toTime.Value.Hours; hour++)
                             {
-                                randomDateTime= randomDateTime.AddDays(1);
-                                triedDateTimes.Add(randomDateTime);
-                            }else if(maxTriedDate.TimeOfDay < toTime && maxTriedDate.TimeOfDay >= fromTime)
-                            {
-                                randomDateTime = randomDateTime.AddHours(1);
-                                triedDateTimes.Add(randomDateTime);
+                                randomizedDateTimes.Add(new DateTime(dt.Year, dt.Month, dt.Day, hour, 0, 0));
                             }
                         }
-
-                        //TODO: Check Holidays here //complete from here
-                        var pickedDate = randomDateTime;
-                        var randomDate = upcomingAppointments.Find(d => d.InspectionDate == pickedDate.Date && d.InspectionTime == pickedDate.TimeOfDay);
-                        var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
-                                           .Where(c =>
-                                                    c.portId == inspectionAppointmentsModel.DeclarationPortId &&
-                                                    c.StartDate <= pickedDate && c.EndDate >= pickedDate)
-                                           .Select(c => c.Capacity)
-                                           .FirstOrDefaultAsync();
-                        portMaxCapacity = portExceptionlCapacity != 0 ? portExceptionlCapacity : inspectionAppointmentsModel.PortMaximumCapacity;
-                        var availableDateSlots = randomDate != null ? portMaxCapacity - randomDate.InspectionCount
-                                                                 : portMaxCapacity;
-
-                        if (availableDateSlots >= inspectionAppointmentsModel.DeclarationVehicles.Count)
+                        while (inspectionAppointmentsModel.DeclarationVehicles.Any(v => v.InspectionDate is null || v.InspectionTime is null))
                         {
-                            inspectionAppointmentsModel.DeclarationVehicles.ForEach(v =>
+
+                            if (triedDateTimes.Count < randomizedDateTimes.Count)
                             {
-                                v.InspectionDate = pickedDate.Date;
-                                v.InspectionTime = pickedDate.TimeOfDay;
+                                List<DateTime> availableDateTimes = randomizedDateTimes
+                                                        .Where(dt => !triedDateTimes.Contains(dt))
+                                                        .ToList();
+                                Random random = new Random();
+                                randomDateTime = availableDateTimes[random.Next(availableDateTimes.Count)];
+                                triedDateTimes.Add(randomDateTime);
+                            }
+                            else
+                            {
+                                var maxTriedDate = randomizedDateTimes.Max();
+                                if (maxTriedDate.TimeOfDay == toTime)
+                                {
+                                    randomDateTime = randomDateTime.AddDays(1);
+                                    triedDateTimes.Add(randomDateTime);
+                                }
+                                else if (maxTriedDate.TimeOfDay < toTime && maxTriedDate.TimeOfDay >= fromTime)
+                                {
+                                    randomDateTime = randomDateTime.AddHours(1);
+                                    triedDateTimes.Add(randomDateTime);
+                                }
+                            }
+
+                            var pickedDate = randomDateTime;
+                            if (holidays.Any(h => h.StartDate <= pickedDate.Date && h.EndDate >= pickedDate.Date))
+                            {
+                                continue;
+                            }
+                            var randomDate = upcomingAppointments.Find(d => d.InspectionDate == pickedDate.Date && d.InspectionTime == pickedDate.TimeOfDay);
+                            var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
+                                               .Where(c =>
+                                                        c.portId == inspectionAppointmentsModel.DeclarationPortId &&
+                                                        c.StartDate <= pickedDate && c.EndDate >= pickedDate)
+                                               .Select(c => c.Capacity)
+                                               .FirstOrDefaultAsync();
+                            portMaxCapacity = portExceptionlCapacity != 0 ? portExceptionlCapacity : inspectionAppointmentsModel.PortMaximumCapacity;
+                            var availableDateSlots = randomDate != null ? portMaxCapacity - randomDate.InspectionCount
+                                                                     : portMaxCapacity;
+
+                            if (availableDateSlots >= inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().Count)
+                            {
+                                inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().ForEach(v =>
+                                {
+                                    if (!portDetails.CooldownPeriodCommitted || (portDetails.CooldownPeriodCommitted &&
+                                        (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays)))
+                                    {
+                                        v.InspectionDate = pickedDate.Date;
+                                        v.InspectionTime = pickedDate.TimeOfDay;
+                                    }
+                                });
+                            }
+                            else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().Count)
+                            {
+                                for (int i = 0; i < availableDateSlots; i++)
+                                {
+                                    if (!portDetails.CooldownPeriodCommitted || (portDetails.CooldownPeriodCommitted &&
+                                        (inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].LastInspectionDate is null ||
+                                            Math.Abs((pickedDate - inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays)))
+                                    {
+                                        var inspectedVehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i];
+                                        inspectedVehicle.InspectionDate = pickedDate.Date;
+                                        inspectedVehicle.InspectionTime = pickedDate.TimeOfDay;
+                                    }
+                                }
+                            }
+
+                        }
+                        string type = inspectionAppointmentsModel.DeclarationTypeId == (int)BillTypesEnums.Export ? "E" : "I";
+                        DeclarationPortEnum port = (DeclarationPortEnum)Enum.Parse(typeof(DeclarationPortEnum), inspectionAppointmentsModel.DeclarationPortId.ToString());
+                        string portDesc = port.GetEnumDescription();
+                        var scheduledInspectionRequests = SplitByInspectionDateAndTime(inspectionAppointmentsModel);
+
+                        foreach (var appointment in scheduledInspectionRequests)
+                        {
+                            var bookedAppointments = await InititalReservceAppointments(date: (DateTime)appointment.InspectionDate.Value.Date,
+                                time: appointment.InspectionTime,
+                                isHourly: appointment.IsHourlySet,
+                                vehicles: appointment.DeclarationVehicles.Select(v => v.VehicleId).ToList(),
+                                declarationNumber: appointment.DeclarationNumber,
+                                inspectionPortStartRampNumber: appointment.StartRampNumber,
+                                inspectionPortEndRampNumber: appointment.EndRampNumber,
+                                inspectionPortCapacity: appointment.PortCapacityPerRamp,
+                                inspectionPortSequanceType: appointment.SequenceType,
+                                inspectionPortId: appointment.InspectionPortId,
+                                declarationPortId: appointment.DeclarationPortId,
+                                portCode: appointment.LocationCode,
+                                portMaxCapacity: portMaxCapacity);
+
+                            if (bookedAppointments.Count == 0)
+                            {
+                                _requestLogger.LogException(new BusinessRuleException($"bookedAppointments = 0 - queueId ={q.id}"));
+                                return;
+                            }
+                            var requestData = await GenerateIdForInspectionAppointment(type, portDesc);
+
+                            ServiceRequest serviceRequest = new ServiceRequest
+                            (
+                                eserviceRequestId: requestData[0].RequestId,
+                                eserviceRequestNumber: requestData[0].RequestNumber,
+                                createdBy: appointment.UserId.ToString(),
+                                stateId: nameof(ServiceRequestStatesEnum.EServiceRequestSubmittedState),
+                                serviceId: (int)ServiceTypesEnum.InspectionAppointments,
+                                requesterUserId: appointment.UserId
+                            );
+
+                            await _eServicesContext.Set<ServiceRequest>().AddAsync(serviceRequest);
+
+                            var requestDtaislsIds = await GenerateRequesDetailsId();
+                            ServiceRequestsDetail serviceRequestDetails = new ServiceRequestsDetail(
+                                eserviceRequestDetailsId: requestDtaislsIds[0],
+                                eserviceRequestId: serviceRequest.EserviceRequestId,
+                                requestForUserType: appointment.UserId,
+                                requestServicesId: (int)ServiceTypesEnum.InspectionAppointments,
+                                stateId: nameof(ServiceRequestDetailsStatesEnum.EServicesRequestDetailsSubmittedState),
+                                organizationId: declarationDetails.ConsigneeOrgId,
+                                createdBy: appointment.UserId.ToString(),
+                                requesterUserId: appointment.UserId,
+                                requestForUserId: appointment.UserId, //TODO: Check
+                                portId: appointment.DeclarationPortId,
+                                zoneId: zone.ZoneId,
+                                terminalId: terminal.TerminalId,
+                                declarationNumber: appointment.DeclarationNumber,
+                                inspectionAppointmentDate: appointment.InspectionDate,
+                                declarationTypeId: appointment.DeclarationTypeId,
+                                declarationId: appointment.DeclarationId);
+
+                            await _eServicesContext.Set<ServiceRequestsDetail>().AddAsync(serviceRequestDetails);
+
+                            var appointments = new List<InspectionAppointments>();
+                            List<int> bookedRamsForCurrnetRequest = new();
+                            foreach (var vehicle in appointment.DeclarationVehicles)
+                            {
+                                var res = bookedAppointments.First(a => a.VehicleId == vehicle.VehicleId);
+                                InspectionAppointments inspection = new InspectionAppointments();
+                                inspection.DeclarationVehicleId = Convert.ToInt32(vehicle.VehicleId);
+                                inspection.CreatedBy = appointment.UserId;
+                                inspection.DateCreated = DateTime.Now;
+                                inspection.EserviceRequestId = requestData[0].RequestId;
+                                inspection.StateId = (int)InspectionAppointmentStateEnum.Booked;
+                                inspection.Printed = false;
+                                inspection.OrganizationId = declarationDetails.ConsigneeOrgId;
+                                inspection.InspectionRampNumber = res.RampNumber;
+                                inspection.InspectionToken = res.InspectionToken;
+                                inspection.InspectionTokenDate = res.InspectionTokenDate;
+                                inspection.InspectionTokenCounter = res.InspectionTokenCounter;
+                                inspection.DeclarationNumber = declarationDetails.DeclarationNumber;
+                                inspection.DeclarationId = appointment.DeclarationId;
+                                inspection.DeclarationPortId = appointment.DeclarationPortId;
+                                inspection.InpsectionPortId = res.InpsectionPortId;
+                                inspection.InspectionDate = res.InspectionDate;
+                                inspection.InspectionTime = res.InspectionTime;
+                                inspection.DriverCivilId = vehicle.DriverCivilId;
+                                inspection.DriverPassportNumber = vehicle.DriverPassportNumber;
+                                inspection.VehiclePlateNumber = vehicle.PlateNo;
+                                inspection.Country = vehicle.Country;
+
+                                bookedRamsForCurrnetRequest.Add((int)inspection.InspectionRampNumber);
+                                appointments.Add(inspection);
+
+                                await _eServicesContext.Set<InspectionAppointments>().AddAsync(inspection);
+
+                            }
+
+                            await _eServicesContext.Set<KGACEmailOutSyncQueue>().AddAsync(new KGACEmailOutSyncQueue
+                            {
+                                UserId = userdetails.UserId.ToString(),
+                                TOEmailAddress = userdetails.EmailId,
+                                MsgType = "BPSubmit",
+                                MailPriority = "Normal",
+                                Status = "Created",
+                                Sync = 0,
+                                SampleRequestNo = requestData[0].RequestId.ToString()
                             });
+                            eserviceRequestsIds.Add(serviceRequest.EserviceRequestId);
                         }
-                        else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Count)
+                        q.IsPorcessed = true;
+                        q.EservicerequestIds = string.Join(",", eserviceRequestsIds);
+                        _eServicesContext.Set<inspectionAppointmentsQueue>().Update(q);
+                        await _eServicesContext.Set<MobileNotification>().AddAsync(new MobileNotification
                         {
-                            for (int i = 0; i < availableDateSlots; i++)
-                            {
-                                inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].InspectionDate = pickedDate.Date;
-                                inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].InspectionTime = pickedDate.TimeOfDay;
-                            }
-                        }
+                            DateCreated = DateTime.Now,
+                            NotificationType = 157,
+                            ReadStatus = "0",
+                            ReffType = q.EservicerequestIds,
+                            UserId = q.UserID,
+                            ReferenceId = Convert.ToInt32(eserviceRequestsIds.First())
+                        });
+                        await _eServicesContext.SaveChangesAsync();
+
 
                     }
-                    string type = inspectionAppointmentsModel.DeclarationTypeId == (int)BillTypesEnums.Export ? "E" : "I";
-                    DeclarationPortEnum port = (DeclarationPortEnum)Enum.Parse(typeof(DeclarationPortEnum), inspectionAppointmentsModel.DeclarationPortId.ToString());
-                    string portDesc = port.GetEnumDescription();
-                    var scheduledInspectionRequests = SplitByInspectionDateAndTime(inspectionAppointmentsModel);
 
-                    foreach (var appointment in scheduledInspectionRequests)
-                    {
-                        var bookedAppointments = await InititalReservceAppointments(date: (DateTime)appointment.InspectionDate.Value.Date,
-                            time: appointment.InspectionDate.Value.TimeOfDay,
-                            isHourly: appointment.IsHourlySet,
-                            vehicles: appointment.DeclarationVehicles.Select(v => v.VehicleId).ToList(),
-                            declarationNumber: appointment.DeclarationNumber,
-                            inspectionPortStartRampNumber: appointment.StartRampNumber,
-                            inspectionPortEndRampNumber: appointment.EndRampNumber,
-                            inspectionPortCapacity: appointment.PortCapacityPerRamp,
-                            inspectionPortSequanceType: appointment.SequenceType,
-                            inspectionPortId: appointment.InspectionPortId,
-                            declarationPortId: appointment.DeclarationPortId,
-                            portCode: appointment.LocationCode,
-                            portMaxCapacity: portMaxCapacity);
-
-                        if (bookedAppointments.Count == 0)
-                        {
-                            //TODO: check what to do 
-                        }
-                        var requestData = await GenerateIdForInspectionAppointment(type, portDesc);
-
-                        ServiceRequest serviceRequest = new ServiceRequest
-                        (
-                            eserviceRequestId: requestData[0].RequestId,
-                            eserviceRequestNumber: requestData[0].RequestNumber,
-                            createdBy: appointment.UserId.ToString(),
-                            stateId: nameof(ServiceRequestStatesEnum.EServiceRequestSubmittedState),
-                            serviceId: (int)ServiceTypesEnum.InspectionAppointments,
-                            requesterUserId: appointment.UserId
-                        );
-
-                        await _eServicesContext.Set<ServiceRequest>().AddAsync(serviceRequest);
-
-                        var requestDtaislsIds = await GenerateRequesDetailsId();
-                        ServiceRequestsDetail serviceRequestDetails = new ServiceRequestsDetail(
-                            eserviceRequestDetailsId: requestDtaislsIds[0],
-                            eserviceRequestId: serviceRequest.EserviceRequestId,
-                            requestForUserType: appointment.UserId,
-                            requestServicesId: (int)ServiceTypesEnum.InspectionAppointments,
-                            stateId: nameof(ServiceRequestDetailsStatesEnum.EServicesRequestDetailsSubmittedState),
-                            organizationId: declarationDetails.ConsigneeOrgId,
-                            createdBy: appointment.UserId.ToString(),
-                            requesterUserId: appointment.UserId,
-                            requestForUserId: appointment.UserId, //TODO: Check
-                            portId: appointment.DeclarationPortId,
-                            zoneId: zone.ZoneId,
-                            terminalId: terminal.TerminalId,
-                            declarationNumber: appointment.DeclarationNumber,
-                            inspectionAppointmentDate: appointment.InspectionDate,
-                            declarationTypeId: appointment.DeclarationTypeId,
-                            declarationId: appointment.DeclarationId);
-
-                        await _eServicesContext.Set<ServiceRequestsDetail>().AddAsync(serviceRequestDetails);
-
-                        var appointments = new List<InspectionAppointments>();
-                        List<int> bookedRamsForCurrnetRequest = new();
-                        foreach (var vehicle in appointment.DeclarationVehicles)
-                        {
-                            var res = bookedAppointments.First(a => a.VehicleId == vehicle.VehicleId);
-                            InspectionAppointments inspection = new InspectionAppointments();
-                            inspection.DeclarationVehicleId = Convert.ToInt32(vehicle.VehicleId);
-                            inspection.CreatedBy = appointment.UserId;
-                            inspection.DateCreated = DateTime.Now;
-                            inspection.EserviceRequestId = requestData[0].RequestId;
-                            inspection.StateId = (int)InspectionAppointmentStateEnum.Booked;
-                            inspection.Printed = false;
-                            inspection.OrganizationId = declarationDetails.ConsigneeOrgId;
-                            inspection.InspectionRampNumber = res.RampNumber;
-                            inspection.InspectionToken = res.InspectionToken;
-                            inspection.InspectionTokenDate = res.InspectionTokenDate;
-                            inspection.InspectionTokenCounter = res.InspectionTokenCounter;
-                            inspection.DeclarationNumber = declarationDetails.DeclarationNumber;
-                            inspection.DeclarationId = appointment.DeclarationId;
-                            inspection.DeclarationPortId = appointment.DeclarationPortId;
-                            inspection.InpsectionPortId = res.InpsectionPortId;
-                            inspection.InspectionDate = res.InspectionDate;
-                            inspection.InspectionTime = res.InspectionTime;
-                            inspection.DriverCivilId = vehicle.DriverCivilId;
-                            inspection.DriverPassportNumber = vehicle.DriverPassportNumber;
-                            inspection.VehiclePlateNumber = vehicle.PlateNo;
-                            inspection.Country = vehicle.Country;
-
-                            bookedRamsForCurrnetRequest.Add((int)inspection.InspectionRampNumber);
-                            appointments.Add(inspection);
-
-                            await _eServicesContext.Set<InspectionAppointments>().AddAsync(inspection);
-
-                        }
-                    }
-                    q.IsPorcessed = true;
-                    _eServicesContext.Set<inspectionAppointmentsQueue>().Update(q);
-                    await _eServicesContext.SaveChangesAsync();
                 }
-
             }
-
+            catch (Exception ex)
+            {
+                _requestLogger.LogException(ex,
+                    $"{_jobCycleId} - inspection appointment scheduling - {0,1}",
+                    new object[] { ex.Message, ex.InnerException.Message });
+            }
         }
         List<InspectionAppPreparationModel> SplitByInspectionDateAndTime(InspectionAppPreparationModel model)
         {
@@ -476,10 +621,9 @@ namespace sahelIntegrationIA
         List<InspectionAppPreparationModel> SplitByInspectionDate(InspectionAppPreparationModel model)
         {
             return model.DeclarationVehicles
-                        .GroupBy(v => v.InspectionDate) 
+                        .GroupBy(v => v.InspectionDate)
                         .Select(group => new InspectionAppPreparationModel
                         {
-                            // Copy other properties
                             UserId = model.UserId,
                             DeclarationId = model.DeclarationId,
                             DateCreated = model.DateCreated,
@@ -487,14 +631,14 @@ namespace sahelIntegrationIA
                             DeclarationPortId = model.DeclarationPortId,
                             InspectionPortId = model.InspectionPortId,
                             PortMaximumCapacity = model.PortMaximumCapacity,
-                            PortCapacityPerRamp=model.PortCapacityPerRamp,
+                            PortCapacityPerRamp = model.PortCapacityPerRamp,
                             StartRampNumber = model.StartRampNumber,
-                            EndRampNumber= model.EndRampNumber,
-                            LocationCode=model.LocationCode,
-                            SequenceType=model.SequenceType,
+                            EndRampNumber = model.EndRampNumber,
+                            LocationCode = model.LocationCode,
+                            SequenceType = model.SequenceType,
                             OrgId = model.OrgId,
                             IsHourlySet = model.IsHourlySet,
-                            DeclarationTypeId=model.DeclarationTypeId,
+                            DeclarationTypeId = model.DeclarationTypeId,
                             DeclarationVehicles = group.ToList(),
                             InspectionDate = group.Key
                         })
@@ -606,6 +750,29 @@ namespace sahelIntegrationIA
                 throw;
             }
         }
+        public async Task<List<VehiclesDTO>> GetLastInspectionPointsForVehicles(List<VehiclesDTO> vehicles)
+        {
+            var driverPassports = vehicles.Select(v => v.DriverPassportNumber).ToList();
+            var driverCivilIds = vehicles.Select(v => v.DriverCivilId).ToList();
+            var vehiclesPlatenumbers = vehicles.Select(v => new { v.PlateNo, v.Country }).ToList();
+
+            var lastInspectionAppointments = await _eServicesContext.Set<InspectionAppointments>()
+                                                .Where(i => (driverCivilIds.Contains(i.DriverCivilId) && i.DriverCivilId != null) ||
+                                                            (driverPassports.Contains(i.DriverPassportNumber) && i.DriverPassportNumber != null) ||
+                                                            vehiclesPlatenumbers.Select(vp => vp.PlateNo).ToList().Contains(i.VehiclePlateNumber)
+                                                      )
+                                                .OrderByDescending(i => i.InspectionDate)
+                                                .ToListAsync();
+            vehicles.ForEach(v =>
+            {
+                v.LastInspectionDate = lastInspectionAppointments.FirstOrDefault(i => i.DriverCivilId == v.DriverCivilId ||
+                                                                                      i.DriverPassportNumber == v.DriverPassportNumber ||
+                                                                                      (i.VehiclePlateNumber == v.PlateNo && i.Country == v.Country)
+                                                                                )?.InspectionDate;
+            });
+            return vehicles;
+        }
+
         public async Task<PortListsForInspectionAppointment> GetInspectionPortDetails(int portId)
         {
             return await _eServicesContext.Set<PortListsForInspectionAppointment>()
@@ -773,7 +940,7 @@ namespace sahelIntegrationIA
             int portId = Convert.ToInt32(allDeclarationVehicles.FirstOrDefault()?.PortId);
             int declarationTypeId = Convert.ToInt32(allDeclarationVehicles.FirstOrDefault()?.DeclarationTypeId);
             var inspectionPortDetails = await GetInspectionPortDetails(portId);
-            var location = await _eServicesContext.Set<Location>().Where(a=> a.LocationId == portId).FirstOrDefaultAsync();
+            var location = await _eServicesContext.Set<Location>().Where(a => a.LocationId == portId).FirstOrDefaultAsync();
             inspectionModel.UserId = appointmentQueue.UserID;
             inspectionModel.DeclarationNumber = declarationNumber;
             inspectionModel.DateCreated = appointmentQueue.DateCreated;
@@ -795,7 +962,7 @@ namespace sahelIntegrationIA
                 var vehicleData = allDeclarationVehicles.Where(v => v.VehicleId == Id.ToString()).FirstOrDefault();
                 var vehicle = new VehiclesDTO()
                 {
-                    VehicleId=Id.ToString(),
+                    VehicleId = Id.ToString(),
                     PlateNo = vehicleData.PlateNo,
                     Weight = vehicleData.Weight,
                     DriverPassportNumber = vehicleData.DriverPassportNumber,
@@ -806,7 +973,9 @@ namespace sahelIntegrationIA
                     DeclarationId = vehicleData.DeclarationId,
                     DeclarationNumber = vehicleData.DeclarationNumber,
                     PortId = portId,
-                    IsHourly = inspectionPortDetails.IsHourlySet
+                    IsHourly = inspectionPortDetails.IsHourlySet,
+                    LastInspectionDate = vehicleData.LastInspectionDate
+
                 };
                 inspectionModel.DeclarationVehicles.Add(vehicle);
             });
@@ -987,7 +1156,7 @@ namespace sahelIntegrationIA
             public DateTime? InspectionDate { get; set; } //done
             public TimeSpan? InspectionTime { get; set; } //done
             public string DeclarationNumber { get; set; }//done
-            public int DeclarationTypeId{ get; set; }//done
+            public int DeclarationTypeId { get; set; }//done
             public int StartRampNumber { get; set; }
             public int EndRampNumber { get; set; }
             public SequanceTypeEnum SequenceType { get; set; }

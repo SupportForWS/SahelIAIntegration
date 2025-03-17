@@ -20,6 +20,7 @@ namespace sahelIntegrationIA.Configurations
         public int BrokerKMIDCallingTimer { get; set; }
         public string ToWhomPrintableFormRedirectUrl { get; set; }
         public string ExamAttendanceRedirectUrl { get; set; }
+        public InspectionAppointmentsConfigurations inspectionAppointmentsConfigurations { get; set; }
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -120,5 +121,8 @@ namespace sahelIntegrationIA.Configurations
     public class InspectionAppointmentsConfigurations
     {
         public bool EnablePenaltyCheckingForInspectionAppointments { get; set; }
+        public int InspectionAppointmentsCoolDownInDays { get; set; }
+        public int OperationalHoursGap { get; set; }
+        public int VehicleDropOffWindowStart { get; set; }
     }
 }
