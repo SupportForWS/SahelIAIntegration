@@ -170,10 +170,11 @@ namespace sahelIntegrationIA
 
 
                             var pickedDate = DateTime.Now.AddDays(randomNumber).Date;
-                            if (holidays.Any(h => h.StartDate <= pickedDate && h.EndDate >= pickedDate))
+                            if (holidays.Any(h => h.StartDate <= pickedDate && h.EndDate >= pickedDate) || pickedDate.DayOfWeek == DayOfWeek.Friday)
                             {
                                 continue;
                             }
+
                             var randomDate = upcomingAppointments.Find(d => d.InspectionDate == pickedDate);
                             var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
                                                .Where(c =>
@@ -408,10 +409,11 @@ namespace sahelIntegrationIA
                             }
 
                             var pickedDate = randomDateTime;
-                            if (holidays.Any(h => h.StartDate <= pickedDate.Date && h.EndDate >= pickedDate.Date))
+                            if (holidays.Any(h => h.StartDate <= pickedDate.Date && h.EndDate >= pickedDate.Date) || pickedDate.DayOfWeek == DayOfWeek.Friday)
                             {
                                 continue;
                             }
+
                             var randomDate = upcomingAppointments.Find(d => d.InspectionDate == pickedDate.Date && d.InspectionTime == pickedDate.TimeOfDay);
                             var portExceptionlCapacity = await _eServicesContext.Set<ExceptionalPortsInspectionCapacityConfiguration>()
                                                .Where(c =>
@@ -582,7 +584,7 @@ namespace sahelIntegrationIA
             {
                 _requestLogger.LogException(ex,
                     $"{_jobCycleId} - inspection appointment scheduling - {0,1}",
-                    new object[] { ex.Message, ex.InnerException.Message });
+                    new object[] { ex.Message, ex.InnerException?.Message });
             }
         }
         List<InspectionAppPreparationModel> SplitByInspectionDateAndTime(InspectionAppPreparationModel model)
@@ -717,10 +719,17 @@ namespace sahelIntegrationIA
                 .FirstOrDefaultAsync();
             if (preventionDetails != null)
             {
-                preventionModel.IsPrevented = true;
-                preventionModel.PreventionDate = preventionDetails.PreventionDate;
-
-                return preventionModel;
+                var bypassingTimes = await _eServicesContext.Set<InspectionAppointmentsPenaltyBypassing>()
+                                    .Where(b => b.OrganizationId == organizationId &&
+                                                b.BypassEndDate.Date >= DateTime.Now.Date &&
+                                                b.BypassStartDate.Date <= DateTime.Now.Date)
+                                    .FirstOrDefaultAsync();
+                if (bypassingTimes is null)
+                {
+                    preventionModel.IsPrevented = true;
+                    preventionModel.PreventionDate = preventionDetails.PreventionDate;
+                    return preventionModel;
+                }
             }
             return null;
         }
