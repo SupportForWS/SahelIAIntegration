@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using eServices.APIs.UserApp.OldApplication.Models;
 using eServices.Kernel.Core.Extensions;
 using eServicesV2.Kernel.Core.Configurations;
@@ -201,6 +201,7 @@ namespace sahelIntegrationIA
                             {
                                 for (int i = 0; i < availableDateSlots; i++)
                                 {
+                                    var vehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i];
                                     if (portDetails.CooldownPeriodCommitted &&
                                            (inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate is null
                                             ||
@@ -774,8 +775,8 @@ namespace sahelIntegrationIA
                                                 .ToListAsync();
             vehicles.ForEach(v =>
             {
-                v.LastInspectionDate = lastInspectionAppointments.FirstOrDefault(i => i.DriverCivilId == v.DriverCivilId ||
-                                                                                      i.DriverPassportNumber == v.DriverPassportNumber ||
+                v.LastInspectionDate = lastInspectionAppointments.FirstOrDefault(i => (i.DriverCivilId == v.DriverCivilId && !string.IsNullOrEmpty(v.DriverCivilId))||
+                                                                                      (i.DriverPassportNumber == v.DriverPassportNumber && !string.IsNullOrEmpty(v.DriverPassportNumber)) ||
                                                                                       (i.VehiclePlateNumber == v.PlateNo && i.Country == v.Country)
                                                                                 )?.InspectionDate;
             });
@@ -1006,7 +1007,7 @@ namespace sahelIntegrationIA
             {
                 v.LastInspectionDate = vehiclesDriversLastInspectionDate.Where(i =>
                                                     (v.PlateNo == i.VehiclePlateNumber && i.Country == v.Country) ||
-                                                    v.DriverCivilId == i.DriverCivilId || v.DriverPassportNumber == i.DriverPassportNumber)
+                                                    (v.DriverCivilId == i.DriverCivilId && !string.IsNullOrEmpty(v.DriverCivilId)) || (v.DriverPassportNumber == i.DriverPassportNumber) && !string.IsNullOrEmpty(v.DriverPassportNumber))
                                                     .OrderByDescending(I => I.InspectionDate)
                                                     .Select(i => i.InspectionDate)
                                                     .FirstOrDefault();
