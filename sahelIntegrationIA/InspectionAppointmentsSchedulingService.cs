@@ -13,6 +13,7 @@ using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServicesV2.Kernel.Domain.Entities.LookupEntities;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using eServicesV2.Kernel.Domain.Enums;
+using eServicesV2.Kernel.Domain.Enums.StatesEnum;
 using eServicesV2.Kernel.Domain.Helpers;
 using eServicesV2.Kernel.Infrastructure.Persistence.Constants;
 using eServicesV2.Kernel.Service.EmailQueueServices;
@@ -36,7 +37,7 @@ namespace sahelIntegrationIA
         private readonly SahelConfigurations _sahelConfigs;
         private readonly EmailQueueService _emailService;
         private string _jobCycleId = Guid.NewGuid().ToString();
-
+        private readonly int _coolDownPeriod;
 
         public InspectionAppointmentsSchedulingService(IRequestLogger logger,
             eServicesContext eServicesContext,
@@ -51,6 +52,7 @@ namespace sahelIntegrationIA
             _requestLogger = requestLogger;
             _dapper = dapper;
             _sahelConfigs = sahelConfigs;
+            _coolDownPeriod = _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays;
 
         }
         public async Task ProcessInspectionAppointmentsQueue()
@@ -124,7 +126,8 @@ namespace sahelIntegrationIA
                             .Where(i =>
                                 i.DeclarationPortId == inspectionAppointmentsModel.DeclarationPortId &&
                                 i.InspectionDate > DateTime.Now.Date &&
-                                i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId
+                                i.InpsectionPortId == inspectionAppointmentsModel.InspectionPortId &&
+                                i.StateId == (int)InspectionAppointmentStateEnum.Booked
                             )
                             .GroupBy(i => i.InspectionDate)
                             .Select(g => new
@@ -190,8 +193,13 @@ namespace sahelIntegrationIA
                             {
                                 inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().ForEach(v =>
                                 {
+                                    if (!portDetails.CooldownPeriodCommitted)
+                                    {
+                                        v.InspectionDate = pickedDate;
+                                    }
+
                                     if (portDetails.CooldownPeriodCommitted &&
-                                       (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays))
+                                       (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _coolDownPeriod))
                                     {
                                         v.InspectionDate = pickedDate;
                                     }
@@ -199,16 +207,39 @@ namespace sahelIntegrationIA
                             }
                             else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().Count)
                             {
+                                var testedVehicles = new List<string>();
                                 for (int i = 0; i < availableDateSlots; i++)
                                 {
-                                    var vehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i];
-                                    if (portDetails.CooldownPeriodCommitted &&
+                                    var vehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && !testedVehicles.Contains(v.VehicleId)).ToList()[i];
+                                    if (!portDetails.CooldownPeriodCommitted)
+                                    {
+                                        vehicle.InspectionDate = pickedDate;
+                                    }
+                                    else
+                                    {
+                                        if(vehicle.LastInspectionDate is null || Math.Abs((pickedDate - vehicle.LastInspectionDate.Value).Days) > _coolDownPeriod) 
+                                        {
+                                            vehicle.InspectionDate = pickedDate;
+                                        }
+                                    }
+
+                                    if(vehicle.InspectionDate is null)
+                                    {
+                                        testedVehicles.Add(vehicle.VehicleId);
+                                        i--;
+                                    }
+
+                                    if(testedVehicles.Count == inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().Count)
+                                    {
+                                        break;
+                                    }
+/*                                    if (portDetails.CooldownPeriodCommitted &&
                                            (inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate is null
                                             ||
-                                           Math.Abs((pickedDate - inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays))
+                                           Math.Abs((pickedDate - inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].LastInspectionDate.Value).Days) > _coolDownPeriod))
                                     {
                                         inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList()[i].InspectionDate = pickedDate;
-                                    }
+                                    }*/
                                 }
                             }
 
@@ -430,8 +461,9 @@ namespace sahelIntegrationIA
                             {
                                 inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().ForEach(v =>
                                 {
+                                    
                                     if (!portDetails.CooldownPeriodCommitted || (portDetails.CooldownPeriodCommitted &&
-                                        (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays)))
+                                        (v.LastInspectionDate is null || Math.Abs((pickedDate - v.LastInspectionDate.Value).Days) > _coolDownPeriod)))
                                     {
                                         v.InspectionDate = pickedDate.Date;
                                         v.InspectionTime = pickedDate.TimeOfDay;
@@ -440,15 +472,37 @@ namespace sahelIntegrationIA
                             }
                             else if (availableDateSlots > 0 && availableDateSlots < inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().Count)
                             {
+                                var testedVehicles = new List<string>();
                                 for (int i = 0; i < availableDateSlots; i++)
                                 {
-                                    if (!portDetails.CooldownPeriodCommitted || (portDetails.CooldownPeriodCommitted &&
-                                        (inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].LastInspectionDate is null ||
-                                            Math.Abs((pickedDate - inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i].LastInspectionDate.Value).Days) > _sahelConfigs.inspectionAppointmentsConfigurations.InspectionAppointmentsCoolDownInDays)))
+                                    var vehicle = inspectionAppointmentsModel.DeclarationVehicles
+                                        .Where(v => v.InspectionDate is null && v.InspectionTime is null && !testedVehicles.Contains(v.VehicleId))
+                                        .ToList()[i];
+                                    if (!portDetails.CooldownPeriodCommitted)
                                     {
                                         var inspectedVehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i];
                                         inspectedVehicle.InspectionDate = pickedDate.Date;
                                         inspectedVehicle.InspectionTime = pickedDate.TimeOfDay;
+                                    }
+
+                                    if (portDetails.CooldownPeriodCommitted &&
+                                        (vehicle.LastInspectionDate is null ||
+                                            Math.Abs((pickedDate - vehicle.LastInspectionDate.Value).Days) > _coolDownPeriod))
+                                    {
+                                        var inspectedVehicle = inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList()[i];
+                                        inspectedVehicle.InspectionDate = pickedDate.Date;
+                                        inspectedVehicle.InspectionTime = pickedDate.TimeOfDay;
+                                    }
+
+                                    if(vehicle.InspectionDate is null || vehicle.InspectionTime is null)
+                                    {
+                                        testedVehicles.Add(vehicle.VehicleId);
+                                        i--;
+                                    }
+
+                                    if (testedVehicles.Count == inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null && v.InspectionTime is null).ToList().Count)
+                                    {
+                                        break;
                                     }
                                 }
                             }
@@ -592,6 +646,8 @@ namespace sahelIntegrationIA
         {
             return model.DeclarationVehicles
                         .GroupBy(v => new { v.InspectionDate, v.InspectionTime }) // Group by both Date & Time
+                        .OrderBy(v => v.Key.InspectionDate)
+                        .ThenBy(v => v.Key.InspectionTime)
                         .Select(group => new InspectionAppPreparationModel
                         {
                             // Copy other properties
@@ -625,6 +681,7 @@ namespace sahelIntegrationIA
         {
             return model.DeclarationVehicles
                         .GroupBy(v => v.InspectionDate)
+                        .OrderBy(v=>v.Key)
                         .Select(group => new InspectionAppPreparationModel
                         {
                             UserId = model.UserId,
@@ -764,7 +821,7 @@ namespace sahelIntegrationIA
         {
             var driverPassports = vehicles.Select(v => v.DriverPassportNumber).ToList();
             var driverCivilIds = vehicles.Select(v => v.DriverCivilId).ToList();
-            var vehiclesPlatenumbers = vehicles.Select(v => new { v.PlateNo, v.Country }).ToList();
+            var vehiclesPlatenumbers = vehicles.Select(v => new { v.PlateNo, v.Country }).ToList();//"Passport : "123456kjhgfdn" VehiclePlate: "124 7654gjkln"
 
             var lastInspectionAppointments = await _eServicesContext.Set<InspectionAppointments>()
                                                 .Where(i => (driverCivilIds.Contains(i.DriverCivilId) && i.DriverCivilId != null) ||
@@ -1003,14 +1060,16 @@ namespace sahelIntegrationIA
                                                                 )
                                                         .OrderByDescending(I => I.InspectionDate)
                                                         .ToListAsync();
+
             inspectionModel.DeclarationVehicles.ForEach(v =>
             {
-                v.LastInspectionDate = vehiclesDriversLastInspectionDate.Where(i =>
+                var lastInspection = vehiclesDriversLastInspectionDate.Where(i =>
                                                     (v.PlateNo == i.VehiclePlateNumber && i.Country == v.Country) ||
                                                     (v.DriverCivilId == i.DriverCivilId && !string.IsNullOrEmpty(v.DriverCivilId)) || (v.DriverPassportNumber == i.DriverPassportNumber) && !string.IsNullOrEmpty(v.DriverPassportNumber))
                                                     .OrderByDescending(I => I.InspectionDate)
-                                                    .Select(i => i.InspectionDate)
                                                     .FirstOrDefault();
+
+                v.LastInspectionDate = lastInspection?.InspectionDate;
             });
             return inspectionModel;
         }
