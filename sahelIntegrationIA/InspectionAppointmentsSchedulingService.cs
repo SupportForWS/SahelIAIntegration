@@ -188,7 +188,10 @@ namespace sahelIntegrationIA
                             portMaxCapacity = portExceptionlCapacity != 0 ? portExceptionlCapacity : inspectionAppointmentsModel.PortMaximumCapacity;
                             var availableDateSlots = randomDate != null ? portMaxCapacity - randomDate.InspectionCount
                                                                      : portMaxCapacity;
-
+                            if (availableDateSlots == 0)
+                            {
+                                continue;
+                            }
                             if (availableDateSlots >= inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().Count)
                             {
                                 inspectionAppointmentsModel.DeclarationVehicles.Where(v => v.InspectionDate is null).ToList().ForEach(v =>
@@ -628,11 +631,13 @@ namespace sahelIntegrationIA
                             UserId = q.UserID,
                             ReferenceId = Convert.ToInt32(eserviceRequestsIds.First())
                         });
+
+                        if (q.RequestSource == "Sahel")
+                        {
+                            //TODO: Add notification for Sahel
+                        }
                         await _eServicesContext.SaveChangesAsync();
-
-
                     }
-
                 }
             }
             catch (Exception ex)
@@ -822,11 +827,13 @@ namespace sahelIntegrationIA
             var driverPassports = vehicles.Select(v => v.DriverPassportNumber).ToList();
             var driverCivilIds = vehicles.Select(v => v.DriverCivilId).ToList();
             var vehiclesPlatenumbers = vehicles.Select(v => new { v.PlateNo, v.Country }).ToList();//"Passport : "123456kjhgfdn" VehiclePlate: "124 7654gjkln"
+            var includedStates = new List<int>() { (int)InspectionAppointmentStateEnum.Booked, (int)InspectionAppointmentStateEnum.Attended, (int)InspectionAppointmentStateEnum.Release };
 
             var lastInspectionAppointments = await _eServicesContext.Set<InspectionAppointments>()
-                                                .Where(i => (driverCivilIds.Contains(i.DriverCivilId) && i.DriverCivilId != null) ||
+                                                .Where(i => includedStates.Contains(i.StateId) &&
+                                                            ((driverCivilIds.Contains(i.DriverCivilId) && i.DriverCivilId != null) ||
                                                             (driverPassports.Contains(i.DriverPassportNumber) && i.DriverPassportNumber != null) ||
-                                                            vehiclesPlatenumbers.Select(vp => vp.PlateNo).ToList().Contains(i.VehiclePlateNumber)
+                                                            vehiclesPlatenumbers.Select(vp => vp.PlateNo).ToList().Contains(i.VehiclePlateNumber))
                                                       )
                                                 .OrderByDescending(i => i.InspectionDate)
                                                 .ToListAsync();
@@ -849,7 +856,7 @@ namespace sahelIntegrationIA
         public async Task<List<InspectionAppointmentMemoryModel>> GetAppointments(DateTime currentDateTime)
         {
             return await _eServicesContext.Set<InspectionAppointments>()
-            .Where(a => a.InspectionDate.Date >= currentDateTime)
+            .Where(a => a.InspectionDate.Date >= currentDateTime && a.StateId == (int)InspectionAppointmentStateEnum.Booked)
             .Select(a => new InspectionAppointmentMemoryModel
             {
                 Date = a.InspectionDate,
@@ -903,9 +910,12 @@ namespace sahelIntegrationIA
                                                             a.Date.Date == date.Date &&
                                                             (isHourly ? a.Time == time : 1 == 1))
                                 .ToList();
+
+            _requestLogger.LogInformation($"ReservationData: Date:{date} ,Time:{time}, isHourly:{isHourly}, vehiclesCount:{vehicles.Count}, startRampNumber:{inspectionPortStartRampNumber}," +
+                $"EndRampNumber:{inspectionPortEndRampNumber}, portMaxCapacity:{portMaxCapacity}");
             if (portAppointments.Count >= portMaxCapacity)
             {
-                //TODO: Check what to Do
+                _requestLogger.LogException(new BusinessRuleException($"portAppointments.Count >= portMaxCapacity,Date:{date}, Time: {time}, Count:{portAppointments.Count} ,portMaxCapacity:{portMaxCapacity} "));
                 throw new BusinessRuleException();
             }
             var res = new ReturnModel();
@@ -948,7 +958,7 @@ namespace sahelIntegrationIA
 
             if (appointmentsAvailability.Count(a => a.IsAvailable) < vehicles.Count)
             {
-                //throw new BusinessRuleException(localizer[ResourcesEnum.NoBookingCapacityAvaialbeleForTheSelectedDate]);
+                _requestLogger.LogException(new BusinessRuleException($"no available capacity in the selected date, Date:{date}, Time: {time},inspectionPortStartRampNumber:{inspectionPortStartRampNumber}, "));
                 throw new BusinessRuleException();
             }
 
@@ -1050,13 +1060,13 @@ namespace sahelIntegrationIA
             var vehcilesPlateNumbers = inspectionModel.DeclarationVehicles.Select(v => v.PlateNo).ToList();
             var driversCivilIds = inspectionModel.DeclarationVehicles.Select(v => v.DriverCivilId).ToList();
             var driversPassports = inspectionModel.DeclarationVehicles.Select(v => v.DriverPassportNumber).ToList();
-
+            var includedStates = new List<int>() { (int)InspectionAppointmentStateEnum.Booked, (int)InspectionAppointmentStateEnum.Attended, (int)InspectionAppointmentStateEnum.Release };
             var vehiclesDriversLastInspectionDate = await _eServicesContext
                                                         .Set<InspectionAppointments>()
-                                                        .Where(I =>
-                                                                    vehcilesPlateNumbers.Contains(I.VehiclePlateNumber) ||
+                                                        .Where(I => includedStates.Contains(I.StateId) &&
+                                                                    (vehcilesPlateNumbers.Contains(I.VehiclePlateNumber) ||
                                                                     (driversCivilIds.Contains(I.DriverCivilId) && !string.IsNullOrEmpty(I.DriverCivilId)) ||
-                                                                    (driversPassports.Contains(I.DriverPassportNumber) && !string.IsNullOrEmpty(I.DriverPassportNumber))
+                                                                    (driversPassports.Contains(I.DriverPassportNumber) && !string.IsNullOrEmpty(I.DriverPassportNumber)))
                                                                 )
                                                         .OrderByDescending(I => I.InspectionDate)
                                                         .ToListAsync();
