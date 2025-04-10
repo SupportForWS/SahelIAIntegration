@@ -373,6 +373,7 @@ namespace sahelIntegrationIA
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.AdditionalInfoNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
 
+                //TODO: in case of org reg service, we need to get rejectionRemearks from organizationrequests table
                 case nameof(ServiceRequestStatesEnum.EServiceRequestORGRejectedState):
                 case nameof(ServiceRequestStatesEnum.EServiceRequestRejectedState):
                 case "OrganizationRequestRejectedState":
