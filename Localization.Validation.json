@@ -1,0 +1,1637 @@
+﻿[
+  {
+    "Key": "ConfirmInvoiceCommand.DuplicatedRegistrationNumbers",
+    "LocalizedValue": {
+      "en": "Registration numbers are duplicated",
+      "ar": "ارقام التسجيل مكرره"
+    }
+  },
+  {
+    "Key": "CivilIdValidationFail",
+    "LocalizedValue": {
+      "en": "Please enter the valid Civil Id number.",
+      "ar": "الرجاء كتابة رقم مدني صحيح"
+    }
+  },
+  {
+    "Key": "DateFormat",
+    "LocalizedValue": {
+      "en": "Please enter valid Date Format",
+      "ar": "الرجاء كتابة التاريخ"
+    }
+  },
+
+  {
+    "Key": "InvalidLicenseNumber",
+    "LocalizedValue": {
+      "en": "There is no information available for the entered import license number, please re-enter correct import license number and try again",
+      "ar": "لا يوجد معلومات متوفرة عن رقم رخصة الإستيراد الذي تم إدخاله، يرجى إعادة إدخال رقم رخصة الإستيراد بشكل صحيح وإعادة المحاولة"
+    }
+  },
+
+  {
+    "Key": "IncorrectLicenseNumber",
+    "LocalizedValue": {
+      "en": "The entered import license number is invalid",
+      "ar": "رقم رخصة الإستيراد المدخلة غير صحيحة"
+    }
+  },
+
+  {
+    "Key": "InvalidIndustrialLicenseNumber",
+    "LocalizedValue": {
+      "en": "There is no information available for entered industrial license number, please re-enter the correct industrial license number, and try again",
+      "ar": "لا يوجد معلومات متوفرة عن رقم الترخيص الصناعي الذي تم إدخاله، يرجى إعادة إدخال رقم الترخيص الصناعي بشكل صحيح وإعادة المحاولة"
+    }
+  },
+
+  {
+    "Key": "DatePastNotAllowed",
+    "LocalizedValue": {
+      "en": "Expiry date  should be greater than or equal to current date",
+      "ar": "يجب أن يكون التاريخ المحدد أكبر من اليوم"
+    }
+  },
+  {
+    "Key": "PassportNoRequired",
+    "LocalizedValue": {
+      "en": "Passport Number is Required",
+      "ar": "الرجاء كتابة رقم جواز السفر"
+    }
+  },
+  {
+    "Key": "MobileNumberValid",
+    "LocalizedValue": {
+      "en": "Please enter a valid 8 digit Mobile Number",
+      "ar": "الرجاء كتابة رقم جوال صحيح من 8 ارقام"
+    }
+  },
+  {
+    "Key": "EmailRequired",
+    "LocalizedValue": {
+      "en": "Please, Write Valid Email",
+      "ar": "الرجاء كتابة البريد الالكتروني"
+    }
+  },
+  {
+    "Key": "ValidLicenseNumberRequired",
+    "LocalizedValue": {
+      "en": "Please enter a valid License Number",
+      "ar": "الرجاء إدخال رقم ترخيص صالح"
+    }
+  },
+  {
+    "Key": "AgreeInfoCorrectnessRequired",
+    "LocalizedValue": {
+      "en": "Please agree to correctness of the information",
+      "ar": "الرجاء الاقرار على صحة البيانات"
+    }
+  },
+  {
+    "Key": "FromBusinessValidate",
+    "LocalizedValue": {
+      "en": "Please Write Your Current Business",
+      "ar": "الرجاء كتابة النشاط الحالي"
+    }
+  },
+  {
+    "Key": "ChangeJobTitleFromValidate",
+    "LocalizedValue": {
+      "en": "Please Write Your Current Job Title",
+      "ar": "الرجاء كتابة المسمى الوظيفي الحالي"
+    }
+  },
+  {
+    "Key": "ChangeJobTitleToValidate",
+    "LocalizedValue": {
+      "en": "Please Choose Required JobTitle",
+      "ar": "الرجاء اختيار المسمى الوظيفي المطلوب"
+    }
+  },
+  {
+    "Key": "FirstNamerDA",
+    "LocalizedValue": {
+      "en": "Please enter the First Name",
+      "ar": "الرجاء كتابة الاسم الأول"
+    }
+  },
+
+  {
+    "Key": "NumbersAndSpecialCharactersNotAllowed",
+    "LocalizedValue": {
+      "en": "Please enter a valid name (numbers and special characters are not allowed)",
+      "ar": "الرجاء إدخال إسم صالح  (الأرقام و الرموز غير مسموح بها)"
+    }
+  },
+
+  {
+    "Key": "LastNamerDA",
+    "LocalizedValue": {
+      "en": "Please enter the Last Name",
+      "ar": "الرجاء كتابة الاسم الأخير"
+    }
+  },
+
+
+  {
+    "Key": "EServiceRequestNumber",
+    "LocalizedValue": {
+      "en": "Request Number",
+      "ar": "رقم الطلب"
+    }
+  },
+
+  {
+    "Key": "CivilIdValidationFail",
+    "LocalizedValue": {
+      "en": "Please enter the valid Civil Id number",
+      "ar": "الرجاء كتابة رقم مدني صحيح"
+    }
+  },
+
+  {
+    "Key": "MobileNumberValid",
+    "LocalizedValue": {
+      "en": "Please enter a valid 8 digit Mobile Number",
+      "ar": "الرجاء كتابة رقم جوال صحيح من 8 ارقام"
+    }
+  },
+
+  {
+    "Key": "validemail",
+    "LocalizedValue": {
+      "en": "Please, Write valid email",
+      "ar": "الرجاء كتابة بريد إلكتروني صحيح"
+    }
+  },
+
+  {
+    "Key": "validpassword",
+    "LocalizedValue": {
+      "en": "The password should not be less than 8 digits and should contains upper and lower case ,numbers and special characters.",
+      "ar": "يجب أن لا تقل كلمة المرور عن 8 خانات و يجب ان تحتوي على حروف كبيرة و صغيرة و ارقام  و رموز"
+    }
+  },
+
+  {
+    "Key": "PleaseselectaLegalEntity",
+    "LocalizedValue": {
+      "en": "Please select a Legal Entity",
+      "ar": "الكيان القانوني الذي تمثله"
+    }
+  },
+
+  {
+    "Key": "GenderRequired",
+    "LocalizedValue": {
+      "en": "Please select a gender type",
+      "ar": "الرجاء اختيار الجنس"
+    }
+  },
+
+  {
+    "Key": "nationailityRequired",
+    "LocalizedValue": {
+      "en": "Please, Choose Nationality",
+      "ar": "الرجاء اختيار الجنسية"
+    }
+  },
+  {
+    "Key": "OrgnaizationAlreadyConnectedToThisBusinessActivity",
+    "LocalizedValue": {
+      "en": "Orgnaization is already connected to this business activity",
+      "ar": "المؤسسة مرتبطة بهذا النشاط بالفعل"
+    }
+  },
+  {
+    "Key": "ThisBrokerIsNotAllowedToHaveBankGuarantee",
+    "LocalizedValue": {
+      "en": "This Broker Is Not Allowed To Have Bank Guarantee",
+      "ar": "هذا المخلص غير مسموح له التقدم بطلب كفالة مالية"
+    }
+  },
+  {
+    "Key": "UploadAllRequestedDocuments",
+    "LocalizedValue": {
+      "en": "Upload All Requested Documents",
+      "ar": "قم برفع جميع الملفات المطلوبة"
+    }
+  },
+  {
+    "Key": "BusinessActivityRequestCreatedState",
+    "LocalizedValue": {
+      "en": "Created",
+      "ar": "تم الإنشاء"
+    }
+  },
+  {
+    "Key": "BusinessActivityRequestSubmittedState",
+    "LocalizedValue": {
+      "en": "Submitted",
+      "ar": "تم الإرسال"
+    }
+  },
+  {
+    "Key": "BusinessActivityRequestRejectedState",
+    "LocalizedValue": {
+      "en": "Rejected",
+      "ar": "تم الرفض"
+    }
+  },
+
+  {
+    "Key": "BusinessActivityRequestInialApprovedState",
+    "LocalizedValue": {
+      "en": "Initial Approval",
+      "ar": "اعتماد مبدئي"
+    }
+  },
+  {
+    "Key": "BusinessActivityRequestCompletedState",
+    "LocalizedValue": {
+      "en": "Completed",
+      "ar": "تم الإكمال"
+    }
+  },
+
+  {
+    "Key": "UserActivityRequestCreatedState",
+    "LocalizedValue": {
+      "en": "Created",
+      "ar": "تم الإنشاء"
+    }
+  },
+  {
+    "Key": "UserActivityRequestSubmittedState",
+    "LocalizedValue": {
+      "en": "Submitted",
+      "ar": "تم الإرسال"
+    }
+  },
+
+  {
+    "Key": "UserActivityRequestDeliveredState",
+    "LocalizedValue": {
+      "en": "Delivered",
+      "ar": "تم التسليم"
+    }
+  },
+
+  {
+    "Key": "RequestDelivered",
+    "LocalizedValue": {
+      "en": "Request Has Been Delivered",
+      "ar": "تم تسليم المستخدم"
+    }
+  },
+
+
+  {
+    "Key": "EServiceRequestIssTranApprovedState",
+    "LocalizedValue": {
+      "en": "Approved",
+      "ar": "تمت الموافقة"
+    }
+  },
+  {
+    "Key": "OrganizationRequestApprovedForCreate",
+    "LocalizedValue": {
+      "en": "Approved For Create",
+      "ar": "الموافقة على الإنشاء"
+    }
+  },
+
+  {
+    "Key": "OrganizationRequestApprovedForUpdate",
+    "LocalizedValue": {
+      "en": "Approved For Update",
+      "ar": "موافقة على التحديث"
+    }
+  },
+  {
+    "Key": "UserActivityRequestRejectedState",
+    "LocalizedValue": {
+      "en": "Rejected",
+      "ar": "تم الرفض"
+    }
+  },
+  {
+    "Key": "UserActivityRequestAcceptedState",
+    "LocalizedValue": {
+      "en": "Accepted",
+      "ar": "تم القبول"
+    }
+  },
+  {
+    "Key": "UserActivityRequestCompletedState",
+    "LocalizedValue": {
+      "en": "Completed",
+      "ar": "تم الإكمال"
+    }
+  },
+
+  {
+    "Key": "InvalidMCDeatils",
+    "LocalizedValue": {
+      "en": "Invalid MC Deatils",
+      "ar": "يوجد خطأ في معلومات نظام الجمارك"
+    }
+  },
+
+  {
+    "Key": "AlreadyRegisteredBrokerLicense",
+    "LocalizedValue": {
+      "en": "Already Registered Broker License",
+      "ar": "رخصة المخلص مسجلة بالفعل"
+    }
+  },
+
+  {
+    "Key": "AlreadyRegisteredLicense",
+    "LocalizedValue": {
+      "en": "The given General Broker License number is already registered with us, Please contact your Admin",
+      "ar": "رقم الرخصة التي قمت بإدخالها مسجلة لدينا من قبل، الرجاء الإتصال بالجمارك إدارة تسجيل الشركات"
+    }
+  },
+
+  {
+    "Key": "AlreadyRegisteredCompanyCivilID",
+    "LocalizedValue": {
+      "en": "Already Registered Company Civil ID",
+      "ar": "الرقم المدني للمؤسسة مسجل بالفعل"
+    }
+  },
+
+  {
+    "Key": "ImporterLicenseAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "The entered Importer License number has been already registered with us",
+      "ar": " رقم رخصة الإستيراد مسجل لدينا من قبل ، الرجاء الاتصال بادارة الشركة"
+    }
+  },
+
+  {
+    "Key": "DataTampered",
+    "LocalizedValue": {
+      "en": "Data Tampered",
+      "ar": "يوجد عبث في البيانات"
+    }
+  },
+
+  {
+    "Key": "NotValidLicenseForGeneralBroker",
+    "LocalizedValue": {
+      "en": "Please enter a valid General Broker License Number",
+      "ar": "الرجاء كتابة رقم ترخيص صحيح للمخلص العام"
+    }
+  },
+
+  {
+    "Key": "ProcessincompleteinRegistration",
+    "LocalizedValue": {
+      "en": "Process in Complete in Registration",
+      "ar": " العملية غير مكتملة في التسجيل"
+    }
+  },
+
+  {
+    "Key": "UnknownStatusinRegistration",
+    "LocalizedValue": {
+      "en": "Unknown Status in Registration",
+      "ar": "حالة غير معروفة في التسجيل"
+    }
+  },
+
+  {
+    "Key": "AssociatedOrganizations",
+    "LocalizedValue": {
+      "en": "Associated Organizations",
+      "ar": "الشركات المرفقة"
+    }
+  },
+  {
+    "Key": "ArabicFirstName",
+    "LocalizedValue": {
+      "en": "Arabic First Name",
+      "ar": "الاسم الاول باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "ArabicSecondName",
+    "LocalizedValue": {
+      "en": "Arabic Second Name",
+      "ar": "الاسم الثاني باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "ArabicThirdName",
+    "LocalizedValue": {
+      "en": "Arabic Third Name",
+      "ar": "الاسم الثالث باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "ArabicLastName",
+    "LocalizedValue": {
+      "en": "Arabic Last Name",
+      "ar": "الاسم الأخير باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "EnglishFirstName",
+    "LocalizedValue": {
+      "en": "English First Name",
+      "ar": "الاسم الاول باللغة الانجليزية"
+    }
+  },
+
+  {
+    "Key": "EnglishSecondName",
+    "LocalizedValue": {
+      "en": "English Second Name",
+      "ar": "الاسم الثاني باللغه الانجليزية"
+    }
+  },
+
+  {
+    "Key": "EnglishThirdName",
+    "LocalizedValue": {
+      "en": "English Third Name",
+      "ar": "الاسم الثالث باللغه الانجليزية"
+    }
+  },
+
+  {
+    "Key": "EnglishLastName",
+    "LocalizedValue": {
+      "en": "English Last Name",
+      "ar": "الاسم الاخير باللغه الانجليزية"
+    }
+  },
+
+  {
+    "Key": "CivilID",
+    "LocalizedValue": {
+      "en": "Civil Id",
+      "ar": "الرقم المدني"
+    }
+  },
+
+  {
+    "Key": "CivilIDExpiryDate",
+    "LocalizedValue": {
+      "en": "Civil ID Expiry Date",
+      "ar": "تاريخ انتهاء البطاقة المدنية"
+    }
+  },
+
+  {
+    "Key": "PassportNo",
+    "LocalizedValue": {
+      "en": "Passport Number",
+      "ar": "رقم الجواز"
+    }
+  },
+
+  {
+    "Key": "PassportNo",
+    "LocalizedValue": {
+      "en": "Passport Number",
+      "ar": "رقم الجواز"
+    }
+  },
+
+  {
+    "Key": "PassportNo",
+    "LocalizedValue": {
+      "en": "Passport Number",
+      "ar": "رقم جواز السفر"
+    }
+  },
+
+  {
+    "Key": "PassportExpiryDate",
+    "LocalizedValue": {
+      "en": "Passport Expiry Date",
+      "ar": "تاريخ انتهاء جواز السفر"
+    }
+  },
+
+  {
+    "Key": "MobileNumber",
+    "LocalizedValue": {
+      "en": "Mobile Number",
+      "ar": "رقم الجوال الكويتي"
+    }
+  },
+
+  {
+    "Key": "Address",
+    "LocalizedValue": {
+      "en": "Address",
+      "ar": "العنوان"
+    }
+  },
+
+  {
+    "Key": "Email",
+    "LocalizedValue": {
+      "en": "Email",
+      "ar": "البريد الالكتروني"
+    }
+  },
+
+  {
+    "Key": "LicenseNumber",
+    "LocalizedValue": {
+      "en": "License No",
+      "ar": "رقم الرخصة"
+    }
+  },
+
+  {
+    "Key": "RejectionRemarks",
+    "LocalizedValue": {
+      "en": "Rejection Remarks",
+      "ar": "سبب الرفض"
+    }
+  },
+
+  {
+    "Key": "UTFExpirationDate",
+    "LocalizedValue": {
+      "en": "UTF Expiry Date",
+      "ar": "تاريخ انتهاء طلب التعهد"
+    }
+  },
+
+  {
+    "Key": "NewOrganizationEnglishName",
+    "LocalizedValue": {
+      "en": "Organization New English Name",
+      "ar": "اسم الشركة الجديد باللغة الانجليزية"
+    }
+  },
+
+  {
+    "Key": "NewOrganizationArabiName",
+    "LocalizedValue": {
+      "en": "Organization New Arabic Name",
+      "ar": "اسم الشركة الجديد باللغة العربية"
+    }
+  },
+
+  {
+    "Key": "OldOrganizationEnglishName",
+    "LocalizedValue": {
+      "en": "Organization Old English Name",
+      "ar": "اسم الشركة القديم باللغة الانجليزية"
+    }
+  },
+
+  {
+    "Key": "OldOrganizationArabicName",
+    "LocalizedValue": {
+      "en": "Organization Old Arabic Name",
+      "ar": "اسم الشركة القديم باللغة العربية"
+    }
+  },
+
+
+  {
+    "Key": "IndustrialLicenseNumber",
+    "LocalizedValue": {
+      "en": "Industrial License Number",
+      "ar": "رقم الرخصة الصناعية"
+    }
+  },
+
+
+  {
+    "Key": "CommercialLicenseNumber",
+    "LocalizedValue": {
+      "en": "Commercial License Number",
+      "ar": "رقم الترخيص التجاري"
+    }
+  },
+
+
+  {
+    "Key": "ImporterLicenseType",
+    "LocalizedValue": {
+      "en": "Importer License Type",
+      "ar": "نوع رخصة الإستيراد"
+    }
+  },
+
+
+  {
+    "Key": "ImporterLicenseTypeDescription",
+    "LocalizedValue": {
+      "en": "Importer License Type Description",
+      "ar": "وصف نوع رخصة الإستيراد"
+    }
+  },
+
+
+  {
+    "Key": "LicenseIssueDate",
+    "LocalizedValue": {
+      "en": "Issue Date",
+      "ar": "تاريخ الاصدار"
+    }
+  },
+
+  {
+    "Key": "LicenseExpiryDate",
+    "LocalizedValue": {
+      "en": "Expiry Date",
+      "ar": "تاريخ انتهائه"
+    }
+  },
+
+  {
+    "Key": "AuthorizedPerson",
+    "LocalizedValue": {
+      "en": "Authorized Person Name",
+      "ar": "اسم المُفوض"
+    }
+  },
+
+  {
+    "Key": "IssueDate",
+    "LocalizedValue": {
+      "en": "Authorized Signatory Issue Date",
+      "ar": "تاريخ اصدار اعتماد التوقيع"
+    }
+  },
+
+  {
+    "Key": "ExpiryDate",
+    "LocalizedValue": {
+      "en": "Authorized Signatory Expiry Date",
+      "ar": "تاريخ انتهاء اعتماد التوقيع"
+    }
+  },
+
+  {
+    "Key": "AuthorizedSignatoryCivilIdExpiryDate",
+    "LocalizedValue": {
+      "en": "Authorized Signatory Civil ID Expiry Date",
+      "ar": "تاريخ انتهاء البطاقة المدنية للمفوض بالتوقيع"
+    }
+  },
+
+  {
+    "Key": "POBoxNo",
+    "LocalizedValue": {
+      "en": "P.O.Box No",
+      "ar": "رقم صندوق البريد"
+    }
+  },
+
+  {
+    "Key": "City",
+    "LocalizedValue": {
+      "en": "City",
+      "ar": "مدينة"
+    }
+  },
+
+  {
+    "Key": "State",
+    "LocalizedValue": {
+      "en": "State",
+      "ar": "محافظة"
+    }
+  },
+
+  {
+    "Key": "PostalCode",
+    "LocalizedValue": {
+      "en": "Postal Code",
+      "ar": "الرمز البريدي"
+    }
+  },
+
+  {
+    "Key": "CountryId",
+    "LocalizedValue": {
+      "en": "Country",
+      "ar": "الدولة"
+    }
+  },
+
+  {
+    "Key": "BussinessNumber",
+    "LocalizedValue": {
+      "en": "Business Number",
+      "ar": "هاتف المكتب"
+    }
+  },
+
+  {
+    "Key": "BussinessFaxNo",
+    "LocalizedValue": {
+      "en": "Business Fax Number",
+      "ar": "رقم فاكس المكتب"
+    }
+  },
+
+  {
+    "Key": "Mobile",
+    "LocalizedValue": {
+      "en": "Mobile Number",
+      "ar": "رقم الهاتف"
+    }
+  },
+
+  {
+    "Key": "MobileAlreadyRegistered",
+    "LocalizedValue": {
+      "en": "Mobile Number Already Exists",
+      "ar": "رقم الهاتف موجود بالفعل"
+    }
+  },
+
+  {
+    "Key": "ResidenceNumber",
+    "LocalizedValue": {
+      "en": "Residence Number",
+      "ar": "رقم الاقامة"
+    }
+  },
+
+  {
+    "Key": "WebPageAddress",
+    "LocalizedValue": {
+      "en": "Web Page Address",
+      "ar": "عنوان صفحة الانترنت"
+    }
+  },
+
+  {
+    "Key": "Block",
+    "LocalizedValue": {
+      "en": "Block",
+      "ar": "القطعة"
+    }
+  },
+
+  {
+    "Key": "Street",
+    "LocalizedValue": {
+      "en": "Street",
+      "ar": "الشارع"
+    }
+  },
+
+  {
+    "Key": "RequestForVisitRemarks",
+    "LocalizedValue": {
+      "en": "Request For Visit Remarks",
+      "ar": "طلب ملاحظات الزيارة"
+    }
+  },
+
+  {
+    "Key": "AdditionalInfoRemarks",
+    "LocalizedValue": {
+      "en": "Additional Information Remarks",
+      "ar": "ملاحظات اضافية"
+    }
+  },
+
+  {
+    "Key": "Nationality",
+    "LocalizedValue": {
+      "en": "Nationality",
+      "ar": "الجنسية"
+    }
+  },
+
+
+  {
+    "Key": "MOIFailure",
+    "LocalizedValue": {
+      "en": "Please Verify Vehicle details",
+      "ar": "يرجى التأكد من معلومات المركبة"
+    }
+  },
+
+  {
+    "Key": "KMIDFailure",
+    "LocalizedValue": {
+      "en": "Authentication request sent to Kuwait Mobile id is not approved",
+      "ar": "لم يتم الموافقة على طلب المصادقة المرسل على تطبيق هويتي"
+    }
+  },
+
+  {
+    "Key": "ARequestHasBeenAlreadySubmittedPleaseCheckInMyRequestsScreenForTheStatus",
+    "LocalizedValue": {
+      "en": "A Request Has Been Already Submitted Please Check In My Requests Screen For The Status",
+      "ar": "تم إرسال الطلب بالفعل ، يرجى التحقق من الحالة في شاشة الطلبات الخاصة بي"
+    }
+  },
+
+  {
+    "Key": "ARequestHasBeenAlreadySubmittedPleaseCheckInMyRequestsScreenForTheStatusSahel",
+    "LocalizedValue": {
+      "en": "تم إرسال الطلب بالفعل ، يرجى التحقق من الحالة في شاشة الطلبات الخاصة بي",
+      "ar": "تم إرسال الطلب بالفعل ، يرجى التحقق من الحالة في شاشة الطلبات الخاصة بي"
+    }
+  },
+  {
+    "Key": "CivilIDNotEqual",
+    "LocalizedValue": {
+      "en": "The Requester's Civil ID and the Authorizer's Civil ID must be different",
+      "ar": "يجب أن تكون البطاقة المدنية لمقدم الطلب مختلفة عن البطاقة المدنية للمفوض له"
+    }
+  },
+  {
+    "Key": "ConsigneeName",
+    "LocalizedValue": {
+      "en": "Consignee Name",
+      "ar": "اسم المستفيد"
+    }
+  },
+  {
+    "Key": "BrokerType",
+    "LocalizedValue": {
+      "en": "Broker Type",
+      "ar": "نوع المخلص"
+    }
+  },
+  {
+    "Key": "BrokerFullName",
+    "LocalizedValue": {
+      "en": "Broker Name",
+      "ar": "اسم المخلص"
+    }
+  },
+
+  {
+    "Key": "SameOwnerAndDriver",
+    "LocalizedValue": {
+      "en": "The Civil ID should not be the same for owner and driver",
+      "ar": "يجب أن تكون البطاقة المدنية لمالك المركبة مختلفة عن البطاقة المدنية للسائق"
+    }
+  },
+  {
+    "Key": "EServiceBPBGRequestCreatedState",
+    "LocalizedValue": {
+      "en": "Created",
+      "ar": "تم الإنشاء"
+    }
+  },
+
+
+  {
+    "Key": "EServiceBPBGRequestSubmittedState",
+    "LocalizedValue": {
+      "en": "Submitted",
+      "ar": "تم الإرسال"
+    }
+  },
+
+
+  {
+    "Key": "EServiceBPBGRequestRejectedState",
+    "LocalizedValue": {
+      "en": "Rejected",
+      "ar": "تم الرفض"
+    }
+  },
+
+  {
+    "Key": "BGNoAlreadyExist",
+    "LocalizedValue": {
+      "en": "Bank Guarantee Number Already Used",
+      "ar": "رقم الكفالة المصرفية مستخدم بالفعل"
+    }
+  },
+
+  {
+    "Key": "EServiceBPBGRequestInProgressState",
+    "LocalizedValue": {
+      "en": "In Progress",
+      "ar": "قيد التنفيذ"
+    }
+  },
+
+  {
+    "Key": "RequestInProgress",
+    "LocalizedValue": {
+      "en": "Request In Progress",
+      "ar": "الطلب قيد التنفيذ"
+    }
+  },
+
+
+  {
+    "Key": "EServiceBPBGRequestCompletedState",
+    "LocalizedValue": {
+      "en": "Completed",
+      "ar": "تم الإكمال"
+    }
+  },
+
+  {
+    "Key": "BGExpired",
+    "LocalizedValue": {
+      "en": "The bank guarantee for this activity has expired. To Re-Activate the customs business activity, you have to extend the bank guarantee.",
+      "ar": "انتهت صلاحية الضمان البنكي لهذا النشاط. لتجديد النشاط الجمركي يجب تمديد الضمان البنكي."
+    }
+  },
+
+  {
+    "Key": "BGReleased",
+    "LocalizedValue": {
+      "en": "The bank guarantee has been released for this activity. To Re-Activate the customs business activity, you have to create a new bank guarantee.",
+      "ar": "تم الإفراج عن الضمان البنكي لهذا النشاط. لإعادة تفعيل النشاط الجمركي، يجب انشاء ضمان بنكي جديد."
+    }
+  },
+
+  {
+    "Key": "BGDeActivated",
+    "LocalizedValue": {
+      "en": "You cannot Re-Activate the customs business activity because the bank guarantee for this activity is DeActivated by customs, please approach the customs finance for more details.",
+      "ar": "لا يمكن انشاء طلب اعادة تفعيل النشاط الجمركي حيث أنه تم ايقاف الكفالة المصرفية عن طريق الجمارك، لمزيد من التفاصيل يرجي الرجوع الي الإدارة المالية بالجمارك"
+    }
+  },
+
+  {
+    "Key": "OrgNameChangeError",
+    "LocalizedValue": {
+      "en": "It is not possible to submit a request for change the organization's name due to the presence of users associated with this organization or there are requests that have not yet been approved, please check in my requests screen for the status.",
+      "ar": "لا يمكن تقديم طلب لتغيير إسم الشركة بسبب وجود مستخدمين مرتبطين بهذه الشركة أو وجود طلبات لم يتم الموافقة عليها بعد يرجى التحقق من حالة الطلبات الخاصة بك في شاشة طلباتي."
+    }
+  },
+
+  {
+    "Key": "OrgNameChangeErrorActiveRequests",
+    "LocalizedValue": {
+      "en": "It is not possible to submit a request for change the organization's name due to requests that have not yet been approved.",
+      "ar": "لا يمكن تقديم طلب لتغيير إسم الشركة بسبب وجود طلبات لم يتم الموافقة عليها بعد."
+    }
+  },
+
+
+  {
+    "Key": "UTFErrorActiveRequests",
+    "LocalizedValue": {
+      "en": "It is not possible to submit a request for Consignee Undertaking due to requests that have not yet been approved.",
+      "ar": "لا يمكن تقديم طلب تعهد حفظ البيانات الجمركي الأصلية بسبب وجود طلبات لم يتم الموافقة عليها بعد."
+    }
+  },
+
+
+  {
+    "Key": "VARequestDuplicationMsg",
+    "LocalizedValue": {
+      "en": "Cannot process, you have a submitted request, having request number @requestNo with same details. Please check using print request of documentation and issuance of a power of attorney to travel with a Kuwaiti vehicle.",
+      "ar": "يوجد لديك طلب اصدار توكيل بنفس التفاصيل رقم الطلب: @requestNo يمكنك استعراض الطلب عن طريق الذهاب الي خدمة طباعة طلب اصدار توكيل السفر بالمركبة"
+    }
+  },
+
+  {
+    "Key": "OrganizationNameChangeRequestCurrentlyActive",
+    "LocalizedValue": {
+      "en": "You cannot create this request when you have an Organization Name Change Request.",
+      "ar": ".لا يمكنك إنشاء هذا الطلب عندما يكون لديك طلب لتغيير إسم الشركة"
+    }
+  },
+
+  {
+    "Key": "DRDataEntryNotActive",
+    "LocalizedValue": {
+      "en": "The Direct Release Organization(DRO) Activity is not registered or inactive. Please activate it to Use DR Data Entry Services",
+      "ar": "النشاط الخاص بشركات البريد السريع (تصفية فورية) غير مفعل أو غير نشط حاليًا. يرجى تنشيطه لاستخدام خدمات مدخل بيانات التصفية الفورية"
+    }
+  },
+
+  {
+    "Key": "IndustrialLicenseNumberExpired",
+    "LocalizedValue": {
+      "en": "Your Industrial license has already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصتك الصناعية بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "ImportLicenseNumberExpired",
+    "LocalizedValue": {
+      "en": "Your Importer license has already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصة الإستيراد الخاصة بك بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "CommercialLicenseNumberExpired",
+    "LocalizedValue": {
+      "en": "Your Commercial license has already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصتك التجارية بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "ImportLicAndCommercialLicExpired",
+    "LocalizedValue": {
+      "en": "Your Importer license and Commercial license have already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصة الإستيراد و الرخصة التجارية الخاصة بك بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "ImportLicAndIndustrialLicExpired",
+    "LocalizedValue": {
+      "en": "Your Importer license and Industrial license have already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصة الإستيراد و الرخصة الصناعية الخاصة بك بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "IndustrialLicAndCommercialLicExpired",
+    "LocalizedValue": {
+      "en": "Your Industrial license and Commercial license have already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية الرخصة الصناعية و الرخصة التجارية الخاصة بك بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "ImportLicAndIndustrialLicAndCommercialLicExpired",
+    "LocalizedValue": {
+      "en": "Your Importer license, Industrial license and Commercial license have already expired, so you cannot complete the request.",
+      "ar": "لقد انتهت صلاحية رخصة الإستيراد والرخصة الصناعية و الرخصة التجارية الخاصة بك بالفعل، لذا لا يمكنك استكمال الطلب."
+    }
+  },
+
+  {
+    "Key": "RequestNeedPayment",
+    "LocalizedValue": {
+      "en": "Please make the payment to submit the request",
+      "ar": "برجاء الدفع لإرسال الطلب"
+    }
+  },
+
+  {
+    "Key": "InitialRequestSubmitted",
+    "LocalizedValue": {
+      "en": "Request has been submitted for Initial Approval",
+      "ar": "تم إرسال الطلب للموافقة المبدئية"
+    }
+  },
+
+  {
+    "Key": "InitialRequestSubmittedForFinalApp",
+    "LocalizedValue": {
+      "en": "Request has been submitted for Final Approval",
+      "ar": "تم إرسال الطلب للموافقة النهائية"
+    }
+  },
+
+  {
+    "Key": "GoToExam",
+    "LocalizedValue": {
+      "en": "Go to Exam Request",
+      "ar": "إذهب الى طلب الإختبار"
+    }
+  },
+
+  {
+    "Key": "JustSpecialBrokerOrMessenger",
+    "LocalizedValue": {
+      "en": "Borker type must be Special Broker or Special Messenger",
+      "ar": "نوع المخلص يجب أن يكون إما مخلص خاص أو مندوب خاص"
+    }
+  },
+
+  {
+    "Key": "JustGeneralorSuborMessenger",
+    "LocalizedValue": {
+      "en": "Borker type must be General Broker or Sub Broker or Sub Messenger",
+      "ar": "نوع المخلص يجب أن يكون إما مخلص عام أو مخلص تابع أو مندوب "
+    }
+  },
+
+  {
+    "Key": "MoiOwnerCivilIdChecking",
+    "LocalizedValue": {
+      "en": "The details of Vehicle No. #VehicleNo do not belong to the owner of Civil ID No. #CivilIdNo .",
+      "ar": "تفاصيل المركبة رقم #VehicleNo لا تعود لصاحب البطاقة المدنية رقم #CivilIdNo ."
+    }
+  },
+
+  {
+    "Key": "ReleaseBgRequestInProgress",
+    "LocalizedValue": {
+      "en": "You cannot create the request because there is a request to release the bank guarantee in progress.",
+      "ar": "لا يمكنك إنشاء الطلب نظراً لوجد طلب للإفراج عن الكفالة المصرفية قيد التنفيذ."
+    }
+  },
+
+  {
+    "Key": "ExtendBgRequestInProgress",
+    "LocalizedValue": {
+      "en": "You cannot create the request because there is a request to extend the bank guarantee in progress.",
+      "ar": "لا يمكنك إنشاء الطلب نظراً لوجد طلب لتمديد الكفالة المصرفية قيد التنفيذ."
+    }
+  },
+
+  {
+    "Key": "TravelDateExceedsInsuaranceDate",
+    "LocalizedValue": {
+      "en": "Vehicle Insurance end date exceeds the travel date.",
+      "ar": "لايمكن اتمام طلب توكيل السفر، و ذلك لأن الحقل الخاص بالسفر حتى تاريخ، يتجاوز تاريخ إنتهاء تأمين المركبة."
+    }
+  },
+
+  {
+    "Key": "NotValidDataForOrganizationFromMOCIResponse",
+    "LocalizedValue": {
+      "en": "The License number is not associated to the Organization as per MOCI.",
+      "ar": "رقم الرخصة غير مرتبط بالمنظمة وفقًا لوزارة التجارة والصناعة."
+    }
+  },
+
+  {
+    "Key": "NotValidDataForOrganizationFromMOCIResponseSahel",
+    "LocalizedValue": {
+      "en": "The License number is not associated to the Organization as per MOCI.",
+      "ar": "رقم الرخصة غير مرتبط بالمنظمة وفقًا لوزارة التجارة والصناعة."
+    }
+  },
+  {
+    "Key": "ErrorWhileUploadingYourFile",
+    "LocalizedValue": {
+      "en": "Invalid file name. It should not contain any special characters.",
+      "ar": "اسم الملف غير صحيح، يجب أن لا يحتوى اسم الملف على أي رموز خاصة"
+    }
+  },
+  {
+    "Key": "ErrorWhileUploading",
+    "LocalizedValue": {
+      "en": "Error While Uploading the document",
+      "ar": "حدث خطأ اثناء تحميل الملف"
+    }
+  },
+
+  {
+    "Key": "CompanyCivilIdorTradeLicNull",
+    "LocalizedValue": {
+      "en": "You cant proceed with sign up service if the Trade License number or Company civilId not fetched from MOCI correctly, please check the provided License number or  you can contact our technical support team for help.",
+      "ar": "لا يمكنك متابعة خدمة التسجيل إذا لم يتم إرجاع رقم السجل التجاري للشركة أو رقم الجهة المدني من وزارة التجارة والصناعة بشكل صحيح، يرجى التحقق من رقم الرخصة المدخل أو يمكنك الاتصال بفريق الدعم الفني للحصول على المساعدة."
+    }
+  },
+  {
+    "Key": "CommecrcialLicChanged",
+    "LocalizedValue": {
+      "en": "There is change in commercial license and existing account shall cancel and create new account with new commercial license.",
+      "ar": "هناك تغيير في الرخصة التجارية و يجب إلغاء الحساب الحالي وإنشاء حساب جديد برخصة تجارية جديدة."
+    }
+  },
+  {
+    "Key": "BrokerTypeSelectionValidation",
+    "LocalizedValue": {
+      "en": "Please select the type of broker before submitting the request.",
+      "ar": "يرجى تحديد نوع المخلص قبل تقديم الطلب."
+    }
+  },
+  {
+    "Key": "Removed",
+    "LocalizedValue": {
+      "en": "Removed",
+      "ar": "محذوف"
+    }
+  },
+  {
+    "Key": "Associated",
+    "LocalizedValue": {
+      "en": "Associated",
+      "ar": "مُسجل"
+    }
+  },
+  {
+    "Key": "Added",
+    "LocalizedValue": {
+      "en": "Added",
+      "ar": "إضافة"
+    }
+  },
+  {
+    "Key": "RemoveHistory",
+    "LocalizedValue": {
+      "en": "Removed",
+      "ar": "حذف"
+    }
+  },
+  {
+    "Key": "CommercialLicNotRetreived",
+    "LocalizedValue": {
+      "en": "There is no information about the commercial license number",
+      "ar": "لا توجد معلومات حول رقم الرخصة التجارية"
+    }
+  },
+
+  {
+    "Key": "CommercialLicNotRetreived",
+    "LocalizedValue": {
+      "en": "There is no information about the commercial license number",
+      "ar": "لا توجد معلومات حول رقم الرخصة التجارية"
+    }
+  },
+
+  {
+    "Key": "CommecrcialLicChangedSahel",
+    "LocalizedValue": {
+      "en": "There is change in commercial license and existing account shall cancel and create new account with new commercial license.",
+      "ar": "هناك تغيير في الرخصة التجارية و يجب إلغاء الحساب الحالي وإنشاء حساب جديد برخصة تجارية جديدة."
+    }
+  },
+  {
+    "Key": "CommercialLicNotRetreivedSahel",
+    "LocalizedValue": {
+      "en": "There is no information about the commercial license number",
+      "ar": "لا توجد معلومات حول رقم الرخصة التجارية"
+    }
+  },
+  {
+    "Key": "NotFoundExceptionSahel",
+    "LocalizedValue": {
+      "en": "This resource does not found",
+      "ar": "العنصر الذي تحاول الوصول اليه غير موجود او تم نقله"
+    }
+  },
+
+  {
+    "Key": "NoAuthorizedSignatorySahel",
+    "LocalizedValue": {
+      "en": "No Authorized Signatory Available",
+      "ar": "لا يوجد اي مفوض بالتوقيع متاح"
+    }
+  },
+  {
+    "Key": "SahelNotficationExpired",
+    "LocalizedValue": {
+      "en": "Your Request Expired",
+      "ar": "إنتهت صلاحية طلبك"
+    }
+  },
+  {
+    "Key": "SelectedAuthorizerNotValid",
+    "LocalizedValue": {
+      "en": "The selected authorized signatory not valid for this organization",
+      "ar": "المفوض بالتوقيع الذي تم اختياره ليس مصرح به لهذه الشركة"
+    }
+  },
+  {
+    "Key": "SelectedAuthorizerNotValidSahel",
+    "LocalizedValue": {
+      "en": "The selected authorized signatory not valid for this organization",
+      "ar": "المفوض بالتوقيع الذي تم اختياره ليس مصرح به لهذه الشركة"
+    }
+  },
+  {
+    "Key": "DateCreated",
+    "LocalizedValue": {
+      "en": "Date Created",
+      "ar": "تاريخ الإنشاء"
+    }
+  },
+  {
+    "Key": "DownloadRegistrationForm",
+    "LocalizedValue": {
+      "en": "Do you want to print the registration request form, sign and stamp it with the company stamp, then upload it along with the required documents of the request as it is mandatory before sending the request,if you download the document, you will have to submit the request again.",
+      "ar": "هل ترغب في طباعة استمارة طلب التسجيل والتوقيع عليها وختمها بختم الشركة ثم تحميلها مع المستند المطلوب للطلب حيث أنه إلزامي قبل إرسال الطلب,حيث انه في حالة تحميل المستند سيتوجب عليك الدخول مرة أخرى للطلب. "
+    }
+  },
+  {
+    "Key": "RegistrationFormNotification",
+    "LocalizedValue": {
+      "en": "A notification has been sent containing a link to download the file.",
+      "ar": "تم إرسال إشعار يحتوي على رابط لتحميل الملف."
+    }
+  },
+  {
+    "Key": "SkipDownloadRegistrationForm",
+    "LocalizedValue": {
+      "en": "I don't want to download the Registration Form",
+      "ar": "لا اريد تحميل استمارة طلب التسجيل "
+    }
+  },
+  {
+    "Key": "CivilIdExpired",
+    "LocalizedValue": {
+      "en": "The entered CivilId Expired",
+      "ar": "تاريخ صلاحية البطاقة المدنية التي تم إدخالها منتهي "
+    }
+  },
+  {
+    "Key": "NoAuthorizerSelected",
+    "LocalizedValue": {
+      "en": "No authorizer signatory selected",
+
+      "ar": "لم يتم إختيار اي مفوض بالتوقيع "
+    }
+  },
+  {
+    "Key": "KMIDServiceFailed",
+    "LocalizedValue": {
+      "en": "There is a problem connecting to the Kuwait Mobile ID service. Please try again later",
+
+      "ar": "هناك مشكلة في الاتصال بخدمة هويتي. يرجى المحاولة فيما بعد."
+    }
+  },
+  {
+    "Key": "MOCIServiceFailed",
+    "LocalizedValue": {
+      "en": "There is a problem connecting to the Ministry of Commerce & Industry service.",
+
+      "ar": "هناك مشكلة في الاتصال بخدمة وزارة التجارة والصناعة. يرجى المحاولة فيما بعد. "
+    }
+  },
+  {
+    "Key": "MOIServiceFailed",
+    "LocalizedValue": {
+      "en": "There is a problem connecting to the Ministry of Interior service.",
+
+      "ar": "هناك مشكلة في الاتصال بخدمة وزارة الداخلية. يرجى المحاولة فيما بعد. "
+    }
+  },
+  {
+    "Key": "PAIServiceFailed",
+    "LocalizedValue": {
+      "en": "There is a problem connecting to the Public Authority for Industry service.",
+
+      "ar": "هناك مشكلة في الاتصال بخدمة الهيئة العامة للصناعة. يرجى المحاولة فيما بعد. "
+    }
+  },
+  {
+    "Key": "UploadTheRenewalDocuments",
+    "LocalizedValue": {
+      "en": "Your document titled {0} has expired. Please upload a new document by submitting a renewal request.",
+
+      "ar": "تم انتهاء صلاحية المستند {0}. يُرجى تحميل مستند جديد من خلال تقديم طلب تجديد."
+    }
+  },
+  {
+    "Key": "UploadIndustrialDocument",
+    "LocalizedValue": {
+      "en": "You are required to upload the industrial license document by submitting a request to renew it.",
+
+      "ar": "يجب عليك رفع مستند الرخصة الصناعية من خلال تقديم طلب لتجديد الرخصة الصناعية."
+    }
+  },
+  {
+    "Key": "UploadCommercialDocument",
+    "LocalizedValue": {
+      "en": "You are required to upload the commercial license document by submitting a request to renew it.",
+
+      "ar": "يجب عليك رفع مستند الرخصة التجارية من خلال تقديم طلب لتجديد الرخصة التجارية."
+    }
+  },
+  {
+    "Key": "UploadAuthorizedSignatoryDocument",
+    "LocalizedValue": {
+      "en": "You are required to upload the {0} document by submitting a request to renew it.",
+
+      "ar": "يجب عليك رفع مستند  {0} من خلال تقديم طلب لتجديد المفوض بالتوقيع."
+    }
+  },
+  {
+    "Key": "UploadFromCurrentService",
+    "LocalizedValue": {
+      "en": "Upload From the current service",
+
+      "ar": "يتم تحميل المستند عن طريق الخدمة الحالية"
+    }
+  },
+  {
+    "Key": "UploadFromRenewService",
+    "LocalizedValue": {
+      "en": "Upload from the Renew Authorized Signatory Service ",
+
+      "ar": "يتم تحميل المستند عن طريق خدمة تجديد المفوض بالتوقيع"
+    }
+  },
+  {
+    "Key": "ActiveDocument",
+    "LocalizedValue": {
+      "en": "Active",
+
+      "ar": "نشط"
+    }
+  },
+  {
+    "Key": "NotActiveDocument",
+    "LocalizedValue": {
+      "en": "Not Active",
+
+      "ar": "غير نشط"
+    }
+  },
+  {
+    "Key": "TheCivilIdNotValidated",
+    "LocalizedValue": {
+      "en": "You cannot proceed as the Civil ID {0} has not been validated.",
+      "ar": "لا يمكنك المتابعة حيث أن الرقم المدني {0} لم يتم التحقق منه."
+    }
+  },
+
+  {
+    "Key": "TheCivilIdValidationExpired",
+    "LocalizedValue": {
+      "en": "You have to validate the Civil ID: {0} again to proceed.",
+      "ar": "يجب عليك التحقق من الرقم المدني: {0} مرة أخرى للمتابعة."
+    }
+  },
+  {
+    "Key": "RemoveTheOptionalUploadedDocument",
+    "LocalizedValue": {
+      "en": "You must remove the document  \"{0}\" from the uploaded files to proceed with your request.",
+      "ar": "يجب عليك حذف المستند  \"{0}\" من الملفات المرفوعة لمتابعة طلبك."
+    }
+  },
+
+  {
+    "Key": "FileSizeExceedsLimit",
+    "LocalizedValue": {
+      "en": "The file size exceeds the maximum allowed size of {0} KB.",
+      "ar": "حجم الملف يتجاوز الحجم الأقصى المسموح به وهو {0} كيلوبايت."
+    }
+  },
+  {
+    "Key": "CheckVehicleDataVA",
+    "LocalizedValue": {
+      "en": "please verify vehicle details and its type.",
+      "ar": "الرجاء التأكد من نوع و بيانات المركبة."
+    }
+  },
+  {
+    "Key": "ExpiryOrIssueDateNotValid",
+    "LocalizedValue": {
+      "en": "The authorized signatory's expiration date or Issue date is not valid.",
+      "ar": "تاريخ انتهاء صلاحية الشخص المفوض بالتوقيع أو تاريخ الإصدار غير صالح."
+
+    }
+  },
+  {
+    "Key": "TheServiceNotAvailable",
+    "LocalizedValue": {
+      "en": "Applying for a Broker Exam is currently unavailable, Reopening the registration for broker exams will be announced by Customs in due course.",
+      "ar": "خدمه تسجيل دخول اختبار المخلصين الجمركيين غير متاحه حالياً ، سوف يتم الاعلان عن فتح باب تسجيل لاختبارات المخلصين الجمركيين في وقت لاحق ."
+
+    }
+  },
+  {
+    "Key": "HolidayDateInspectionAppointment",
+    "LocalizedValue": {
+      "en": "This date is a holiday for inspections appointments, please refresh your page to get latest updated available dates.",
+      "ar": "هذا التاريخ تم تحديده كعُطلة لطلبات التفتيش, الرجاء اعاده تحميل الصفحة مرة اخرى للحصول على القائمة المحدثة للتواريخ المُتاحة "
+
+    }
+  },
+  {
+    "Key": "IssueDateAndExpiryDateshouldNotMatch",
+    "LocalizedValue": {
+      "en": "The Issue Date and Expiry Date should not match.",
+      "ar": "يجب أن لا يتطابق تاريخ الإصدار مع تاريخ الانتهاء."
+
+    }
+  },
+  {
+    "Key": "EnterYourMailOrCivilId",
+    "LocalizedValue": {
+      "en": "Please enter your email or your Civil ID.",
+      "ar": "يرجى إدخال بريدك الإلكتروني او رقمك المدني."
+    }
+  },
+  {
+    "Key": "ShouldLoginUsingKMIDVerification",
+    "LocalizedValue": {
+      "en": "Please use your KMID to sign in and access your account.",
+      "ar": "الرجاء استخدام تطبيق هويتي لتسجيل الدخول والوصول إلى حسابك."
+    }
+  },
+  {
+    "Key": "TheCurrentPasswordNotCorrect",
+    "LocalizedValue": {
+      "en": "The current password you entered is incorrect.",
+      "ar": "كلمة المرور الحالية التي أدخلتها غير صحيحة."
+    }
+  },
+  {
+    "Key": "TheNewPasswordAndConfirmPasswordNotMatched",
+    "LocalizedValue": {
+      "en": "The new password and confirm password do not match.",
+      "ar": "كلمة المرور الجديدة وكلمة المرور المؤكدة غير متطابقتين."
+    }
+  },
+  {
+    "Key": "CurrentPasswordEqualNewPassword",
+    "LocalizedValue": {
+      "en": "You cannot use the current password as the new password.",
+      "ar": "لا يمكنك استخدام كلمة المرور الحالية ككلمة مرور جديدة."
+    }
+  },
+  {
+    "Key": "TheBrokerNotVerified",
+    "LocalizedValue": {
+      "en": "The broker is not verified, you can't proceed.",
+      "ar": "لم يتم التحقق من المخلص، لا يمكنك المتابعة."
+    }
+  },
+  {
+    "Key": "PasswordExpirationNotice",
+    "LocalizedValue": {
+      "en": "Your account password has expired. For security purposes, you are required to reset your password to maintain access to your account.",
+      "ar": "لقد انتهت صلاحية كلمة المرور الخاصة بك. للحفاظ على أمان حسابك، يرجى إعادة تعيين كلمة المرور للمتابعة."
+    }
+  },
+  {
+    "Key": "KMIDNotAvailable",
+    "LocalizedValue": {
+      "en": "The KMID service is currently unavailable for registration and login operations. Please try again later.",
+      "ar": "خدمة KMID غير متاحة حالياً لعمليات التسجيل وتسجيل الدخول. يرجى المحاولة مرة أخرى لاحقاً."
+    }
+  },
+  {
+    "Key": "UseYourPassword",
+    "LocalizedValue": {
+      "en": "Please use your email and password to sign in and access your account.",
+      "ar": "الرجاء استخدام البريد الإلكتروني وكلمة المرور لتسجيل الدخول والوصول إلى حسابك."
+    }
+  },
+  {
+    "Key": "QRTokenExpired",
+    "LocalizedValue": {
+      "en": "Your Kuwait Mobile ID authentication QR session has expired. Please regenerate it by selecting the KMID login option.",
+      "ar": "انتهت صلاحية رمز الاستجابة السريعة (QR) في تطبيق هويتي. يرجى إنشاؤها مرة أخرى باختيار خيار تسجيل الدخول عبر تطبيق هويتي."
+    }
+  },
+  {
+    "Key": "UserCivilIdExpired",
+    "LocalizedValue": {
+      "en": "The account holder's Civil ID has expired. Please update the customs system with the latest Civil ID information to regain access.",
+      "ar": "انتهت صلاحية البطاقة المدنية لصاحب الحساب. يرجى تحديث نظام الجمارك ببيانات البطاقة المدنية الجديدة لاستعادة الوصول."
+    }
+  },
+  {
+    "Key": "KMIDDateVerificationValidation",
+    "LocalizedValue": {
+      "en": "Effective {0}, you must use KMID to log in to your account. Password-based login will be disabled. Please verify CivilId attached to your account as soon as possible to continue using services.",
+      "ar": "اعتبارًا من {0}، يجب استخدام تطبيق هويتي (KMID) لتسجيل الدخول إلى حسابك. سيتم تعطيل تسجيل الدخول باستخدام كلمة المرور. يرجى التحقق من ربط البطاقة المدنية بحسابك في أقرب وقت لمواصلة استخدام الخدمات."
+    }
+  },
+  {
+    "Key": "SignUpCivilIdNotMatched",
+    "LocalizedValue": {
+      "en": "The Civil ID you entered does not match the one obtained through KMID QR Scan. Please verify the entered Civil ID.",
+      "ar": "رقم البطاقة المدنية التي تم إدخالها لا تطابق مع رقم البطاقة المدنية الذي قام بمسح رمز الاستجابة السريع (QR). يرجى التحقق من رقم البطاقة المدنية المدخلة."
+    }
+  },
+  {
+    "Key": "AccountCivilIdNotMatched",
+    "LocalizedValue": {
+      "en": "The Civil ID you entered does not match the one obtained through KMID QR Scan.",
+      "ar": "رقم البطاقة المدنية المدخلة ورقم البطاقة المدنية الممسوحة عبر رمز الاستجابة السريعة (QR) غير متطابقين."
+    }
+  },
+  {
+    "Key": "KMIDAndPassowrdDateVerification",
+    "LocalizedValue": {
+      "en": "Please verify your Civil ID with Kuwait Mobile ID to enable KMID login for your account. Note: You can continue using the system with your credentials.",
+      "ar": "يرجى التحقق من بطاقتك المدنية باستخدام تطبيق هويتي لتمكين تسجيل الدخول عبر KMID. ملاحظة: يمكنك الاستمرار في استخدام النظام باستخدام بيانات الدخول الحالية."
+    }
+  },
+  {
+    "Key": "TheCivilIdVerifiedBefore",
+    "LocalizedValue": {
+      "en": "The Civil ID linked to this account has already been verified with a different account. Please update your Civil ID to proceed.",
+      "ar": "البطاقة المدنية المرتبطة بهذا الحساب تم التحقق منها مسبقًا مع حساب مختلف. يرجى تحديث البطاقة المدنية للمتابعة."
+    }
+  },
+  {
+    "Key": "PasswordExpiringSoonNotice",
+    "LocalizedValue": {
+      "en": "Reminder: your password expires in less than a week. To prevent login interruptions, please reset your password.",
+      "ar": "تذكير: كلمة المرور الخاصة بك ستنتهي خلال أقل من أسبوع. لتفادي انقطاع في تسجيل الدخول، يرجى إعادة تعيين كلمة المرور."
+    }
+  
+  },
+  {
+    "Key": "DeactivationRequestActive",
+    "LocalizedValue": {
+      "en": "You have an active account deactivation request, so you cannot submit any other requests at this time.",
+      "ar": "لديك طلب ايقاف حساب نشط، لذلك لا يمكنك تقديم أي طلبات أخرى في الوقت الحالي."
+
+    }
+  }
+
+
+]
