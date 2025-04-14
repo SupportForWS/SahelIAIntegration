@@ -344,6 +344,7 @@ namespace sahelIntegrationIA
                             await _eServicesContext.Set<KGACEmailOutSyncQueue>().AddAsync(new KGACEmailOutSyncQueue
                             {
                                 UserId = userdetails.UserId.ToString(),
+                                DateCreated= DateTime.Now,
                                 TOEmailAddress = userdetails.EmailId,
                                 MsgType = "BPSubmit",
                                 MailPriority = "Normal",
