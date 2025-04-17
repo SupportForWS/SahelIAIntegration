@@ -170,8 +170,8 @@ namespace sahelIntegrationIA
             };
 
 
-           // var organizationRequests =  await GetOrganizationRequests(orgStateId);
-         //   LogRequestList(organizationRequests, "Organization Register Requests ADO");
+            // var organizationRequests =  await GetOrganizationRequests(orgStateId);
+            //   LogRequestList(organizationRequests, "Organization Register Requests ADO");
 
             var organizationRequests = await _eServicesContext
                                .Set<ServiceRequest>()
@@ -408,7 +408,7 @@ namespace sahelIntegrationIA
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.CompletedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
 
-                case nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState): 
+                case nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState):
                     msgAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationAr, serviceRequest.EserviceRequestNumber);
                     msgEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.InitAcceptedNotificationEn, serviceRequest.EserviceRequestNumber);
                     break;
@@ -461,13 +461,15 @@ namespace sahelIntegrationIA
                    })
                    .FirstOrDefaultAsync();
 
+                BrokerTypeEnum brokerType = (BrokerTypeEnum)serviceRequest.ServiceRequestsDetail.RequestForUserType;
+
                 if (examInfo != null)
                 {
                     examStateId = examInfo.StateId;
 
                     if (examStateId == "ExamCandidateInfoExamSentState")
                     {
-                        var result = HandleExamAttendNotification(serviceRequest.EserviceRequestNumber);
+                        var result = HandleExamAttendNotification(serviceRequest.EserviceRequestNumber, brokerType);
                         examNotificationValue = result.NotificationExamValue;
                         msgAr = result.MessageAr;
                         msgEn = result.MessageEn;
@@ -475,7 +477,7 @@ namespace sahelIntegrationIA
                     }
                     else if (examStateId == "ExamCandidateInfoApprovedState")
                     {
-                        var result = HandleExamApprovedNotification(examInfo, serviceRequest);
+                        var result = HandleExamApprovedNotification(examInfo, serviceRequest, brokerType);
                         examNotificationValue = result.NotificationExamValue;
                         msgAr = result.MessageAr;
                         msgEn = result.MessageEn;
@@ -484,13 +486,13 @@ namespace sahelIntegrationIA
 
             }
 
-            if(serviceRequest.ServiceId == (int)ServiceTypesEnum.TransferService && 
+            if (serviceRequest.ServiceId == (int)ServiceTypesEnum.TransferService &&
                 stateId == nameof(ServiceRequestStatesEnum.EservTranReqInitAcceptedState))
             {
                 string url = _sahelConfigurations.EservicesUrlsConfigurations.TransferServiceUrl;
                 var notification = await CallServiceAPI(GetBrokerTransferRequestDto(serviceRequest), url);
-                msgAr= notification is not null ?notification.bodyAr : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongAr, serviceRequest.EserviceRequestNumber);
-                msgEn= notification is not null ?notification.bodyEn : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongEn, serviceRequest.EserviceRequestNumber);
+                msgAr = notification is not null ? notification.bodyAr : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongAr, serviceRequest.EserviceRequestNumber);
+                msgEn = notification is not null ? notification.bodyEn : string.Format(_sahelConfigurations.MCNotificationConfiguration.CustomizedSomethingWentWrongEn, serviceRequest.EserviceRequestNumber);
 
                 actionButtons = notification is not null ? notification.actionButtonRequestList : null;
             }
@@ -837,7 +839,7 @@ namespace sahelIntegrationIA
             //"NotAttend": "332294366",
         }
 
-        private ExamNotificationResult HandleExamApprovedNotification(ExamCandidateInfo examInfo, ServiceRequest serviceRequest)
+        private ExamNotificationResult HandleExamApprovedNotification(ExamCandidateInfo examInfo, ServiceRequest serviceRequest, BrokerTypeEnum brokerType)
         {
             var result = new ExamNotificationResult();
 
@@ -853,23 +855,44 @@ namespace sahelIntegrationIA
                && serviceRequest.ServiceRequestsDetail.ExamNotification != 4
                && examInfo.ExamResult == 332294366;
 
+            var brokertypeEn = "";
+            var brokertypeAr = "";
+
+            switch (brokerType)
+            {
+                case BrokerTypeEnum.GeneralBroker:
+                    brokertypeEn = "General broker";
+                    brokertypeAr = "المخلص العام";
+                    break;
+                case BrokerTypeEnum.SubBroker:
+                    brokertypeEn = "Sub broker";
+                    brokertypeAr = "المخلص التابع";
+                    break;
+                case BrokerTypeEnum.SubMessanger:
+                    brokertypeEn = "Sub messenger";
+                    brokertypeAr = "المندوب";
+                    break;
+                default:
+                    brokertypeEn = brokertypeAr = "";
+                    break;
+            }
             if (isExamPassed)
             {
                 result.NotificationExamValue = 2;
-                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationAr, serviceRequest.EserviceRequestNumber);
-                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationEn, serviceRequest.EserviceRequestNumber);
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationAr, brokertypeAr, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.PassExamNotificationEn, brokertypeEn, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
             }
             else if (isExamFailed)
             {
                 result.NotificationExamValue = 3;
-                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationAr, serviceRequest.EserviceRequestNumber);
-                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationEn, serviceRequest.EserviceRequestNumber);
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationAr, brokertypeAr, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.FailedExamNotificationEn, brokertypeEn, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
             }
             else if (isExamNotAttend)
             {
                 result.NotificationExamValue = 4;
-                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationAr, serviceRequest.EserviceRequestNumber);
-                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationEn, serviceRequest.EserviceRequestNumber);
+                result.MessageAr = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationAr, brokertypeAr, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
+                result.MessageEn = string.Format(_sahelConfigurations.MCNotificationConfiguration.NotAttendExamNotificationEn, brokertypeEn, serviceRequest.ServiceRequestsDetail.CivilId, serviceRequest.EserviceRequestNumber);
             }
 
 
@@ -877,7 +900,7 @@ namespace sahelIntegrationIA
 
         }
 
-        private ExamNotificationResult HandleExamAttendNotification(string eServiceRequestNumber)
+        private ExamNotificationResult HandleExamAttendNotification(string eServiceRequestNumber, BrokerTypeEnum brokerType)
         {
             var result = new ExamNotificationResult();
             result.NotificationExamValue = 1;
@@ -1009,10 +1032,10 @@ namespace sahelIntegrationIA
 
                     _logger.LogInformation("eService Response content: {ResponseContent}", responseContent);
 
-                    return  JsonConvert.DeserializeObject<Notification>(responseContent);
-                   
+                    return JsonConvert.DeserializeObject<Notification>(responseContent);
+
                 }
-                
+
             }
             catch (Exception ex)
             { //TO DO Add notification on failure
