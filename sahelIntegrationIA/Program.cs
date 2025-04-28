@@ -10,6 +10,7 @@ using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
 using sahelIntegrationIA.Configurations;
 using IndividualAuthorizationSahelWorker;
 using sahelIntegrationIA;
+using sahelIntegrationIA.EmailService;
 
 public partial class Program
 {
@@ -78,6 +79,7 @@ public partial class Program
                    services.AddSingleton<IStringLocalizerFactory, eServicesV2.Kernel.Host.API.Configurations.JsonStringLocalizerFactory>();
                    services.AddSingleton<IStringLocalizer, eServicesV2.Kernel.Host.API.Configurations.JsonStringLocalizer>();
 
+               //    services.AddScoped<CommunicationService>();
 
                    services.AddSingleton<IDapper, eServicesV2.Kernel.Infrastructure.Persistence.Dapper.Dapper>();
                    services.AddSingleton<VarificationService>();
@@ -87,6 +89,7 @@ public partial class Program
                    services.AddSingleton<VerificationServiceForBrokerServices>();
                    services.AddSingleton<VerificationServiceForSignUp>();
                    services.AddSingleton<VerificationServiceForCivilIdValidation>();
+                   services.AddSingleton<EmailSenderService>();
 
 
                    services.AddHostedService<Worker>();
