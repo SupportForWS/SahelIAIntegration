@@ -1,3 +1,4 @@
+﻿using Azure.Core;
 using Dapper;
 using eServices.APIs.UserApp.OldApplication.Models;
 using eServices.Kernel.Core.Extensions;
@@ -6,6 +7,7 @@ using eServicesV2.Kernel.Core.Constants;
 using eServicesV2.Kernel.Core.Exceptions;
 using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
+using eServicesV2.Kernel.Core.Resources;
 using eServicesV2.Kernel.Domain.Entities;
 using eServicesV2.Kernel.Domain.Entities.IdentityEntities;
 using eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities;
@@ -19,8 +21,10 @@ using eServicesV2.Kernel.Infrastructure.Persistence.Constants;
 using eServicesV2.Kernel.Service.EmailQueueServices;
 using eServicesV2.Kernel.Service.IdentityServices.Models.IdentityService;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Models;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using EinspectionsZones = eServicesV2.Kernel.Domain.Entities.InspectionAppointmentsEntities.EinspectionsZones;
@@ -63,7 +67,7 @@ namespace sahelIntegrationIA
 
                 foreach (var q in inspectionAppointmentsQueues)
                 {
-                    var orgId = await GetOrganizationId(q.UserID);
+                   var orgId = await GetOrganizationId(q.UserID);
                     if (_sahelConfigs.inspectionAppointmentsConfigurations.EnablePenaltyCheckingForInspectionAppointments)
                     {
                         var preventionModel = await CheckPreventedOrganization(orgId);
@@ -86,6 +90,41 @@ namespace sahelIntegrationIA
                                 UserId = q.UserID,
                                 ReferenceId = 0
                             });
+                            if (q.RequestSource == "Sahel")
+                            {
+                                var user = await _eServicesContext
+                                          .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                                          .Where(u => u.UserId == q.UserID)
+                                          .FirstOrDefaultAsync();
+
+                                string message = string.Format("Inspection appointment can not be applied for this consignee due to previous unattended appointment, please try again on {0}",
+                                                                preventionModel.PreventionDate.Value.AddDays(1).ToString("yyyy-MM-dd"));
+                                string messageEn = string.Format("لقد تعذر انشاء موعد لهذا المستفيد بسبب التخلف عن حضور موعد سابق، ويمكن اعادة المحاولة في تاريخ {0}",
+                                                                preventionModel.PreventionDate.Value.AddDays(1).ToString("yyyy-MM-dd"));
+
+                                var notification = new KGACSahelOutSyncQueue()
+                                {
+                                    CivilId = user.CivilId,
+                                    CreatedBy = user.CivilId,
+                                    NotificationId = 50, //TODO: check notification id
+                                    SahelType = "B",
+                                    MsgTableEn = JsonConvert.SerializeObject(new Dictionary<string, string>()),
+                                    MsgTableAr = JsonConvert.SerializeObject(new Dictionary<string, string>()),
+                                    MsgBodyEn = messageEn,
+                                    MsgBodyAr = message,
+                                    DateCreated = DateTime.Now,
+                                    Sync = false,
+                                    TryCount = 0,
+                                    Source = "eService",
+                                    ReferenceId = null,
+                                    RefreneceType = null,
+                                    DataprofileClassId = null,
+                                    PageId = "Sahel",
+                                    ActionId = "Create"
+
+                                };
+                                _eServicesContext.Add(notification);
+                            }
                             await _eServicesContext.SaveChangesAsync();
                             return;
                         }
@@ -120,6 +159,7 @@ namespace sahelIntegrationIA
                                             Where(h => h.EndDate >= DateTime.Now)
                                             .ToListAsync();
                     var eserviceRequestsIds = new List<long>();
+                    var eserviceRequestsNumbers = new List<string>();
                     if (!inspectionAppointmentsModel.IsHourlySet)
                     {
                         var upcomingAppointments = await _eServicesContext.Set<InspectionAppointments>()
@@ -353,6 +393,7 @@ namespace sahelIntegrationIA
                                 SampleRequestNo = requestData[0].RequestId.ToString()
                             });
                             eserviceRequestsIds.Add(serviceRequest.EserviceRequestId);
+                            eserviceRequestsNumbers.Add(serviceRequest.EserviceRequestNumber);
                         }
                         q.IsPorcessed = true;
                         q.EservicerequestIds = string.Join(",", eserviceRequestsIds);
@@ -366,6 +407,41 @@ namespace sahelIntegrationIA
                             UserId = q.UserID,
                             ReferenceId = Convert.ToInt32(eserviceRequestsIds.First())
                         });
+
+                        if (q.RequestSource == "Sahel")
+                        {
+                            var user = await _eServicesContext
+                                      .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                                      .Where(u => u.UserId == q.UserID)
+                                      .FirstOrDefaultAsync();
+
+
+
+                            var eservicerequestsNumbers = string.Join(",", eserviceRequestsNumbers);
+
+                            var notification = new KGACSahelOutSyncQueue()
+                            {
+                                CivilId = user.CivilId,
+                                CreatedBy = user.CivilId,
+                                NotificationId = 50, //TODO: check notification id
+                                SahelType = "B", //Business
+                                MsgTableEn = JsonConvert.SerializeObject(new Dictionary<string, string>()),
+                                MsgTableAr = JsonConvert.SerializeObject(new Dictionary<string, string>()),
+                                MsgBodyEn = $"Inspection appointments dates has been scheduled for the following request numbers ({eservicerequestsNumbers}), please check inspection dates using view option",
+                                MsgBodyAr = $"لقد تم تحديد المواعيد لطلبات التفتيش التالية ({eservicerequestsNumbers}), الرجاء التحقق من مواعيد الطلبات من خلال اختيار عرض الطلبات السابقة",
+                                DateCreated = DateTime.Now,
+                                Sync = false,
+                                TryCount = 0,
+                                Source = "eService",
+                                ReferenceId = null,
+                                RefreneceType = null,
+                                DataprofileClassId = null,
+                                PageId = "Sahel",
+                                ActionId = "Create"
+
+                            };
+                            _eServicesContext.Add(notification);
+                        }
                         await _eServicesContext.SaveChangesAsync();
                     }
                     else
@@ -635,7 +711,40 @@ namespace sahelIntegrationIA
 
                         if (q.RequestSource == "Sahel")
                         {
-                            //TODO: Add notification for Sahel
+                            var user = await _eServicesContext
+                                      .Set<eServicesV2.Kernel.Domain.Entities.IdentityEntities.User>()
+                                      .Where(u => u.UserId == q.UserID)
+                                      .FirstOrDefaultAsync();
+
+                            var eservicerequestsNumbersList = await _eServicesContext
+                                .Set<ServiceRequest>()
+                                .Where(r => eserviceRequestsIds.Contains(r.EserviceRequestId))
+                                .Select(r => r.EserviceRequestNumber)
+                                .ToListAsync();
+
+                            var eservicerequestsNumbers = string.Join(",", eservicerequestsNumbersList);
+
+                            var notification = new KGACSahelOutSyncQueue()
+                            {
+                                CivilId = user.CivilId,
+                                CreatedBy = user.CivilId,
+                                NotificationId = 50, //TODO: check notification id
+                                SahelType = "B", //Business
+                                MsgTableEn = JsonConvert.SerializeObject( new Dictionary<string, string>()),
+                                MsgTableAr = JsonConvert.SerializeObject( new Dictionary<string, string>()),
+                                MsgBodyEn = $"Inspection appointments dates has been scheduled for the following request numbers ({eservicerequestsNumbers}), please check inspection dates using view option",
+                                MsgBodyAr = $"لقد تم تحديد المواعيد لطلبات التفتيش التالية ({eservicerequestsNumbers}), الرجاء التحقق من مواعيد الطلبات من خلال اختيار عرض الطلبات السابقة",
+                                DateCreated = DateTime.Now,
+                                Sync = false,
+                                TryCount = 0,
+                                Source = "eService",
+                                ReferenceId = null,
+                                RefreneceType = null,
+                                DataprofileClassId = null,
+                                PageId = "Sahel",
+                                ActionId = "Create"
+                            };
+                            _eServicesContext.Add(notification);
                         }
                         await _eServicesContext.SaveChangesAsync();
                     }
