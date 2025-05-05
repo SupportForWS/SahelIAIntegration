@@ -80,6 +80,15 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
               
            };
+
+            int[] authorizerServices = new int[]
+          {
+
+                (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
+                (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
+
+          };
             DateTime currentDate = DateTime.Now;
 
             _logger.LogInformation("Start fetching data for organization verification service");
@@ -90,8 +99,7 @@ namespace sahelIntegrationIA
                                .Include(p => p.ServiceRequestsDetail)
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
-                                           && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
-                                           && (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
+&& (authorizerServices.Contains((int)p.ServiceId.Value) || !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)) && (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
                                        ? !string.IsNullOrEmpty(p.ServiceRequestsDetail.kmidTokenForAuthorizer)
                                        : true) && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
@@ -156,8 +164,9 @@ namespace sahelIntegrationIA
             kmidCreatedList.AddRange(organizationRequestList.Select(a=> a.OrganizationRequest.KMIDToken).ToList());
 
             var kmidStrings = kmidCreatedList
-                .Select(k => k.ToString())
-                .ToList();
+      .Select(k => k != null ? k.ToString() : null)
+      .ToList();
+
 
             var currentTime = DateTime.Now;
 
@@ -208,11 +217,18 @@ namespace sahelIntegrationIA
                 
             }
             var filteredRequestList = requestList
-                .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
-                .ToList();
+       .Where(request =>
+           !int.TryParse(request.ServiceRequestsDetail?.KMIDToken, out var kmid) || 
+           !expiredKmidRequests.Contains(kmid) 
+       )
+       .ToList();
 
-            var notExpiredOrganizationRequests = organizationRequestList.Where(a => !expiredKmidRequests.Contains(int.Parse(a.OrganizationRequest.KMIDToken))).ToList();
-
+            var notExpiredOrganizationRequests = organizationRequestList
+       .Where(a =>
+           !int.TryParse(a.OrganizationRequest?.KMIDToken, out var kmid) ||
+           !expiredKmidRequests.Contains(kmid)
+       )
+       .ToList();
             filteredRequestList.AddRange(notExpiredOrganizationRequests);
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
             string requestNumbersLog = JsonConvert.SerializeObject(requestNumbers);
