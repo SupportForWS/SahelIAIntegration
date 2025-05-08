@@ -86,7 +86,7 @@ namespace sahelIntegrationIA
 
                 (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
                 (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
-                (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
+                (int)ServiceTypesEnum.RemoveAuthorizedSignatoryRequest,
 
           };
             DateTime currentDate = DateTime.Now;
@@ -99,7 +99,8 @@ namespace sahelIntegrationIA
                                .Include(p => p.ServiceRequestsDetail)
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
-&& (authorizerServices.Contains((int)p.ServiceId.Value) || !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)) && (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
+&& (authorizerServices.Contains((int)p.ServiceId.Value) || !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)) 
+&& (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
                                        ? !string.IsNullOrEmpty(p.ServiceRequestsDetail.kmidTokenForAuthorizer)
                                        : true) && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
