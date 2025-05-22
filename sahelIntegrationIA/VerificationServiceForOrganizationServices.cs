@@ -80,15 +80,6 @@ namespace sahelIntegrationIA
                 (int)ServiceTypesEnum.OrgNameChangeReqServiceId,
               
            };
-
-            int[] authorizerServices = new int[]
-          {
-
-                (int)ServiceTypesEnum.AddNewAuthorizedSignatoryRequest,
-                (int)ServiceTypesEnum.RenewAuthorizedSignatoryRequest,
-                (int)ServiceTypesEnum.RemoveAuthorizedSignatoryRequest,
-
-          };
             DateTime currentDate = DateTime.Now;
 
             _logger.LogInformation("Start fetching data for organization verification service");
@@ -99,8 +90,8 @@ namespace sahelIntegrationIA
                                .Include(p => p.ServiceRequestsDetail)
                                .Where(p => statusEnums.Contains(p.StateId)
                                            && p.RequestSource == "Sahel"
-&& (authorizerServices.Contains((int)p.ServiceId.Value) || !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)) 
-&& (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
+                                           && !string.IsNullOrEmpty(p.ServiceRequestsDetail.KMIDToken)
+                                           && (serviceIdsForValidation.Contains(p.ServiceRequestsDetail.RequestServicesId.Value)
                                        ? !string.IsNullOrEmpty(p.ServiceRequestsDetail.kmidTokenForAuthorizer)
                                        : true) && serviceIds.Contains((int)p.ServiceId.Value)
                                            && (p.ServiceRequestsDetail.ReadyForSahelSubmission == "1" ||
@@ -119,13 +110,11 @@ namespace sahelIntegrationIA
                                            && p.RequestSource == "Sahel"
                                            && p.ServiceId ==(int)ServiceTypesEnum.OrganizationRegistrationService
                                            && !string.IsNullOrEmpty(p.OrganizationRequest.KMIDToken)
-                                           && p.OrganizationRequest.StateId != "OrganizationRequestForCreateState" 
-                                           && p.OrganizationRequest.StateId != "OrganizationRequestForUpdateState"
+                                           && p.OrganizationRequest.StateId != "OrganizationRequestForCreateState" && p.OrganizationRequest.StateId != "OrganizationRequestForUpdateState"
 
                                && (p.OrganizationRequest.ReadyForSahelSubmission == "1" || (p.OrganizationRequest.ReadyForSahelSubmission == "2" &&
                                p.RequestSubmissionDateTime.HasValue &&
                                             p.RequestSubmissionDateTime.Value.AddMinutes(_sahelConfigurations.SahelSubmissionTimer) < currentDate)))
-                               .AsNoTracking()
                                 .ToListAsync();
                                    
 
@@ -165,9 +154,8 @@ namespace sahelIntegrationIA
             kmidCreatedList.AddRange(organizationRequestList.Select(a=> a.OrganizationRequest.KMIDToken).ToList());
 
             var kmidStrings = kmidCreatedList
-      .Select(k => k != null ? k.ToString() : null)
-      .ToList();
-
+                .Select(k => k.ToString())
+                .ToList();
 
             var currentTime = DateTime.Now;
 
@@ -218,18 +206,11 @@ namespace sahelIntegrationIA
                 
             }
             var filteredRequestList = requestList
-       .Where(request =>
-           !int.TryParse(request.ServiceRequestsDetail?.KMIDToken, out var kmid) || 
-           !expiredKmidRequests.Contains(kmid) 
-       )
-       .ToList();
+                .Where(request => !expiredKmidRequests.Contains(int.Parse(request.ServiceRequestsDetail.KMIDToken)))
+                .ToList();
 
-            var notExpiredOrganizationRequests = organizationRequestList
-       .Where(a =>
-           !int.TryParse(a.OrganizationRequest?.KMIDToken, out var kmid) ||
-           !expiredKmidRequests.Contains(kmid)
-       )
-       .ToList();
+            var notExpiredOrganizationRequests = organizationRequestList.Where(a => !expiredKmidRequests.Contains(int.Parse(a.OrganizationRequest.KMIDToken))).ToList();
+
             filteredRequestList.AddRange(notExpiredOrganizationRequests);
             requestNumbers = filteredRequestList.Select(p => p.EserviceRequestNumber).ToList();
             string requestNumbersLog = JsonConvert.SerializeObject(requestNumbers);
@@ -398,7 +379,6 @@ namespace sahelIntegrationIA
             }
 
         }
-
         public async Task SendExpiredKmidNotification(List<ServiceRequest> serviceRequest)
         {
             var tasks = serviceRequest.Select(async request =>
@@ -579,8 +559,8 @@ namespace sahelIntegrationIA
                 propertyValues: new object[] { msgAr, msgEn });
 
             var notificationType = GetNotificationType((ServiceTypesEnum)serviceRequest.ServiceId);
-            notficationResponse.bodyEn = msgAr;
-            notficationResponse.bodyAr = msgEn;
+            notficationResponse.bodyEn = msgEn;
+            notficationResponse.bodyAr = msgAr;
             notficationResponse.isForSubscriber = "true";
             notficationResponse.notificationType = serviceRequest.ServiceId.ToString();
             notficationResponse.dataTableEn = null;
@@ -636,10 +616,6 @@ namespace sahelIntegrationIA
                     return SahelNotficationTypesEnum.OrganizationNameChange;
                 case ServiceTypesEnum.ConsigneeUndertakingRequest:
                     return SahelNotficationTypesEnum.UnderTakingConsigneeRequest;
-
-                case ServiceTypesEnum.OrganizationRegistrationService:
-                    return SahelNotficationTypesEnum.OrganizationRegistrationService;
-
                 default:
                     return SahelNotficationTypesEnum.RenewImportLicense;
             }
@@ -720,13 +696,13 @@ namespace sahelIntegrationIA
         {
             return new AuthorizedSignatoryDto
             {
-                //AuthorizedSignatoryCivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                AuthorizedSignatoryCivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.HasValue ? serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value : DateTime.Now,
                 CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
                 EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
-                //AuthPerson = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
+                AuthPerson = serviceRequest.ServiceRequestsDetail.AuthorizedPerson,
                 ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
                 IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-               // NationalityId = serviceRequest.ServiceRequestsDetail.Nationality,
+                NationalityId = serviceRequest.ServiceRequestsDetail.Nationality,
                 OrganizationId = serviceRequest.ServiceRequestsDetail.OrganizationId.Value.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,
                 SelectedAuthorizerCivilId = serviceRequest.ServiceRequestsDetail.SelectedAuthorizer
@@ -762,10 +738,11 @@ namespace sahelIntegrationIA
                 {
                     //TODO: check
                     CivilId = serviceRequest.ServiceRequestsDetail.CivilId,
-                   // CivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
+                    CivilIdExpiryDate = serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.HasValue ? serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value : DateTime.Now,
+                    //serviceRequest.ServiceRequestsDetail.AuthorizedSignatoryCivilIdExpiryDate.Value,
                     ExpiryDate = serviceRequest.ServiceRequestsDetail.ExpiryDate.Value,
                     IssueDate = serviceRequest.ServiceRequestsDetail.IssueDate.Value,
-                    //Name = serviceRequest.ServiceRequestsDetail.AuthorizedPerson
+                    Name = serviceRequest.ServiceRequestsDetail.AuthorizedPerson
                 },
                 EServiceRequestId = serviceRequest.EserviceRequestId.ToString(),
                 RequestNumber = serviceRequest.EserviceRequestNumber,

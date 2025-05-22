@@ -1,0 +1,149 @@
+﻿{
+  "ConnectionStrings": {
+    "Default": "Server=10.176.201.155;Initial Catalog=MicroclearKw_FullMar23;Persist Security Info=True;User ID=mcweb;Password=mcweb;TrustServerCertificate=True"
+  },
+  "RedisServerConnection": "10.176.200.154:6379",
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Information",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "Serilog": {
+    "MinimumLevel": "Information",
+    "Override": {
+      "Microsoft": "Information",
+      "System": "Warning"
+    },
+    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.MSSqlServer" ],
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "Server=10.176.201.155;Initial Catalog=Microclearkw_FullMar23;Persist Security Info=True;User ID=mcweb;Password=mcweb;TrustServerCertificate=True",
+          "tableName": "Logging",
+          "schemaName": "etrade",
+          "autoCreateSqlTable": true,
+          "restrictedToMinimumLevel": "Information"
+        }
+      }
+    ]
+  },
+  "IndividualAuthorizationConfiguration": {
+    "QRReportConfigId": "7",
+    "ReferenceType": "AF",
+    "IndividualQRReportUrl": "https://cspaymentstest.kgac.gov.kw/QRReportHTMMar23/ReportQR.aspx?Id={0}&Id2={1}",
+    "IndividualAuthorizationKMIDCallingTimer": "00:30:00",
+    "NotificationTypeForIA": "14"
+  },
+  "IndividualAuthorizationSahelConfiguration": {
+    "IndividualAuthServiceNameAr": "تفويض الأفراد",
+    "IndividualAuthServiceNameEn": "Individual Authorization",
+    "IndividualAuthorizationServiceHintAr": "خدمة طلب توثيق و إصدار تفويض للأفراد لإتخاذ أو إنهاء بعض الإجراءات الجمركية",
+    "IndividualAuthorizationServiceHintEn": "Individual Authorization Certificate issuance to perform customs activities",
+    "ReferenceNumberLabelAr": "الرقم المرجعي",
+    "ReferenceNumberLabelEn": "Reference Number",
+    "AllDataAreRequiredAr": "يجب إدخال كل المعلومات",
+    "RequestNumberAr": "رقم الطلب",
+    "RequestNumberEn": "Request number",
+    "AllDataAreRequiredEn": "All data are required",
+    "CivilIdsCantBeEqualAr": "يجب أن تكون البطاقة المدنية لمقدم الطلب مختلفة عن البطاقة المدنية للمفوض له",
+    "CivilIdsCantBeEqualEn": "The Requester's Civil ID and the Authorizer's Civil ID must be different",
+    "SomethingWentWrongAr": "هناك شئ خاطئ، يرجى المحاولة فى وقت لاحق",
+    "SomethingWentWrongEn": "Something went wrong, Please try again later",
+    "LogMessageForIndividualAuth": "Call Individual Authorization",
+    "CivilIdMaxLength": 12,
+    "UsernamePaci": "customs",
+    "passwordIndividual": "mP!7CGKzsmo$!sL@-B$.",
+    "passwordBusiness": "nsKTu1MQ-e@9pJr?0Ks)",
+    "TargetUrlIndividual": "https://sahelkprx-t.paci.gov.kw:6443/api/sahel/notification/single",
+    "TargetUrlBusiness": "https://kinproxy-bt.sahel.kw:8443/api/sahel-business/notification/single",
+    "TargetURLToken": "https://sahelkprx-t.paci.gov.kw:6443/api/sahel/token/generate",
+    "TargetURLTokenBusiness": "https://kinproxy-bt.sahel.kw:8443/api/sahel-business/token/generate",
+    "TimeIntervalToCheckRequests": -1,
+    "TimerIntervalInSeconds": 1,
+    "IndividualAuthorizationExpirationDays": 7,
+    "eServicesURL": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/IndividualAuthorizationCommands/",
+
+
+
+    "SearchService": {
+      "RequesterCivilIdHintAr": "رقم البطاقة المدنية لمقدم الطلب (المفوِض)",
+      "RequesterCivilIdHintEn": "Requester Civil ID No",
+      "ValidityLabelEn": "Validity",
+      "ValidityLabelAr": "الصلاحية",
+      "AuthorizationPurposeLabelEn": "Authorization Purpose",
+      "AuthorizationPurposeLabelAr": "الغرض من التفويض",
+      "WrongCivilIdAr": "",
+      "WrongCivilIdEn": "",
+      "IndividualAuthorizationKMIDCallFailedAr": "لقد فشلت عملية التأكد من معلومات الرقم المدني، الرجاء إعادة المحاولة مرة أخرى",
+      "IndividualAuthorizationKMIDCallFailedEn": "Verifying civil id information has failed, please try again"
+    },
+    "NewRequestService": {
+      "AuthorizerCivilIdNoHintAr": "رقم البطاقة المدنية للمفوض له ",
+      "AuthorizerCivilIdNoHintEn": "Authorizer Civil ID Number",
+      "AuthorizerCivilIdNoLabelAr": "رقم البطاقة المدنية للمفوض له",
+      "AuthorizerCivilIdNoLabelEn": "Authorizer Civil ID Number",
+      "PortLabelAr": "المنفذ",
+      "PortLabelEn": "Port",
+      "PortOperatorLabelAr": "اسم المشغل",
+      "PortOperatorLabelEn": "Operator Name",
+      "IndividualAuthAgrrementAr": "أقر بصحة جميع المعلومات المدخلة في طلب التفويض كذلك أقر بموافقتي الرسمية على جميع البيانات المذكورة فيه وما يترتب عليه من طلب المصادقة في تطبيق هويتي , ويمكن للإدارة العامة للجمارك التعامل مع المعلومات المدخلة على بوابة الخدمات الالكترونية للجمارك خلال مدة سريان التفويض.",
+      "IndividualAuthAgrrementEn": "I acknowledge the validity of all the information entered in the application, and my approval of the authentication request through the Kuwait Mobile ID application of my identity will be considered as an official approval of the authorization request. It also confirms that the information entered in the customs electronic services portal can be dealt with without the need for additional review from the General Administration of Customs, written notices, or verification in other ways. This authorization confirms the approval to proceed with the necessary procedures by the General Administration of Customs based on the established authorization.",
+      "RequestSubmittedSuccessfullyEn": "Request is submitted successfully",
+      "RequestSubmittedSuccessfullyAr": "تم إستلام الطلب بنجاح",
+      "RequestCreatedEn": "Individual authorization request is created successfully",
+      "RequestCreatedAr": "لقد تم إنشاء طلب التفويض بنجاح"
+    }
+  },
+  "OrganizationKMIDCallingTimer": 180,
+  "EservicesUrlsConfigurations": {
+    "AddNewImportLicenseUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-add-import-license-for-sahel",
+    "ReNewImportLicenseUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-renew-import-license-for-sahel",
+    "RenewComercialLicenseUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-renew-commercial-license-for-sahel",
+    "RenewIndustrialLicenseUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-renew-industrial-license-for-sahel",
+    "AddAuthorizedSignutryUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-add-new-authorized-signatory-for-sahel",
+    "RemoveAuthorizedSignutryUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-remove-authorized-signatory-for-sahel",
+    "RenewAuthorizedSignutryUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-renew-authorized-signatory-for-sahel",
+    "ChangeOrgNameUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-organization-name-change-for-sahel",
+    "ChangeComercialAddressUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-change-commercial-address-for-sahel",
+    "UnderTakingRequestUrl": "https://eservicesui.kgac.gov.kw/eServicesAPI/api/v1/SahelIntegratioOrganizationServicesCommands/submit-consignee-undertaking-for-sahel",
+    "EPaymentRequestUrl": ""
+  },
+  "MCNotificationConfiguration": {
+    /*"RejectNotificationAr": "تم رفض الطلب رقم {0}",
+    "RejectNotificationEn": "Request No {0} has been rejected",
+    "ApproveNotificationAr": "تم الموافقة على الطلب رقم {0}",
+    "ApproveNotificationEn": "Request No {0} has been approved",
+    "FinalRejectNotificationAr": "تم الرفض نهائيا للطلب رقم {0}",
+    "FinalRejectNotificationEn": "Request No {0} has been Final rejected",
+    "AdditionalInfoNotificationAr": "تم تعديل حالة الطلب رقم {0} لتصبح طلب معلومات إضافية",
+    "AdditionalInfoNotificationEn": "Request No {0} status has been updated to be request for additional information",
+    "VisiNotificationAr": "تم تعديل حالة الطلب رقم {0} لتصبح طلب زيارة",
+    "VisiNotificationEn": "Request No {0} status has been updated to be request for Visit",
+    "KmidExpiredAr": "لم تتم الموافقة على طلبك رقم {0} من قبل المفوض بالتوقيع الذي اخترته. يرجى محاولة تقديم الطلب مرة أخرى.",
+    "KmidExpiredEn": "Your  request number {0} has not been approved by your chosen authorized signatory. Please try submitting the request again."*/
+    "RejectNotificationAr": "تم رفض الطلب رقم {0} من قبل الجهة المختصة",
+    "RejectNotificationEn": "Request No {0} has been rejected by Customs.",
+    "ApproveNotificationAr": "تم الموافقة على الطلب رقم {0} من قبل الجهة المختصة",
+    "ApproveNotificationEn": "Request No {0} has been approved by Customs.",
+    "FinalRejectNotificationAr": "تم الرفض نهائيا للطلب رقم {0} من قبل الجهة المختصة",
+    "FinalRejectNotificationEn": "Request No {0} has been Final rejected by Customs.",
+    "AdditionalInfoNotificationAr": "تم تعديل حالة الطلب رقم {0} من الجهة المختصية لتصبح 'طلب معلومات إضافية'",
+    "AdditionalInfoNotificationEn": "Request No {0} status has been updated to be 'request for additional information.'",
+    "VisiNotificationAr": "تم تعديل حالة الطلب رقم {0} من قبل الجهة المختصة لتصبح 'طلب زيارة'",
+    "VisiNotificationEn": "Request No {0} status has been updated to be 'request for Visit'.",
+    "KmidExpiredAr": "لم تتم الموافقة على طلب المصادقة على طلبك رقم {0} من قبل المفوض بالتوقيع الذي اخترته. يرجى محاولة تقديم الطلب مرة أخرى.",
+    "KmidExpiredEn": "Kuwait Mobile ID for your  request number {0} has not been approved by your chosen authorized signatory. Please try submitting the request again."
+  },
+  "SahelSubmissionTimer": 30,
+  "IsSendMcActionNotificationServiceEnable": true,
+  "TryCountForeServiceNotification": 2,
+  "TryCountForMCNotification": 3,
+  "IsSahelNotificationServiceEnable": true
+
+}

@@ -1,8 +1,4 @@
 ﻿
-using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using sahelIntegrationIA.Configurations;
-
 namespace sahelIntegrationIA.Configurations
 {
     public class SahelConfigurations
@@ -11,15 +7,12 @@ namespace sahelIntegrationIA.Configurations
         public int OrganizationKMIDCallingTimer { get; set; }
         public EservicesUrlsConfigurations EservicesUrlsConfigurations { get; set; }
         public MCNotificationConfiguration MCNotificationConfiguration { get; set; }
-        public KMIDVerificationNotification KMIDVerificationNotification { get; set; }
         public int SahelSubmissionTimer { get; set; }
         public bool IsSahelNotificationServiceEnable { get; set; }
         public bool IsSendMcActionNotificationServiceEnable { get; set; }
         public int TryCountForMCNotification { get; set; }
         public int TryCountForeServiceNotification { get; set; }
-        public int BrokerKMIDCallingTimer { get; set; }
-        public string ToWhomPrintableFormRedirectUrl { get; set; }
-        public string ExamAttendanceRedirectUrl { get; set; }
+
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -44,11 +37,8 @@ namespace sahelIntegrationIA.Configurations
         public string UnderTakingRequestUrl { get; set; }
         public string EPaymentRequestUrl { get; set; }
         public string OrganizationRegistrationUrl { get; set; }
-        public string BrokerAffairsUrl { get; set; }
-        public string BrokerExamUrl { get; set; }
-        public string BrokerSharedUrl { get; set; }
-        public string TransferServiceUrl { get; set; }
-        public string SubmitBrokerSignUpUrl { get; set; }
+
+
     }
 
     public class MCNotificationConfiguration
@@ -65,56 +55,5 @@ namespace sahelIntegrationIA.Configurations
         public string VisiNotificationEn { get; set; }
         public string KmidExpiredAr { get; set; }
         public string KmidExpiredEn { get; set; }
-
-        public string BrokerKmidExpiredAr { get; set; }
-        public string BrokerKmidExpiredEn { get; set; }
-        public string SignUpKmidExpiredEn { get; set; }
-        public string SignUpKmidExpiredAr { get; set; }
-
-        public string IdPrintedNotificationAr { get; set; }
-        public string IdPrintedNotificationEn { get; set; }
-
-        public string CompletedNotificationAr { get; set; }
-        public string CompletedNotificationEn { get; set; }
-        public string CompletedNotificationToWhomAr { get; set; }
-        public string CompletedNotificationToWhomEn { get; set; }
-
-        public string InitAcceptedNotificationAr { get; set; }
-        public string InitAcceptedNotificationEn { get; set; }
-
-        public string InitRejectedNotificationAr { get; set; }
-        public string InitRejectedNotificationEn { get; set; }
-
-        public string ConfirmExamAttendanceAr { get; set; }
-        public string ConfirmExamAttendanceEn { get; set; }
-
-        public string PassExamNotificationAr { get; set; }
-        public string PassExamNotificationEn { get; set; }
-
-        public string FailedExamNotificationEn { get; set; }
-        public string FailedExamNotificationAr { get; set; }
-
-        public string NotAttendExamNotificationAr { get; set; }
-        public string NotAttendExamNotificationEn { get; set; }
-
-        public string CustomizedSomethingWentWrongAr { get; set; }
-        public string CustomizedSomethingWentWrongEn { get; set; }
-
-
-
-
-    }
-
-    public class KMIDVerificationNotification
-    {
-        public string KMIDSuccessAr { get; set; }
-        public string KMIDSuccessEn { get; set; }
-        public string SomethingErrorEn { get; set; }
-        public string SomethingErrorAr { get; set; }
-        public string CivilIdExpiredEn { get; set; }
-        public string CivilIdExpiredAr { get; set; }
-        public string VerificationRequestRejectedByAuthorizedSignatoryAr { get; set; }
-        public string VerificationRequestRejectedByAuthorizedSignatoryEn { get; set; }
-
     }
 }

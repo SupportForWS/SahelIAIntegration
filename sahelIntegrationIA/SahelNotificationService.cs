@@ -98,7 +98,20 @@ namespace sahelIntegrationIA
 
         private async Task ProcessServiceRequest(KGACSahelOutSyncQueue notification)
         {
+            //if (serviceRequest.ServiceId is null or 0)
+            //{
+            //    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
+            //    return; //log the error
+            //}
+
+            //if (!Enum.IsDefined(typeof(ServiceTypesEnum), (int)serviceRequest.ServiceId))
+            //{
+            //    _logger.LogException(new ArgumentException($"INVALID SERVICE ID {nameof(serviceRequest.ServiceId)}"));
+            //    return; //log the error
+            //}
+
             await CreateNotification(notification);
+
         }
 
         private async Task CreateNotification(KGACSahelOutSyncQueue notification)

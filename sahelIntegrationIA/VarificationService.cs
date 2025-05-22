@@ -378,8 +378,10 @@ namespace IndividualAuthorizationSahelWorker
                                 {
                                     actionType = "details",
                                     actionUrl = url,
-                                    LabelAr= "تحميل",
-                                    LabelEn="details"
+                                    LabelAr = "تحميل",
+                                    LabelEn = "Download"
+                                    //LabelAr= "تحميل",
+                                    //LabelEn="details"
                                 };
                                 List<actionButtonRequestList> actionButtons = new List<actionButtonRequestList>();
                                 actionButtons.Add(actionButtonRequest);
