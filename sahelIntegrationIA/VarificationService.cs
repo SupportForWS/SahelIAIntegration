@@ -239,7 +239,7 @@ namespace IndividualAuthorizationSahelWorker
             try
             {
                 if (authorizerApproved && requesterApproved &&
-                        !authorizationRequest.Actions.Where(a => (a.StateId == IndividualAuthorizationStatusEnum.Approved.ToString() ||a.StateId == IndividualAuthorizationStatusEnum.AuthorizationCompleted.ToString()))
+                        !authorizationRequest.Actions.Where(a => (a.StateId == IndividualAuthorizationStatusEnum.Approved.ToString() || a.StateId == IndividualAuthorizationStatusEnum.AuthorizationCompleted.ToString()))
                         .Any())
                 {
 
@@ -262,6 +262,7 @@ namespace IndividualAuthorizationSahelWorker
                         .Where(p => p.KgacpaciqueueId == id)
                         .FirstOrDefaultAsync();
 
+
                     _requestLogger.LogInformation(
                         message: "RequesterpersonalData is: {0}",
                         propertyValues: requesterpersonalData == null ? null : Newtonsoft.Json.JsonConvert.SerializeObject(requesterpersonalData));
@@ -276,6 +277,29 @@ namespace IndividualAuthorizationSahelWorker
                         .Where(p => p.KgacpaciqueueId == id)
                         .FirstOrDefaultAsync();
 
+                    if (authorizationRequest.RequesterNationality is null || authorizationRequest.AuthorizerNationality is null)
+                    {
+                        var nationalities = await _eServicesContext.Set<Location>()
+                      .ToListAsync();
+                        foreach (var item in nationalities)
+                        {
+                            if (!string.IsNullOrEmpty(item.KMIDNationalityCode))
+                            {
+                                item.KMIDNationalityCode = item.KMIDNationalityCode.Replace(" ", "");
+                            }
+                        }
+                        if (authorizationRequest.RequesterNationality is null && requesterpersonalData!= null)
+                        {
+                            var requesterNationality = nationalities.Where(a => a.KMIDNationalityCode == requesterpersonalData.NationalityEn).Select(a => a.LocationId).FirstOrDefault();
+                            authorizationRequest.RequesterNationality = requesterNationality;
+                        }
+                        if (authorizationRequest.AuthorizerNationality is null && authorizerPersoanlData != null)
+                        {
+                            var authorizerNationality = nationalities.Where(a => a.KMIDNationalityCode == authorizerPersoanlData.NationalityEn).Select(a => a.LocationId).FirstOrDefault();
+                            authorizationRequest.AuthorizerNationality = authorizerNationality;
+                        }
+
+                    }
                     _requestLogger.LogInformation(
                         message: "AuthorizerPersoanlData is: {0}",
                         propertyValues: authorizerPersoanlData == null ? null : Newtonsoft.Json.JsonConvert.SerializeObject(authorizerPersoanlData, Formatting.None,
@@ -349,22 +373,22 @@ namespace IndividualAuthorizationSahelWorker
                             notification.bodyAr = $"تم رفض طلب المصادقة على الطلب رقم {authorizationRequest.RequestNumber} من قبل المفوض له";
                             notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been rejected by the authorizer";
                             break;
-/*                        case (int)IndividualAuthorizationStatusEnum.RequeterAndAuthorizerReject:
-                            notification.bodyAr = $"تم رفض طلب المصادقة  على الطلب رقم {authorizationRequest.RequestNumber} من قبل مقدم الطلب(المفوِض) و من قبل المفوض له";
-                            notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been rejected by the requester and the authorizer";
-                            break;*/
-/*                        case (int)IndividualAuthorizationStatusEnum.PendingAuthorizerApproval:
-                            notification.bodyAr = $"تمت الموافقة على طلب المصادقة على الطلب رقم {authorizationRequest.RequestNumber} من قبل المفوض, و بإنتظار رد المفوض لة";
-                            notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been accepted by the requester and waiting for the authorizer approval";
-                            break;*/
-/*                        case (int)IndividualAuthorizationStatusEnum.PendingRequesterApproval:
-                            notification.bodyAr = $"تمت الموافقة على طلب المصادقة رقم{authorizationRequest.RequestNumber} من قبل المفوض له, و بإنتظار رد المفوض ";
-                            notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been accepted by the autorizer and waiting for the requester approval";
-                            break;
-                        case (int)IndividualAuthorizationStatusEnum.PendingAuthorization:
-                            notification.bodyAr = $"في انتظار المصادقة على الطلب  رقم {authorizationRequest.RequestNumber} من قبل المفوض و المفوض له";
-                            notification.bodyEn = $"waiting for verification for request number {authorizationRequest.RequestNumber} by the requester and authorizer";
-                            break;*/
+                        /*                        case (int)IndividualAuthorizationStatusEnum.RequeterAndAuthorizerReject:
+                                                    notification.bodyAr = $"تم رفض طلب المصادقة  على الطلب رقم {authorizationRequest.RequestNumber} من قبل مقدم الطلب(المفوِض) و من قبل المفوض له";
+                                                    notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been rejected by the requester and the authorizer";
+                                                    break;*/
+                        /*                        case (int)IndividualAuthorizationStatusEnum.PendingAuthorizerApproval:
+                                                    notification.bodyAr = $"تمت الموافقة على طلب المصادقة على الطلب رقم {authorizationRequest.RequestNumber} من قبل المفوض, و بإنتظار رد المفوض لة";
+                                                    notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been accepted by the requester and waiting for the authorizer approval";
+                                                    break;*/
+                        /*                        case (int)IndividualAuthorizationStatusEnum.PendingRequesterApproval:
+                                                    notification.bodyAr = $"تمت الموافقة على طلب المصادقة رقم{authorizationRequest.RequestNumber} من قبل المفوض له, و بإنتظار رد المفوض ";
+                                                    notification.bodyEn = $"Verification request for request number {authorizationRequest.RequestNumber} has been accepted by the autorizer and waiting for the requester approval";
+                                                    break;
+                                                case (int)IndividualAuthorizationStatusEnum.PendingAuthorization:
+                                                    notification.bodyAr = $"في انتظار المصادقة على الطلب  رقم {authorizationRequest.RequestNumber} من قبل المفوض و المفوض له";
+                                                    notification.bodyEn = $"waiting for verification for request number {authorizationRequest.RequestNumber} by the requester and authorizer";
+                                                    break;*/
                         case (int)IndividualAuthorizationStatusEnum.Approved:
                             string url = await PrintingIndividualRequest(authorizationRequest);
                             //string encryptedRequestId = CommonFunctions.CsUploadEncrypt(authorizationRequest.Id.ToString());
@@ -379,13 +403,11 @@ namespace IndividualAuthorizationSahelWorker
                                     actionType = "details",
                                     actionUrl = url,
                                     LabelAr = "تحميل",
-                                    LabelEn = "Download"
-                                    //LabelAr= "تحميل",
-                                    //LabelEn="details"
+                                    LabelEn = "details"
                                 };
                                 List<actionButtonRequestList> actionButtons = new List<actionButtonRequestList>();
                                 actionButtons.Add(actionButtonRequest);
-                                notification.actionButtonRequestList= actionButtons;
+                                notification.actionButtonRequestList = actionButtons;
                             }
                             break;
                         default:
@@ -398,15 +420,15 @@ namespace IndividualAuthorizationSahelWorker
                     }
 
                     int requestIdInt = Convert.ToInt16(authorizationRequest.Id);
-                    bool isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
+                    bool isSent = PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
                     await InsertNotification(notification, isSent, requestIdInt);
                     notification.subscriberCivilId = authorizationRequest.AuthorizerCivilId;
 
                     //notification.actionButtonRequestList = null;
                     //notification.actionButtonRequestList = null;
 
-                    isSent =  PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
-                    await InsertNotification( notification, isSent, requestIdInt);
+                    isSent = PostNotification(notification, SahelOptionsTypesEnum.Individual.ToString());
+                    await InsertNotification(notification, isSent, requestIdInt);
 
                 }
 
@@ -443,11 +465,11 @@ namespace IndividualAuthorizationSahelWorker
 
         public bool PostNotification(Notification notification, string SahelOption = "Business")
         {
-            if(string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
+            if (string.IsNullOrEmpty(notification.bodyAr) && string.IsNullOrEmpty(notification.bodyAr))
             {
                 return false;
             }
-            string notificationString=JsonConvert.SerializeObject(notification);
+            string notificationString = JsonConvert.SerializeObject(notification);
             _logger.LogInformation($"NotificationBody-->{notificationString}");
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = //SecurityProtocolType.Tls12;
@@ -470,8 +492,8 @@ namespace IndividualAuthorizationSahelWorker
 
                     //HTTP POST //single to be modified as enum
                     Task<HttpResponseMessage> postTask = client.PostAsJsonAsync<Notification>("single", notification);
-/*                    var notificationString = JsonConvert.SerializeObject(notification);
-                    _logger.LogInformation(notificationString);*/
+                    /*                    var notificationString = JsonConvert.SerializeObject(notification);
+                                        _logger.LogInformation(notificationString);*/
                     return !string.IsNullOrEmpty(getResult(postTask));
                 }
             }
@@ -568,11 +590,11 @@ namespace IndividualAuthorizationSahelWorker
                 Sync = isSent,
                 TryCount = 1,
                 Source = "eService",
-                ReferenceId=requestId,
-                RefreneceType="IA",
-                DataprofileClassId= "IndividualAuth",
-                PageId= "Sahel",
-                ActionId="Create"
+                ReferenceId = requestId,
+                RefreneceType = "IA",
+                DataprofileClassId = "IndividualAuth",
+                PageId = "Sahel",
+                ActionId = "Create"
             };
 
             _eServicesContext.Add(syncQueueItem);
