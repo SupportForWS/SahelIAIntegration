@@ -10,6 +10,9 @@ using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 using sahelIntegrationIA.Models;
 using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
+using eServices.APIs.UserApp.OldApplication.Models;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace sahelIntegrationIA
 {
@@ -69,11 +72,41 @@ namespace sahelIntegrationIA
 
             return notificationList;
         }
+        public void FetchMCActionsNotifications()
+        {
+            try
+            {
+
+                using (SqlConnection connection = new SqlConnection(_configurations.ConnectionStrings.Default))
+                {
+                    using SqlCommand sqlCommand = new SqlCommand("usp_PopulateMCActionsInKGACSahelOutSyncQueue", connection);
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+                return;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex, "Sahel-Service");
+                CommonFunctions.LogUserActivity("usp_PopulateMCActionsInKGACSahelOutSyncQueue", "", "", "", "", ex.Message.ToString());
+            }
+            return;
+        }
 
 
         public async Task SendNotification()
         {
             _logger.LogInformation($"SahelNotificationService - start send notification for sahel service");
+            try
+            {
+                FetchMCActionsNotifications();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex, "Fetch MC notifications fail");
+            }
 
             var notificationList = await GetNotifications();
 
