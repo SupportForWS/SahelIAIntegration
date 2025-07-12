@@ -3,16 +3,17 @@ using eServicesV2.Kernel.Core.Logging;
 using eServicesV2.Kernel.Core.Persistence;
 using eServicesV2.Kernel.Data.Contexts;
 using eServicesV2.Kernel.Infrastructure.Logging.Logging.Implementations;
+using IndividualAuthorizationSahelWorker;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using Serilog;
-using sahelIntegrationIA.Models;
-using RequestLogger = sahelIntegrationIA.Models.RequestLogger;
-using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
-using sahelIntegrationIA.Configurations;
-using IndividualAuthorizationSahelWorker;
 using sahelIntegrationIA;
+using sahelIntegrationIA.Configurations;
+using sahelIntegrationIA.Models;
+using sahelIntegrationIA.Services.SendMCNotificationService;
+using Serilog;
+using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
+using RequestLogger = sahelIntegrationIA.Models.RequestLogger;
 
 public partial class Program
 {
@@ -87,8 +88,11 @@ public partial class Program
                    services.AddSingleton<SendMcActionNotificationService>();
                    services.AddSingleton<SahelNotificationService>();
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
+                   services.AddSahelIntegrationServices();
+
                    services.AddHostedService<Worker>();
-                   
+
+
                });
 
 

@@ -2,6 +2,7 @@
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
+using sahelIntegrationIA.Services.SendMCNotificationService;
 
 namespace IndividualAuthorizationSahelWorker
 {
@@ -13,7 +14,8 @@ namespace IndividualAuthorizationSahelWorker
         private readonly SendMcActionNotificationService sendMcActionNotificationService;
         private readonly SahelNotificationService sahelNotificationService;
         private readonly SahelConfigurations _sahelConfigurations;
-
+        private readonly OldSendMCNotificationRefactoring _oldSendMCNotificationRefactoring;
+        private readonly NewSendMcActionNotificationService _newSendMcActionNotificationService;
         private TimeSpan period;
         IBaseConfiguration _configuration;
         //private readonly SendMCNotificationForSahelService sendMCNotificationForSahelService;
@@ -35,7 +37,9 @@ namespace IndividualAuthorizationSahelWorker
             IBaseConfiguration configuration,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
-            SahelConfigurations sahelConfigurations)
+            SahelConfigurations sahelConfigurations,
+            OldSendMCNotificationRefactoring oldSendMcActionNotificationService,
+            NewSendMcActionNotificationService newSendMcActionNotificationService)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
@@ -44,6 +48,8 @@ namespace IndividualAuthorizationSahelWorker
             _configuration = configuration;
             this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
+            _oldSendMCNotificationRefactoring = oldSendMcActionNotificationService;
+            _newSendMcActionNotificationService = newSendMcActionNotificationService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -57,19 +63,22 @@ namespace IndividualAuthorizationSahelWorker
                 _logger.LogInformation("New Worker running at: {time}", DateTimeOffset.Now);
                 Console.WriteLine("Sahel integration with individual authorization Worker running at: {time}" + DateTimeOffset.Now);
                 //Console.WriteLine("ssss");
-                await varificationService.VarifyRequests();
-                await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
+               // await varificationService.VarifyRequests();
+              //  await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
                 //await sendMcActionNotificationService.SendNotification();
 
                 if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
                 {
-                    await sendMcActionNotificationService.SendNotification();
+                   // await sendMcActionNotificationService.SendNotification();
                 }
 
                 if (_sahelConfigurations.IsSahelNotificationServiceEnable)
                 {
-                    await sahelNotificationService.SendNotification();
+                   // await sahelNotificationService.SendNotification();
                 }
+
+                await _newSendMcActionNotificationService.SendNotificationsAsync();
+                await _oldSendMCNotificationRefactoring.InsertNotificationsAsync();
             }
 
 
