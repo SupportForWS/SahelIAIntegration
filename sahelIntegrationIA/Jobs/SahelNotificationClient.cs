@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Services
+namespace sahelIntegrationIA.Jobs
 {
     /// <summary>
     /// Shared HTTP client for sending notifications to Sahel.

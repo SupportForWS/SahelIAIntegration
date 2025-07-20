@@ -21,6 +21,33 @@ namespace sahelIntegrationIA.Helpers
             _context = context;
         }
 
+
+        public async Task<bool> LogNotifications(IEnumerable<Notification> notification, string sahelType = "B")
+        {
+            if (notification == null || !notification.Any())
+                return false;
+
+            var queues = notification.Select(notification => new KGACSahelOutSyncQueue
+            {
+                CivilId = notification.subscriberCivilId,
+                CreatedBy = notification.subscriberCivilId,
+                NotificationId = int.Parse(notification.notificationType),
+                SahelType = sahelType,
+                MsgTableAr = JsonConvert.SerializeObject(notification.dataTableAr ?? new Dictionary<string, string>()),
+                MsgTableEn = JsonConvert.SerializeObject(notification.dataTableEn ?? new Dictionary<string, string>()),
+                MsgBodyAr = notification.bodyAr,
+                MsgBodyEn = notification.bodyEn,
+                DateCreated = DateTime.Now,
+                Sync = false,
+                TryCount = 1,
+                Source = RequestSourceEnum.eService.ToString()
+            }).ToList();
+
+            await _context.AddRangeAsync(queues);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> LogNotification(Notification notification, bool sent, string sahelType = "B")
         {
             var queue = new KGACSahelOutSyncQueue
@@ -42,5 +69,9 @@ namespace sahelIntegrationIA.Helpers
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }
+
+
     }
+
+
 }

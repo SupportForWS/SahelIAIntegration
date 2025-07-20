@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService.Interfaces
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces
 {
     // 1. Query provider for service requests
     public interface IServiceRequestProvider

@@ -2,7 +2,8 @@
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Services.SendMCNotificationService;
+using sahelIntegrationIA.Jobs.SendMCNotificationService;
+using sahelIntegrationIA.Jobs.VerificationServiceForOrganizationServices;
 
 namespace IndividualAuthorizationSahelWorker
 {
@@ -16,19 +17,11 @@ namespace IndividualAuthorizationSahelWorker
         private readonly SahelConfigurations _sahelConfigurations;
         private readonly OldSendMCNotificationRefactoring _oldSendMCNotificationRefactoring;
         private readonly NewSendMcActionNotificationService _newSendMcActionNotificationService;
+
+        private readonly SahelRequestSubmissionJob _NewVerificationServiceForOrganizationServices; 
         private TimeSpan period;
         IBaseConfiguration _configuration;
-        //private readonly SendMCNotificationForSahelService sendMCNotificationForSahelService;
-        //private readonly SahelConfigurations _sahelConfigurations;
 
-        /*public Worker(IRequestLogger logger,VarificationService varificationService,SendMcActionNotificationService sendMcActionNotificationService, IBaseConfiguration configuration,VerificationServiceForOrganizationServices verificationServiceForOrganizationServices)
-        {
-            _logger = logger;
-            this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
-            this.varificationService = varificationService;
-            this.sendMcActionNotificationService = sendMcActionNotificationService;
-            _configuration = configuration;
-        }*/
 
         public Worker(
             IRequestLogger logger,
@@ -39,7 +32,8 @@ namespace IndividualAuthorizationSahelWorker
             SahelNotificationService sahelNotificationService,
             SahelConfigurations sahelConfigurations,
             OldSendMCNotificationRefactoring oldSendMcActionNotificationService,
-            NewSendMcActionNotificationService newSendMcActionNotificationService)
+            NewSendMcActionNotificationService newSendMcActionNotificationService,
+            SahelRequestSubmissionJob newVerificationServiceForOrganizationServices)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
@@ -50,6 +44,7 @@ namespace IndividualAuthorizationSahelWorker
             _sahelConfigurations = sahelConfigurations;
             _oldSendMCNotificationRefactoring = oldSendMcActionNotificationService;
             _newSendMcActionNotificationService = newSendMcActionNotificationService;
+            _NewVerificationServiceForOrganizationServices = newVerificationServiceForOrganizationServices;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -77,8 +72,9 @@ namespace IndividualAuthorizationSahelWorker
                    // await sahelNotificationService.SendNotification();
                 }
 
-                await _newSendMcActionNotificationService.SendNotificationsAsync();
-                await _oldSendMCNotificationRefactoring.InsertNotificationsAsync();
+             //   await _newSendMcActionNotificationService.SendNotificationsAsync();
+             //   await _oldSendMCNotificationRefactoring.InsertNotificationsAsync();
+                await _NewVerificationServiceForOrganizationServices.ExecuteAsync();
             }
 
 

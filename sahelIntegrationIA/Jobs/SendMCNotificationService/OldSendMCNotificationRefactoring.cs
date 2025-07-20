@@ -1,13 +1,14 @@
 ﻿using eServicesV2.Kernel.Core.Logging;
-using sahelIntegrationIA.Services.SendMCNotificationService.Interfaces;
+using sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService
 {
+    //rename queuing
     public class OldSendMCNotificationRefactoring
     {
         private readonly IServiceRequestProvider _provider;

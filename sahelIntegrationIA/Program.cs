@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Models;
-using sahelIntegrationIA.Services.SendMCNotificationService;
+using sahelIntegrationIA.Jobs;
 using Serilog;
 using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
 using RequestLogger = sahelIntegrationIA.Models.RequestLogger;
@@ -88,7 +88,9 @@ public partial class Program
                    services.AddSingleton<SendMcActionNotificationService>();
                    services.AddSingleton<SahelNotificationService>();
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
-                   services.AddSahelIntegrationServices();
+
+                   services.AddSahelIntegrationServicesForSendMCNotification();
+                   services.AddSahelIntegrationServicesForOrgVerficiationService();
 
                    services.AddHostedService<Worker>();
 

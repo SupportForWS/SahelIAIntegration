@@ -3,7 +3,7 @@ using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using eServicesV2.Kernel.Domain.Enums;
 using Newtonsoft.Json;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Services.SendMCNotificationService.Interfaces;
+using sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService
 {
     public class NotificationContentFactory : INotificationContentFactory
     {

@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using sahelIntegrationIA.Enums;
 using sahelIntegrationIA.Helpers;
 using sahelIntegrationIA.Models;
-using sahelIntegrationIA.Services.SendMCNotificationService.Interfaces;
+using sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService
 {
 
     public class NotificationProcessor : INotificationProcessor

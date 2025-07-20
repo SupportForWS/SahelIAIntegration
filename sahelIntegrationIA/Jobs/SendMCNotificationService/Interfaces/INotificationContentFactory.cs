@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService.Interfaces
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces
 {
     // 2. Factory for notification content
     public interface INotificationContentFactory

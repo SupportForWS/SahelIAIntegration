@@ -8,14 +8,14 @@ using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Enums;
 using sahelIntegrationIA.Helpers;
 using sahelIntegrationIA.Models;
-using sahelIntegrationIA.Services.SendMCNotificationService.Interfaces;
+using sahelIntegrationIA.Jobs.SendMCNotificationService.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Services.SendMCNotificationService
+namespace sahelIntegrationIA.Jobs.SendMCNotificationService
 {
     public class ServiceRequestProvider : IServiceRequestProvider
     {
@@ -38,7 +38,7 @@ namespace sahelIntegrationIA.Services.SendMCNotificationService
         public async Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync()
         {
             _jobCycleId = Guid.NewGuid().ToString();
-            var statuses = ServiceConstants.BuildStatuses();
+            var statuses = ServiceConstants.BuildStatusesForSendMCService();
             var services = ServiceConstants.BuildServiceIds();
 
             LogStart(statuses, services);
