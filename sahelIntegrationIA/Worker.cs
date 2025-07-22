@@ -2,8 +2,8 @@
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Jobs.SendMCNotificationService;
-using sahelIntegrationIA.Jobs.VerificationServiceForOrganizationServices;
+ using sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs;
+using sahelIntegrationIA.Jobs.SendMCNotificationJobs;
 
 namespace IndividualAuthorizationSahelWorker
 {

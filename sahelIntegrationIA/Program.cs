@@ -10,10 +10,10 @@ using Microsoft.Extensions.Localization;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
 using sahelIntegrationIA.Models;
-using sahelIntegrationIA.Jobs;
 using Serilog;
 using eServicesContext = sahelIntegrationIA.Models.eServicesContext;
 using RequestLogger = sahelIntegrationIA.Models.RequestLogger;
+using sahelIntegrationIA.Jobs.Shared;
 
 public partial class Program
 {

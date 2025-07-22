@@ -457,4 +457,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Jobs\SahelNotificationsJobs\" />
+    <Folder Include="Jobs\SahelRequestSubmissionJobs\Constants\" />
+    <Folder Include="Jobs\Shared\Constants\" />
+  </ItemGroup>
 </Project>
