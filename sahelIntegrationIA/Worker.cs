@@ -2,8 +2,9 @@
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
- using sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs;
-using sahelIntegrationIA.Jobs.SendMCNotificationJobs;
+using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs;
+using sahelIntegrationIA.Jobs.SahelNotificationsJobs;
+using sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs;
 
 namespace IndividualAuthorizationSahelWorker
 {
@@ -15,10 +16,12 @@ namespace IndividualAuthorizationSahelWorker
         private readonly SendMcActionNotificationService sendMcActionNotificationService;
         private readonly SahelNotificationService sahelNotificationService;
         private readonly SahelConfigurations _sahelConfigurations;
-        private readonly OldSendMCNotificationRefactoring _oldSendMCNotificationRefactoring;
-        private readonly NewSendMcActionNotificationService _newSendMcActionNotificationService;
 
-        private readonly SahelRequestSubmissionJob _NewVerificationServiceForOrganizationServices; 
+
+        private readonly MCNotificationQueueWriterJob _MCNotificationQueueWriterJob;
+        private readonly SahelRequestSubmissionJob _sahelRequestSubmissionJob;
+        private readonly SahelNotificationsJob _sahelNotificationsJob;
+
         private TimeSpan period;
         IBaseConfiguration _configuration;
 
@@ -31,9 +34,9 @@ namespace IndividualAuthorizationSahelWorker
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
             SahelConfigurations sahelConfigurations,
-            OldSendMCNotificationRefactoring oldSendMcActionNotificationService,
-            NewSendMcActionNotificationService newSendMcActionNotificationService,
-            SahelRequestSubmissionJob newVerificationServiceForOrganizationServices)
+            MCNotificationQueueWriterJob MCNotificationQueueWriterJob,
+            SahelRequestSubmissionJob sahelRequestSubmissionJob,
+            SahelNotificationsJob sahelNotificationsJob)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
@@ -42,9 +45,10 @@ namespace IndividualAuthorizationSahelWorker
             _configuration = configuration;
             this.sahelNotificationService = sahelNotificationService;
             _sahelConfigurations = sahelConfigurations;
-            _oldSendMCNotificationRefactoring = oldSendMcActionNotificationService;
-            _newSendMcActionNotificationService = newSendMcActionNotificationService;
-            _NewVerificationServiceForOrganizationServices = newVerificationServiceForOrganizationServices;
+
+            _MCNotificationQueueWriterJob = MCNotificationQueueWriterJob;
+            _sahelNotificationsJob = sahelNotificationsJob;
+            _sahelRequestSubmissionJob = sahelRequestSubmissionJob;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -57,24 +61,24 @@ namespace IndividualAuthorizationSahelWorker
             {
                 _logger.LogInformation("New Worker running at: {time}", DateTimeOffset.Now);
                 Console.WriteLine("Sahel integration with individual authorization Worker running at: {time}" + DateTimeOffset.Now);
-                //Console.WriteLine("ssss");
-               // await varificationService.VarifyRequests();
-              //  await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
+
+                // await varificationService.VarifyRequests();
+                //  await verificationServiceForOrganizationServices.CreateRequestObjectDTO();
                 //await sendMcActionNotificationService.SendNotification();
 
                 if (_sahelConfigurations.IsSendMcActionNotificationServiceEnable)
                 {
-                   // await sendMcActionNotificationService.SendNotification();
+                    // await sendMcActionNotificationService.SendNotification();
                 }
 
                 if (_sahelConfigurations.IsSahelNotificationServiceEnable)
                 {
-                   // await sahelNotificationService.SendNotification();
+                    // await sahelNotificationService.SendNotification();
                 }
 
-             //   await _newSendMcActionNotificationService.SendNotificationsAsync();
-             //   await _oldSendMCNotificationRefactoring.InsertNotificationsAsync();
-                await _NewVerificationServiceForOrganizationServices.ExecuteAsync();
+                await _MCNotificationQueueWriterJob.InsertNotificationsAsync();
+                await _sahelRequestSubmissionJob.ExecuteAsync();
+                await _sahelNotificationsJob.SendNotificationsAsync();
             }
 
 

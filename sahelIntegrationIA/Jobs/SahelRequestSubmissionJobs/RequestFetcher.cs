@@ -6,7 +6,7 @@ using eServicesV2.Kernel.Domain.Entities.ServiceRequestEntities;
 using eServicesV2.Kernel.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Helpers;
+using sahelIntegrationIA.Jobs.Shared.Constants;
 using sahelIntegrationIA.Models;
 using System;
 using System.Linq;

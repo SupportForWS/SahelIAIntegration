@@ -6,8 +6,10 @@ using eServicesV2.Kernel.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.ReportingServices.Interfaces;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Helpers;
 using sahelIntegrationIA.Jobs.sahelIntegrationIA.Jobs;
+using sahelIntegrationIA.Jobs.Shared.Constants;
+using sahelIntegrationIA.Jobs.Shared.SharedNotificationService;
+using sahelIntegrationIA.Jobs.Shared.SharedUserService;
 using sahelIntegrationIA.Models;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,7 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs
         private readonly SahelConfigurations _config;
         private readonly IRequestLogger _logger;
         private readonly eServicesContext _context;
+        private readonly IKMIDNotificationService _KMIDNotificationService;
         private Dictionary<int, string> _civilIdLookup;
 
         public SahelRequestSubmissionJob(
@@ -40,7 +43,8 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs
             ISahelApiClient sahelApiClient,
             SahelConfigurations config,
             IRequestLogger logger,
-            eServicesContext context)
+            eServicesContext context,
+            IKMIDNotificationService kMIDNotificationService)
         {
             _requestFetcher = requestFetcher;
             _statusUpdater = statusUpdater;
@@ -48,6 +52,7 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs
             _config = config;
             _logger = logger;
             _context = context;
+            _KMIDNotificationService = kMIDNotificationService;
         }
 
         public async Task ExecuteAsync()
@@ -68,44 +73,17 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs
 
             _civilIdLookup = await BuildCivilIdMap(activeRequests.Concat(expiredRequests).ToList());
 
-            await NotifyExpiredKmidRequestsAsync(expiredRequests);
+            await _KMIDNotificationService.NotifyExpiredKmidRequestsAsync(expiredRequests, _civilIdLookup);
             await SubmitActiveKmidRequestsAsync(activeRequests);
         }
 
 
-        //mpve to new service
-        private async Task NotifyExpiredKmidRequestsAsync(List<ServiceRequest> expiredRequests)
-        {
-            if (!expiredRequests.Any()) return;
-
-            var notifications = new List<Notification>();
-
-            foreach (var request in expiredRequests)
-            {
-                notifications.Add(new Notification
-                {
-                    bodyAr = string.Format(_config.MCNotificationConfiguration.KmidExpiredAr, request.EserviceRequestNumber),
-                    bodyEn = string.Format(_config.MCNotificationConfiguration.KmidExpiredEn, request.EserviceRequestNumber),
-                    isForSubscriber = "true",
-                    subscriberCivilId = _civilIdLookup[(int)request.RequesterUserId],
-                    notificationType = ((int)NotificationTypeMapper.GetNotificationType((ServiceTypesEnum)request.ServiceId)).ToString()
-                });
-            }
-
-            //move to updater service
-            var requestIds = expiredRequests.Select(x => x.EserviceRequestId).ToList();
-            await _context.Set<ServiceRequestsDetail>()
-                .Where(a => requestIds.Contains(a.EserviceRequestId))
-                              .ExecuteUpdateAsync(a => a.SetProperty(b => b.MCNotificationSent, true));
-
-            await new InsertDataService(_context).LogNotifications(notifications);
-        }
 
         private async Task SubmitActiveKmidRequestsAsync(List<ServiceRequest> activeRequests)
         {
             var submissionTasks = activeRequests.Select(ProcessRequestAsync);
             var results = await Task.WhenAll(submissionTasks);
-            await new InsertDataService(_context).LogNotifications(results.ToList());
+            await NotificationWriter.InsertNotificationListAsync(_context, results.ToList());
         }
 
         private async Task<Notification> ProcessRequestAsync(ServiceRequest request)
@@ -147,10 +125,8 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs
 
         private async Task<Dictionary<int, string>> BuildCivilIdMap(List<ServiceRequest> requests)
         {
-            var requesterIds = requests.Select(r => r.RequesterUserId).Distinct();
-            return await _context.Set<User>()
-                .Where(u => requesterIds.Contains(u.UserId))
-                .ToDictionaryAsync(u => u.UserId, u => u.CivilId);
+            var requesterIds = requests.Select(r => (int)r.RequesterUserId).Distinct().ToList();
+            return await SharedUserService.GetCivilIdMapAsync(_context, requesterIds);
         }
     }
 }

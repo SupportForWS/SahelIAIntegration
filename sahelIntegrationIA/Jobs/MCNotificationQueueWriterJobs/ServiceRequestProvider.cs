@@ -5,8 +5,7 @@ using eServicesV2.Kernel.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Enums;
-using sahelIntegrationIA.Helpers;
+using sahelIntegrationIA.Jobs.Shared.Constants;
 using sahelIntegrationIA.Models;
 using System;
 using System.Collections.Generic;
@@ -14,13 +13,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
+namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs
 {
     public interface IServiceRequestProvider
     {
         Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync();
-
-        public Task<List<KGACSahelOutSyncQueue>> GetPendingNotificationsAsync();
 
     }
 
@@ -54,24 +51,7 @@ namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
             LogEnd(list);
             return list;
         }
-        public async Task<List<KGACSahelOutSyncQueue>> GetPendingNotificationsAsync()
-        {
-            //_logger.LogInformation("SahelNotificationService - start Notifications For Sahel");
-
-            var notificationList = await FetchNotificationAsync();
-
-            //string log = JsonConvert.SerializeObject(notificationList, Formatting.None,
-            //            new JsonSerializerSettings()
-            //            {
-            //                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            //            });
-
-            //   _logger.LogInformation(message: $"SahelNotificationService - start Notifications For Sahel {0}", log);
-
-
-            return notificationList;
-        }
-
+     
 
         private void LogStart(string[] statuses, int[] services)
         {
@@ -105,19 +85,6 @@ namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
                             && !r.OrganizationRequest.MCNotificationSent.Value)
                 .AsNoTracking()
                 .ToListAsync();
-        }
-
-        private async Task<List<KGACSahelOutSyncQueue>> FetchNotificationAsync()
-        {
-            return await _context.Set<KGACSahelOutSyncQueue>()
-                                .Where(x => (x.Source == NotificationSource.MC.ToString()
-                                                   && x.Sync.Value != true
-                                                   && x.TryCount.Value <= _sahelConfigurations.TryCountForMCNotification)
-                                            || (x.Source == NotificationSource.eService.ToString()
-                                                && x.Sync != true
-                                                && x.TryCount.Value <= _sahelConfigurations.TryCountForeServiceNotification))
-                                .AsNoTracking()
-                                .ToListAsync();
         }
 
         private void LogEnd(List<ServiceRequest> list)

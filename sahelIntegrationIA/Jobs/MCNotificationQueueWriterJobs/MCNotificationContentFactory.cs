@@ -10,19 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
+namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs
 {
-    public interface INotificationContentFactory
+    public interface IMCNotificationContentFactory
     {
         (string msgAr, string msgEn) BuildNotificationContentForServiceRequest(ServiceRequest request);
-        public Notification BuildNotificationFromQueueMessage(KGACSahelOutSyncQueue notification);
-    }
+     }
 
-    public class NotificationContentFactory : INotificationContentFactory
+    public class MCNotificationContentFactory : IMCNotificationContentFactory
     {
         private readonly SahelConfigurations _config;
 
-        public NotificationContentFactory(SahelConfigurations config)
+        public MCNotificationContentFactory(SahelConfigurations config)
         {
             _config = config;
         }
@@ -67,39 +66,7 @@ namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
         }
 
 
-        public Notification BuildNotificationFromQueueMessage(KGACSahelOutSyncQueue notification)
-        {
-            //var reqJson = JsonConvert.SerializeObject(notification, Formatting.None,
-            //    new JsonSerializerSettings()
-            //    {
-            //        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            //    });
-
-            //_logger.LogInformation("SahelNotificationService - start Notification creation process - {0}",
-            //    propertyValues: new { reqJson });
-
-            var notificationResponse = new Notification
-            {
-                bodyEn = notification.MsgBodyAr,
-                bodyAr = notification.MsgBodyEn,
-                isForSubscriber = "true",
-                notificationType = notification.NotificationId.ToString(),
-                subscriberCivilId = notification.CivilId
-            };
-
-            try
-            {
-                notificationResponse.dataTableEn = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableEn);
-                notificationResponse.dataTableAr = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableAr);
-            }
-            catch (JsonException)
-            {
-                notificationResponse.dataTableEn = new Dictionary<string, string> { { "Header", notification.MsgTableEn } };
-                notificationResponse.dataTableAr = new Dictionary<string, string> { { "عنوان", notification.MsgTableAr } };
-            }
-
-            return notificationResponse;
-        }
+     
 
     }
 }

@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Enums
+namespace sahelIntegrationIA.Jobs.Shared.Enums
 {
-    public enum SahelTypeEnum
+    public enum NotificationSource
     {
-        B,
-        Business,
-        I,
-        Individual,
+        eService,
+        MC
     }
 }

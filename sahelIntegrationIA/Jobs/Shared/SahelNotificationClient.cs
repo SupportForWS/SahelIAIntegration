@@ -1,5 +1,6 @@
 ﻿using eServicesV2.Kernel.Core.Configurations;
 using eServicesV2.Kernel.Core.Logging;
+using eServicesV2.Kernel.Domain.Entities.KGACEntities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -113,6 +114,32 @@ namespace sahelIntegrationIA.Jobs.Shared
 
             var tokenResult = JsonConvert.DeserializeObject<TokenResult>(response);
             return tokenResult?.accessToken;
+        }
+
+
+        public Notification BuildNotificationFromQueueMessage(KGACSahelOutSyncQueue notification)
+        { 
+            var notificationResponse = new Notification
+            {
+                bodyEn = notification.MsgBodyAr,
+                bodyAr = notification.MsgBodyEn,
+                isForSubscriber = "true",
+                notificationType = notification.NotificationId.ToString(),
+                subscriberCivilId = notification.CivilId
+            };
+
+            try
+            {
+                notificationResponse.dataTableEn = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableEn);
+                notificationResponse.dataTableAr = JsonConvert.DeserializeObject<Dictionary<string, string>>(notification.MsgTableAr);
+            }
+            catch (JsonException)
+            {
+                notificationResponse.dataTableEn = new Dictionary<string, string> { { "Header", notification.MsgTableEn } };
+                notificationResponse.dataTableAr = new Dictionary<string, string> { { "عنوان", notification.MsgTableAr } };
+            }
+
+            return notificationResponse;
         }
     }
 }

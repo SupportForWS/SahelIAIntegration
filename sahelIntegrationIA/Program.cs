@@ -58,21 +58,17 @@ public partial class Program
                .ConfigureServices((services) =>
                {
                    services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-                   //services.AddHttpContextAccessor();
                    services.AddSingleton<IBaseConfiguration>(a => _baseConfiguration);
                    services.AddSingleton<SahelConfigurations>(a => _SahelConfiguration);
 
-                   //services.AddSingleton<ILogger<Worker>, Logger<Worker>>();
                    services.AddSingleton<IRequestLogger, RequestLogger>();
-                 services
-               .AddDbContext<eServicesContext>(options =>
-                    options.UseSqlServer(_baseConfiguration.ConnectionStrings.Default,
-                    sqlServerOptionsAction: sqlOptions =>
-                       {
-                           sqlOptions.CommandTimeout(60);
-                           sqlOptions.EnableRetryOnFailure();
-                       }).EnableSensitiveDataLogging(true),
-               ServiceLifetime.Singleton);
+                   services.AddDbContext<eServicesContext>(options =>
+                      options.UseSqlServer(_baseConfiguration.ConnectionStrings.Default,
+                      sqlServerOptionsAction: sqlOptions =>
+                         {
+                             sqlOptions.CommandTimeout(60);
+                             sqlOptions.EnableRetryOnFailure();
+                         }).EnableSensitiveDataLogging(true), ServiceLifetime.Singleton);
 
                    services.AddLocalization(o =>
                    {
@@ -84,13 +80,16 @@ public partial class Program
 
 
                    services.AddSingleton<IDapper, eServicesV2.Kernel.Infrastructure.Persistence.Dapper.Dapper>();
+
                    services.AddSingleton<VarificationService>();
                    services.AddSingleton<SendMcActionNotificationService>();
                    services.AddSingleton<SahelNotificationService>();
                    services.AddSingleton<VerificationServiceForOrganizationServices>();
 
-                   services.AddSahelIntegrationServicesForSendMCNotification();
-                   services.AddSahelIntegrationServicesForOrgVerficiationService();
+                   services.AddSharedSahelIntegrationServices();
+                   services.AddSahelIntegrationServicesForSahelNotificationsJob();
+                   services.AddSahelIntegrationServicesForMCNotificationQueueWriterJob();
+                   services.AddSahelIntegrationServicesForSaheRequestSubmissionJob();
 
                    services.AddHostedService<Worker>();
 

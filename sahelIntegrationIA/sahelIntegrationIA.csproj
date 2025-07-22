@@ -459,8 +459,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Jobs\SahelNotificationsJobs\" />
     <Folder Include="Jobs\SahelRequestSubmissionJobs\Constants\" />
-    <Folder Include="Jobs\Shared\Constants\" />
+    <Folder Include="Jobs\Shared\Helpers\" />
   </ItemGroup>
 </Project>

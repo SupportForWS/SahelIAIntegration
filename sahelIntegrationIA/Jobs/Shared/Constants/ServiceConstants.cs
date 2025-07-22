@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Helpers
+namespace sahelIntegrationIA.Jobs.Shared.Constants
 {
     //move to Shared/Constants
 

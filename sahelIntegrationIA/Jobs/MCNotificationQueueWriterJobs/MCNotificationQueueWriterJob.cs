@@ -5,18 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
+namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs
 {
-    // 4. Orchestrator
-    public class NewSendMcActionNotificationService
+    public class MCNotificationQueueWriterJob
     {
         private readonly IServiceRequestProvider _provider;
-        private readonly INotificationProcessor _processor;
+        private readonly IMCNotificationProcessor _processor;
         private readonly IRequestLogger _logger;
 
-        public NewSendMcActionNotificationService(
+        public MCNotificationQueueWriterJob(
             IServiceRequestProvider provider,
-            INotificationProcessor processor,
+            IMCNotificationProcessor processor,
             IRequestLogger logger)
         {
             _provider = provider;
@@ -24,14 +23,12 @@ namespace sahelIntegrationIA.Jobs.SendMCNotificationJobs
             _logger = logger;
         }
 
-     
-        public async Task SendNotificationsAsync()
+        public async Task InsertNotificationsAsync()
         {
             _logger.LogInformation("Starting MC action notification cycle");
-            var notifications = await _provider.GetPendingNotificationsAsync();
-            await _processor.ProcessNotificatonsAsync(notifications);
+            var requests = await _provider.GetPendingeServiceRequestsAsync();
+            await _processor.ProcessEServiceRequestsAsync(requests);
             _logger.LogInformation("Completed MC action notification cycle");
         }
-
-     }
+    }
 }

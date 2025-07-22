@@ -9,20 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using static eServicesV2.Kernel.Core.Configurations.SahelIntegrationModels;
 
-namespace sahelIntegrationIA.Helpers
+namespace sahelIntegrationIA.Jobs.Shared.SharedNotificationService
 {
-    public class InsertDataService
+    public static class NotificationWriter
     {
-
-        private readonly eServicesContext _context;
-
-        public InsertDataService(eServicesContext context)
-        {
-            _context = context;
-        }
-
-
-        public async Task<bool> LogNotifications(IEnumerable<Notification> notification, string sahelType = "B")
+        public static async Task<bool> InsertNotificationListAsync(eServicesContext context, IEnumerable<Notification> notification, string sahelType = "B")
         {
             if (notification == null || !notification.Any())
                 return false;
@@ -43,12 +34,12 @@ namespace sahelIntegrationIA.Helpers
                 Source = RequestSourceEnum.eService.ToString()
             }).ToList();
 
-            await _context.AddRangeAsync(queues);
-            var result = await _context.SaveChangesAsync();
+            await context.AddRangeAsync(queues);
+            var result = await context.SaveChangesAsync();
             return result > 0;
         }
 
-        public async Task<bool> LogNotification(Notification notification, bool sent, string sahelType = "B")
+        public static async Task<bool> InsertNotificationAsync(eServicesContext context, Notification notification, bool sent, string sahelType = "B")
         {
             var queue = new KGACSahelOutSyncQueue
             {
@@ -65,13 +56,14 @@ namespace sahelIntegrationIA.Helpers
                 TryCount = 1,
                 Source = RequestSourceEnum.eService.ToString()
             };
-            _context.Add(queue);
-            var result = await _context.SaveChangesAsync();
+            context.Add(queue);
+            var result = await context.SaveChangesAsync();
             return result > 0;
         }
 
 
+
     }
 
-
 }
+

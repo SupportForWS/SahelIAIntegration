@@ -5,33 +5,48 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using sahelIntegrationIA.Jobs.sahelIntegrationIA.Jobs;
-using sahelIntegrationIA.Jobs.SendMCNotificationJobs;
+using sahelIntegrationIA.Jobs.SahelNotificationsJobs;
+using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs;
 
 namespace sahelIntegrationIA.Jobs.Shared
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddSahelIntegrationServicesForSendMCNotification(this IServiceCollection services)
+        public static IServiceCollection AddSahelIntegrationServicesForMCNotificationQueueWriterJob(this IServiceCollection services)
         {
             services.AddSingleton<IServiceRequestProvider, ServiceRequestProvider>();
-            services.AddSingleton<INotificationContentFactory, NotificationContentFactory>();
-            services.AddSingleton<INotificationProcessor, NotificationProcessor>();
-            services.AddSingleton<SahelNotificationClient>();
-            services.AddSingleton<OldSendMCNotificationRefactoring>();
-            services.AddSingleton<NewSendMcActionNotificationService>();
-
+            services.AddSingleton<IMCNotificationContentFactory, MCNotificationContentFactory>();
+            services.AddSingleton<IMCNotificationProcessor, MCNotificationProcessor>();
+            services.AddSingleton<MCNotificationQueueWriterJob>();
+ 
             return services;
         }
 
-        public static IServiceCollection AddSahelIntegrationServicesForOrgVerficiationService(this IServiceCollection services)
+        public static IServiceCollection AddSahelIntegrationServicesForSaheRequestSubmissionJob(this IServiceCollection services)
         {
             services.AddSingleton<SahelRequestSubmissionJob>();
             services.AddSingleton<IRequestFetcher, RequestFetcher>();
              services.AddSingleton<IRequestStatusUpdater, RequestStatusUpdater>();
-            services.AddSingleton<INotificationService, NotificationService>();
+            services.AddSingleton<IKMIDNotificationService, KMIDNotificationService>();
             services.AddSingleton<ISahelApiClient, SahelApiClient>();
 
             return services;
         }
+
+        public static IServiceCollection AddSahelIntegrationServicesForSahelNotificationsJob(this IServiceCollection services)
+        {
+            services.AddSingleton<SahelNotificationsJob>();
+            services.AddSingleton<INotificationFetcher, NotificationFetcher>();
+            services.AddSingleton<INotificationProcessor, NotificationProcessor>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddSharedSahelIntegrationServices(this IServiceCollection services)
+        {
+            services.AddSingleton<SahelNotificationClient>();
+            return services;
+        }
+
     }
 }
