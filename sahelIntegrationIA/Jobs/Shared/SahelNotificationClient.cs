@@ -118,14 +118,14 @@ namespace sahelIntegrationIA.Jobs.Shared
 
 
         public Notification BuildNotificationFromQueueMessage(KGACSahelOutSyncQueue notification)
-        { 
+        {
             var notificationResponse = new Notification
             {
                 bodyEn = notification.MsgBodyAr,
                 bodyAr = notification.MsgBodyEn,
                 isForSubscriber = "true",
                 notificationType = notification.NotificationId.ToString(),
-                subscriberCivilId = notification.CivilId
+                subscriberCivilId = notification.CivilId,
             };
 
             try

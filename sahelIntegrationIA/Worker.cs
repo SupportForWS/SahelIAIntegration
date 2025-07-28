@@ -2,8 +2,8 @@
 using eServicesV2.Kernel.Core.Logging;
 using sahelIntegrationIA;
 using sahelIntegrationIA.Configurations;
-using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs;
-using sahelIntegrationIA.Jobs.SahelNotificationsJobs;
+using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob;
+using sahelIntegrationIA.Jobs.SahelNotificationsJob;
 using sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs;
 
 namespace IndividualAuthorizationSahelWorker
@@ -20,7 +20,7 @@ namespace IndividualAuthorizationSahelWorker
 
         private readonly MCNotificationQueueWriterJob _MCNotificationQueueWriterJob;
         private readonly SahelRequestSubmissionJob _sahelRequestSubmissionJob;
-        private readonly SahelNotificationsJob _sahelNotificationsJob;
+        private readonly SahelSenderNotificationsJob _sahelNotificationsJob;
 
         private TimeSpan period;
         IBaseConfiguration _configuration;
@@ -36,7 +36,7 @@ namespace IndividualAuthorizationSahelWorker
             SahelConfigurations sahelConfigurations,
             MCNotificationQueueWriterJob MCNotificationQueueWriterJob,
             SahelRequestSubmissionJob sahelRequestSubmissionJob,
-            SahelNotificationsJob sahelNotificationsJob)
+            SahelSenderNotificationsJob sahelNotificationsJob)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;

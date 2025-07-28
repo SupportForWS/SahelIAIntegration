@@ -1,12 +1,8 @@
-﻿using sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using sahelIntegrationIA.Jobs.sahelIntegrationIA.Jobs;
-using sahelIntegrationIA.Jobs.SahelNotificationsJobs;
-using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJobs;
+﻿
+
+using sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob;
+using sahelIntegrationIA.Jobs.SahelNotificationsJob;
+using sahelIntegrationIA.Jobs.SahelRequestSubmissionJob;
 
 namespace sahelIntegrationIA.Jobs.Shared
 {
@@ -17,14 +13,14 @@ namespace sahelIntegrationIA.Jobs.Shared
             services.AddSingleton<IServiceRequestProvider, ServiceRequestProvider>();
             services.AddSingleton<IMCNotificationContentFactory, MCNotificationContentFactory>();
             services.AddSingleton<IMCNotificationProcessor, MCNotificationProcessor>();
-            services.AddSingleton<MCNotificationQueueWriterJob>();
- 
+            services.AddSingleton<sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob.MCNotificationQueueWriterJob>();
+
             return services;
         }
 
         public static IServiceCollection AddSahelIntegrationServicesForSaheRequestSubmissionJob(this IServiceCollection services)
         {
-            services.AddSingleton<SahelRequestSubmissionJob>();
+            services.AddSingleton<sahelIntegrationIA.Jobs.SahelRequestSubmissionJobs.SahelRequestSubmissionJob>();
             services.AddSingleton<IRequestFetcher, RequestFetcher>();
              services.AddSingleton<IRequestStatusUpdater, RequestStatusUpdater>();
             services.AddSingleton<IKMIDNotificationService, KMIDNotificationService>();
@@ -35,7 +31,7 @@ namespace sahelIntegrationIA.Jobs.Shared
 
         public static IServiceCollection AddSahelIntegrationServicesForSahelNotificationsJob(this IServiceCollection services)
         {
-            services.AddSingleton<SahelNotificationsJob>();
+            services.AddSingleton<SahelNotificationsJob.SahelSenderNotificationsJob>();
             services.AddSingleton<INotificationFetcher, NotificationFetcher>();
             services.AddSingleton<INotificationProcessor, NotificationProcessor>();
 
