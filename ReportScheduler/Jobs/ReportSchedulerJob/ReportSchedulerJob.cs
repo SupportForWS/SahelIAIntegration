@@ -141,6 +141,8 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
             return await CallPostAPI<SaveCriteriaDTO, ResponseDto>(saveCriteria, _executeReportApiUrl);
         }
 
+
+        //todo: try send the file without saving it
         private async Task<string> SaveReportFileAsync(DownloadFileDTO fileDto)
         {
             if (string.IsNullOrWhiteSpace(fileDto.File))
