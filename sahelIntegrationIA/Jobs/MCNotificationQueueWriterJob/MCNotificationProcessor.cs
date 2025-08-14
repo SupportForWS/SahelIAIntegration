@@ -15,7 +15,7 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
 {
     public interface IMCNotificationProcessor
     {
-        Task ProcessEServiceRequestsAsync(List<ServiceRequest> serviceRequests);
+        Task ProcessEServiceRequestsAsync(List<ServiceRequest> serviceRequests, string jobCycleId);
     }
 
     public class MCNotificationProcessor : IMCNotificationProcessor
@@ -37,11 +37,14 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
             _notificationClient = notificationClient;
         }
 
-        public async Task ProcessEServiceRequestsAsync(List<ServiceRequest> serviceRequests)
+        public async Task ProcessEServiceRequestsAsync(List<ServiceRequest> serviceRequests, string jobCycleId)
         {
+            _logger.LogInformation("{0} - Starting MC action notification cycle for {1} service requests",
+                jobCycleId, serviceRequests.Count);
 
             if (!serviceRequests.Any())
             {
+                _logger.LogInformation("{0} - No service requests found. Exiting.", jobCycleId);
                 return;
             }
 
@@ -51,28 +54,25 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
 
             foreach (var request in serviceRequests)
             {
-
                 string civilId = civilIdByUserId[(int)request.RequesterUserId];
                 var (msgAr, msgEn) = _notificationFactory.BuildNotificationContentForServiceRequest(request);
 
-                var notification = new Notification
+                pendingNotifications.Add(new Notification
                 {
                     bodyAr = msgAr,
                     bodyEn = msgEn,
                     isForSubscriber = "true",
                     notificationType = ((int)NotificationTypeMapper.GetNotificationType((ServiceTypesEnum)request.ServiceId)).ToString(),
                     subscriberCivilId = civilId
-                };
+                });
 
-                pendingNotifications.Add(notification);
-
-
+                _logger.LogInformation("{0} - Prepared notification for RequestId: {1}, ServiceId: {2}, CivilId: {3}",
+                    jobCycleId, request.EserviceRequestId, request.ServiceId, civilId);
             }
 
             await MarkEServiceRequestsAsSentAsync(serviceRequests);
 
             await NotificationWriter.InsertNotificationListAsync(_context, pendingNotifications);
-
         }
 
 

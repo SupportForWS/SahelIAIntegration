@@ -15,7 +15,7 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
 {
     public interface IRequestFetcher
     {
-        Task<(List<ServiceRequest> activeRequests, List<ServiceRequest> expiredRequests)> FetchAsync();
+        Task<(List<ServiceRequest> activeRequests, List<ServiceRequest> expiredRequests)> FetchAsync(string jobCycleId);
     }
 
     public class RequestFetcher : IRequestFetcher
@@ -23,7 +23,7 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
         private readonly eServicesContext _ctx;
         private readonly IRequestLogger _log;
         private readonly SahelConfigurations _sahelConfigurations;
-        DateTime currentDate = DateTime.Now;
+        readonly DateTime currentDate = DateTime.Now;
 
         public RequestFetcher(eServicesContext ctx, IRequestLogger log, SahelConfigurations cfg)
         {
@@ -53,25 +53,34 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
         (int)ServiceTypesEnum.OrgNameChangeReqServiceId
     };
 
-        public async Task<(List<ServiceRequest> activeRequests, List<ServiceRequest> expiredRequests)> FetchAsync()
+        public async Task<(List<ServiceRequest> activeRequests, List<ServiceRequest> expiredRequests)> FetchAsync(string jobCycleId)
         {
-            _log.LogInformation("[Sahel] Starting fetch of pending service requests at {Time}", DateTime.Now);
+            _log.LogInformation("{JobCycleId} - [Sahel] Starting fetch of pending service requests at {Time}", jobCycleId, DateTime.Now);
 
             var statusEnums = ServiceConstants.BuildStatusesForOrgVerficationService();
-            var requestList = await GetRequestsForValidation(statusEnums, ServiceIds, ServiceIdsForValidation, currentDate);
-            var organizationRequestList = await GetOrganizationRequestsForValidation(statusEnums);
+
+            var requestList = await GetRequestsForValidation(jobCycleId, statusEnums, ServiceIds, ServiceIdsForValidation, currentDate);
+            _log.LogInformation("{JobCycleId} - [Sahel] Found {Count} service requests for validation", jobCycleId, requestList.Count);
+
+            var organizationRequestList = await GetOrganizationRequestsForValidation(jobCycleId, statusEnums);
+            _log.LogInformation("{JobCycleId} - [Sahel] Found {Count} organization requests for validation", jobCycleId, organizationRequestList.Count);
 
             requestList.AddRange(organizationRequestList);
 
-            var expiredRequests = await HandleKMIDExpiryTokenAsync(requestList);
+            _log.LogInformation("{JobCycleId} - [Sahel] Total requests before KMID expiry check: {Count}", jobCycleId, requestList.Count);
+
+            var expiredRequests = await HandleKMIDExpiryTokenAsync(jobCycleId, requestList);
+
+            _log.LogInformation("{JobCycleId} - [Sahel] ActiveRequests={ActiveCount}, ExpiredRequests={ExpiredCount}",
+                jobCycleId, requestList.Count - expiredRequests.Count, expiredRequests.Count);
 
             return (requestList.Except(expiredRequests).ToList(), expiredRequests);
         }
 
-        private async Task<List<ServiceRequest>> GetRequestsForValidation(string[] statusEnums, int[] serviceIds,
+        private async Task<List<ServiceRequest>> GetRequestsForValidation(string jobCycleId, string[] statusEnums, int[] serviceIds,
             int[] serviceIdsForValidation, DateTime currentDate)
         {
-            return await _ctx.Set<ServiceRequest>()
+            var list = await _ctx.Set<ServiceRequest>()
                 .Include(p => p.ServiceRequestsDetail)
                 .Where(p =>
                     statusEnums.Contains(p.StateId)
@@ -94,11 +103,16 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
                 )
                 .AsNoTracking()
                 .ToListAsync();
+
+            _log.LogInformation("{JobCycleId} - [Sahel] Detailed request list from GetRequestsForValidation: {Requests}",
+                jobCycleId, string.Join(",", list.Select(r => r.EserviceRequestId)));
+
+            return list;
         }
 
-        private async Task<List<ServiceRequest>> GetOrganizationRequestsForValidation(string[] statusEnums)
+        private async Task<List<ServiceRequest>> GetOrganizationRequestsForValidation(string jobCycleId, string[] statusEnums)
         {
-            return await _ctx.Set<ServiceRequest>()
+            var list = await _ctx.Set<ServiceRequest>()
                 .Include(p => p.OrganizationRequest)
                 .Where(p =>
                     statusEnums.Contains(p.StateId)
@@ -118,9 +132,14 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
                 )
                 .AsNoTracking()
                 .ToListAsync();
+
+            _log.LogInformation("{JobCycleId} - [Sahel] Detailed organization request list: {Requests}",
+                jobCycleId, string.Join(",", list.Select(r => r.EserviceRequestId)));
+
+            return list;
         }
 
-        public async Task<List<ServiceRequest>> HandleKMIDExpiryTokenAsync(List<ServiceRequest> requests)
+        public async Task<List<ServiceRequest>> HandleKMIDExpiryTokenAsync(string jobCycleId, List<ServiceRequest> requests)
         {
             var now = DateTime.Now;
             var tokens = requests.Select(GetToken).Where(t => !string.IsNullOrEmpty(t));
@@ -131,15 +150,22 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
                 .Select(q => q.KGACPACIQueueId)
                 .ToListAsync();
 
-            if (!expiredTokenIds.Any()) return requests;
+            if (!expiredTokenIds.Any())
+            {
+                _log.LogInformation("{JobCycleId} - [Sahel] No expired KMID tokens found", jobCycleId);
+                return requests;
+            }
 
-            _log.LogInformation("[Sahel] {Count} KMID tokens have expired.", expiredTokenIds.Count);
+            _log.LogInformation("{JobCycleId} - [Sahel] {Count} KMID tokens have expired", jobCycleId, expiredTokenIds.Count);
 
             var expiredRequests = requests
                 .Where(r => expiredTokenIds.Contains(int.Parse(GetToken(r))))
                 .ToList();
 
-            await ClearTokensAsync(expiredRequests);
+            _log.LogInformation("{JobCycleId} - Expired Request IDs: {Ids}",
+                jobCycleId, string.Join(",", expiredRequests.Select(r => r.EserviceRequestId)));
+
+            await ClearTokensAsync(jobCycleId, expiredRequests);
 
             return expiredRequests;
         }
@@ -149,7 +175,7 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
                 ? request.OrganizationRequest.KMIDToken
                 : request.ServiceRequestsDetail.KMIDToken;
 
-        private async Task ClearTokensAsync(List<ServiceRequest> expiredRequests)
+        private async Task ClearTokensAsync(string jobCycleId, List<ServiceRequest> expiredRequests)
         {
             var detailIds = expiredRequests
                 .Where(r => r.ServiceId != (int)ServiceTypesEnum.OrganizationRegistrationService)
@@ -157,6 +183,9 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
 
             if (detailIds.Any())
             {
+                _log.LogInformation("{JobCycleId} - [Sahel] Clearing KMIDToken for {Count} service requests",
+                    jobCycleId, detailIds.Count());
+
                 await _ctx.Set<ServiceRequestsDetail>()
                     .Where(d => detailIds.Contains(d.EserviceRequestDetailsId))
                     .ExecuteUpdateAsync(d => d.SetProperty(x => x.KMIDToken, ""));
@@ -168,6 +197,9 @@ namespace sahelIntegrationIA.Jobs.SahelRequestSubmissionJob
 
             if (orgRequestNumbers.Any())
             {
+                _log.LogInformation("{JobCycleId} - [Sahel] Clearing KMIDToken & resetting ReadyForSahelSubmission for {Count} organization requests",
+                    jobCycleId, orgRequestNumbers.Count());
+
                 await _ctx.Set<OrganizationRequests>()
                     .Where(o => orgRequestNumbers.Contains(o.RequestNumber))
                     .ExecuteUpdateAsync(o => o

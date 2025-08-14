@@ -17,7 +17,7 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
 {
     public interface IServiceRequestProvider
     {
-        Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync();
+        Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync(string jobCycleId);
 
     }
 
@@ -35,13 +35,13 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
         {
             _context = context;
             _logger = logger;
-            _jobCycleId = Guid.NewGuid().ToString();
-            _sahelConfigurations = sahelConfigurations;
+             _sahelConfigurations = sahelConfigurations;
         }
 
-        public async Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync()
+        public async Task<List<ServiceRequest>> GetPendingeServiceRequestsAsync(string jobCycleId )
         {
-            _jobCycleId = Guid.NewGuid().ToString();
+            _jobCycleId = jobCycleId;
+
             var statuses = ServiceConstants.BuildStatusesForSendMCService();
             var services = ServiceConstants.BuildServiceIds();
 
@@ -91,7 +91,7 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
         {
             var log = JsonConvert.SerializeObject(list,
                 new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            _logger.LogInformation("{1} - Retrieved {0} requests", list.Count, _jobCycleId);
+            _logger.LogInformation("{1} - Retrieved {0} requests Count - Retrieved {1} requests ", list.Count, log, _jobCycleId);
         }
     }
 }

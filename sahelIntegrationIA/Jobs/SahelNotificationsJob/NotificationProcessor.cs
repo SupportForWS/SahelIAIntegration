@@ -9,7 +9,7 @@ namespace sahelIntegrationIA.Jobs.SahelNotificationsJob
 {
     public interface INotificationProcessor
     {
-        Task ProcessNotificationsAsync(List<KGACSahelOutSyncQueue> notificationQueueItems);
+        Task ProcessNotificationsAsync(List<KGACSahelOutSyncQueue> notificationQueueItems, string jobCycleId);
     }
     public class NotificationProcessor: INotificationProcessor
     {
@@ -28,8 +28,10 @@ namespace sahelIntegrationIA.Jobs.SahelNotificationsJob
         }
 
 
-        public async Task ProcessNotificationsAsync(List<KGACSahelOutSyncQueue> notificationQueueItems)
+        public async Task ProcessNotificationsAsync(List<KGACSahelOutSyncQueue> notificationQueueItems, string jobCycleId)
         {
+
+
             var successfullySentNotifications = new List<Notification>();
             var successfullySentIds = new List<int>();
 
@@ -46,15 +48,23 @@ namespace sahelIntegrationIA.Jobs.SahelNotificationsJob
                     {
                         successfullySentNotifications.Add(notification);
                         successfullySentIds.Add(queueItem.KGACSahelOutSyncQueueId);
+                        _logger.LogInformation("{0} - Successfully sent notification ID {1}", jobCycleId, queueItem.KGACSahelOutSyncQueueId);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("{0} - Failed to send notification ID {1}", jobCycleId, queueItem.KGACSahelOutSyncQueueId);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogException(ex, "Error processing notification queue item {0}", queueItem.KGACSahelOutSyncQueueId);
+                    _logger.LogException(ex, "{0} - Error processing notification queue item {1}", jobCycleId, queueItem.KGACSahelOutSyncQueueId);
                 }
             }
 
             await MarkQueueItemsAsProcessedAsync(notificationQueueItems, successfullySentIds);
+
+            _logger.LogInformation("{0} - Completed notification processing",
+                jobCycleId);
         }
 
         private async Task MarkQueueItemsAsProcessedAsync(List<KGACSahelOutSyncQueue> queueList, List<int> successfullySentIds)
@@ -67,6 +77,7 @@ namespace sahelIntegrationIA.Jobs.SahelNotificationsJob
             if (sentItems.Any())
             {
                 var sentIds = sentItems.Select(q => q.KGACSahelOutSyncQueueId).ToList();
+
 
                 await _context.Set<KGACSahelOutSyncQueue>()
                     .Where(q => sentIds.Contains(q.KGACSahelOutSyncQueueId))

@@ -12,6 +12,7 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
         private readonly IServiceRequestProvider _provider;
         private readonly IMCNotificationProcessor _processor;
         private readonly IRequestLogger _logger;
+        private readonly string _jobCycleId;
 
         public MCNotificationQueueWriterJob(
             IServiceRequestProvider provider,
@@ -21,14 +22,16 @@ namespace sahelIntegrationIA.Jobs.MCNotificationQueueWriterJob
             _provider = provider;
             _processor = processor;
             _logger = logger;
+            _jobCycleId = Guid.NewGuid().ToString();
+
         }
 
         public async Task InsertNotificationsAsync()
         {
-            _logger.LogInformation("Starting MC action notification cycle");
-            var requests = await _provider.GetPendingeServiceRequestsAsync();
-            await _processor.ProcessEServiceRequestsAsync(requests);
-            _logger.LogInformation("Completed MC action notification cycle");
+            _logger.LogInformation("{0} - Starting MC action notification cycle", _jobCycleId);
+            var requests = await _provider.GetPendingeServiceRequestsAsync(_jobCycleId);
+            await _processor.ProcessEServiceRequestsAsync(requests, _jobCycleId);
+            _logger.LogInformation("{0} - Completed MC action notification cycle", _jobCycleId);
         }
     }
 }

@@ -24,15 +24,30 @@ namespace sahelIntegrationIA.Jobs.SahelNotificationsJob
             _context = context;
             _logger = logger;
             _sahelConfigurations = sahelConfigurations;
-           // _jobCycleId = new Guid().ToString();
+            _jobCycleId = Guid.NewGuid().ToString();
             _notificationFetcher = requestFetcher;
             _notificationProcessor = notificationProcessor;
         }
         public async Task SendNotificationsAsync()
         {
+            _logger.LogInformation("{0} - Fetching pending notifications", _jobCycleId);
+
             var notifications = await _notificationFetcher.GetPendingNotificationsAsync();
-            await _notificationProcessor.ProcessNotificationsAsync(notifications);
+
+
+            if (!notifications.Any())
+                return;
+
+            _logger.LogInformation("{0} - Found {1} pending notifications: {2}",
+              _jobCycleId,
+              notifications.Count,
+              string.Join(",", notifications.Select(n => n.KGACSahelOutSyncQueueId)));
+
+            await _notificationProcessor.ProcessNotificationsAsync(notifications, _jobCycleId);
+
+            _logger.LogInformation("{0} - Completed processing notifications", _jobCycleId);
         }
+
 
 
     }
