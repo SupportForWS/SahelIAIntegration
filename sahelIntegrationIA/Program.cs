@@ -89,7 +89,7 @@ public partial class Program
                    services.AddSingleton<VerificationServiceForBrokerServices>();
                    services.AddSingleton<VerificationServiceForSignUp>();
                    services.AddSingleton<VerificationServiceForCivilIdValidation>();
-                   services.AddSingleton<EmailSenderService>();
+                   services.AddSingleton<NotificationSenderJob>();
 
 
                    services.AddHostedService<Worker>();

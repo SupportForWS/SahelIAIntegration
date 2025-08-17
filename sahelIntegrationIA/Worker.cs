@@ -19,7 +19,7 @@ namespace IndividualAuthorizationSahelWorker
         private TimeSpan period;
         IBaseConfiguration _configuration;
         private readonly VerificationServiceForSignUp _verificationServiceForSignUp;
-        private readonly EmailSenderService emailSenderService;
+        private readonly NotificationSenderJob emailSenderService;
 
         public Worker(
             IRequestLogger logger,
@@ -29,7 +29,8 @@ namespace IndividualAuthorizationSahelWorker
             VerificationServiceForSignUp verificationServiceForSignUp,
             VerificationServiceForOrganizationServices verificationServiceForOrganizationServices,
             SahelNotificationService sahelNotificationService,
-            SahelConfigurations sahelConfigurations, VerificationServiceForBrokerServices verificationServiceForBrokerServices, VerificationServiceForCivilIdValidation verificationServiceForCivilIdValidation, EmailSenderService emailSenderService)
+            SahelConfigurations sahelConfigurations, VerificationServiceForBrokerServices verificationServiceForBrokerServices,
+            VerificationServiceForCivilIdValidation verificationServiceForCivilIdValidation, NotificationSenderJob emailSenderService)
         {
             _logger = logger;
             this.verificationServiceForOrganizationServices = verificationServiceForOrganizationServices;
