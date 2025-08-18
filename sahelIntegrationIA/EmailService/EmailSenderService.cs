@@ -206,53 +206,51 @@ namespace sahelIntegrationIA.EmailService
         {
             if (emailDetails == null) return false;
 
+            var emailSettings = _sahelConfigurations.EmailSettings;
             try
             {
-                using (var smtpClient = new SmtpClient
+                var smtpClient = new SmtpClient
                 {
-                    Port = 25,
-                    Credentials = new NetworkCredential("RMSnoreply", "P@ssw0rd", "kgachq"),
+                    Port = emailSettings.SmtpPort,
+                    Credentials = new NetworkCredential(emailSettings.SmtpUsername, emailSettings.SmtpPassword, emailSettings.SmtpDomain),
                     EnableSsl = true,
-                    Host = "mailflow.kgac.com.kw",
-                    Timeout = 10000,
+                    Host = emailSettings.SmtpHost,
+                    Timeout = emailSettings.Timeout,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     UseDefaultCredentials = false
-                })
+                };
+
+                var mailMessage = new MailMessage
                 {
-                    var mailMessage = new MailMessage
-                    {
-                        From = new MailAddress("noreply@Customs.gov.kw"),
-                        Subject = emailDetails.Subject,
-                        Body = emailDetails.Body,
-                        IsBodyHtml = emailDetails.IsBodyHtml
-                    };
+                    From = new MailAddress(emailSettings.FromAddress),
+                    Subject = emailDetails.Subject,
+                    Body = emailDetails.Body,
+                    IsBodyHtml = emailDetails.IsBodyHtml
+                };
 
-                    foreach (var recipient in emailDetails.ToMail.Split(',').Select(r => r.Trim()).Where(r => !string.IsNullOrWhiteSpace(r)))
-                    {
-                        mailMessage.To.Add(recipient);
-                    }
-
-                    if (emailDetails.alternateView != null)
-                    {
-                        mailMessage.AlternateViews.Add(emailDetails.alternateView);
-                    }
-
-                    smtpClient.Send(mailMessage);
+                foreach (var recipient in emailDetails.ToMail.Split(',').Select(r => r.Trim()).Where(r => !string.IsNullOrWhiteSpace(r)))
+                {
+                    mailMessage.To.Add(recipient);
                 }
 
+                if (emailDetails.alternateView != null)
+                {
+                    mailMessage.AlternateViews.Add(emailDetails.alternateView);
+                }
+
+                smtpClient.Send(mailMessage);
                 return true;
             }
             catch
             {
                 // log the exception
-                // return false;
                 throw;
             }
         }
 
         public ETradeAPI.SMSBox.SendingSMSResult SendSMS(SmsDetails smdDetails)
         {
-            var smsConfig = _configurations.SmsConfiguration;
+            var smsConfig = _sahelConfigurations.SmsSettings;
 
             var smsRequest = new ETradeAPI.SMSBox.SendingSMSRequest
             {
@@ -269,6 +267,7 @@ namespace sahelIntegrationIA.EmailService
                 IsFlash = smsConfig.IsFlash
             };
 
+            //todo check error reTURN HERE
             var smsClient = new ETradeAPI.SMSBox.MessagingSoapClient("MessagingSoap");
             return smsClient.SendSMS(smsRequest);
         }

@@ -20,6 +20,9 @@ namespace sahelIntegrationIA.Configurations
         public int BrokerKMIDCallingTimer { get; set; }
         public string ToWhomPrintableFormRedirectUrl { get; set; }
         public string ExamAttendanceRedirectUrl { get; set; }
+
+        public EmailSettings EmailSettings { get; set; }
+        public SmsSettings SmsSettings { get; set; }
     }
     public class IndividualAuthorizationConfiguration
     {
@@ -117,4 +120,26 @@ namespace sahelIntegrationIA.Configurations
         public string VerificationRequestRejectedByAuthorizedSignatoryEn { get; set; }
 
     }
+
+    public class EmailSettings
+    {
+        public string SmtpHost { get; set; }
+        public int SmtpPort { get; set; }
+        public string SmtpUsername { get; set; }
+        public string SmtpPassword { get; set; }
+        public string SmtpDomain { get; set; }
+        public string FromAddress { get; set; }
+        public int Timeout { get; set; }
+    }
+
+    public class SmsSettings
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public string CustomerID { get; set; }
+        public string SenderText { get; set; }
+        public bool IsBlink { get; set; }
+        public bool IsFlash { get; set; }
+    }
+
 }
