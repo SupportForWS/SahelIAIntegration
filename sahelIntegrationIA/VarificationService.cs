@@ -277,29 +277,7 @@ namespace IndividualAuthorizationSahelWorker
                         .Where(p => p.KgacpaciqueueId == id)
                         .FirstOrDefaultAsync();
 
-                    if (authorizationRequest.RequesterNationality is null || authorizationRequest.AuthorizerNationality is null)
-                    {
-                        var nationalities = await _eServicesContext.Set<Location>()
-                      .ToListAsync();
-                        foreach (var item in nationalities)
-                        {
-                            if (!string.IsNullOrEmpty(item.KMIDNationalityCode))
-                            {
-                                item.KMIDNationalityCode = item.KMIDNationalityCode.Replace(" ", "");
-                            }
-                        }
-                        if (authorizationRequest.RequesterNationality is null && requesterpersonalData!= null)
-                        {
-                            var requesterNationality = nationalities.Where(a => a.KMIDNationalityCode == requesterpersonalData.NationalityEn).Select(a => a.LocationId).FirstOrDefault();
-                            authorizationRequest.RequesterNationality = requesterNationality;
-                        }
-                        if (authorizationRequest.AuthorizerNationality is null && authorizerPersoanlData != null)
-                        {
-                            var authorizerNationality = nationalities.Where(a => a.KMIDNationalityCode == authorizerPersoanlData.NationalityEn).Select(a => a.LocationId).FirstOrDefault();
-                            authorizationRequest.AuthorizerNationality = authorizerNationality;
-                        }
-
-                    }
+                    
                     _requestLogger.LogInformation(
                         message: "AuthorizerPersoanlData is: {0}",
                         propertyValues: authorizerPersoanlData == null ? null : Newtonsoft.Json.JsonConvert.SerializeObject(authorizerPersoanlData, Formatting.None,
@@ -624,9 +602,18 @@ namespace IndividualAuthorizationSahelWorker
             }
             if (status == IndividualAuthorizationStatusEnum.Approved)
             {
+                var authorizerToken = authorizationRequest.AuthorizerToken;
+                var requesterToken = authorizationRequest.RequesterToken;
+                //authorizationRequest.StateId = (int)IndividualAuthorizationStatusEnum.Approved;
+                var requesterDetails = await GetKGACPACIPersonIdentityData(Convert.ToInt32(requesterToken));
+                var authorizerDetails = await GetKGACPACIPersonIdentityData(Convert.ToInt32(authorizerToken));
                 authorizationRequest.ExpiryDate = DateTime.Now.AddDays(_configurations.IndividualAuthorizationSahelConfiguration.IndividualAuthorizationExpirationDays);
                 authorizationRequest.ApprovedDate = DateTime.Now;
                 authorizationRequest.SubmissionDate = DateTime.Now;
+                authorizationRequest.RequesterNationality = requesterDetails.NationalityId;
+                authorizationRequest.AuthorizerNationality = authorizerDetails.NationalityId;
+                //authorizationRequest.StateId = (int)IndividualAuthorizationStatusEnum.Approved;
+
             }
 
             authorizationRequest.StateId = (int)status;
@@ -713,7 +700,61 @@ namespace IndividualAuthorizationSahelWorker
 
             return result;
         }
+        public async Task<KgacpacipersonIdentityDto> GetKGACPACIPersonIdentityData(int tokenId)
+        {
+            const string spName = "etrade.GetUserDetailsFromKGACPACIPersonIdentity";
+            using var conn = new SqlConnection(_configurations.ConnectionStrings.Default);
+            using var cmd = new SqlCommand(spName, conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
 
+            // SP expects just @Token
+            cmd.Parameters.Add("@Token", SqlDbType.Int).Value = tokenId;
+
+            conn.Open();
+            using var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+            if (!reader.Read())
+                return new KgacpacipersonIdentityDto();
+
+            var dto = new KgacpacipersonIdentityDto
+            {
+                KgacpaciqueueId = (int)reader["KGACPACIQueueId"],
+                FullNameAr = reader["FullNameAr"] as string,
+                FullNameEn = reader["FullNameEn"] as string,
+
+                CardExpiryDate = reader["CardExpiryDate"] != DBNull.Value
+        ? (DateTime?)reader["CardExpiryDate"]
+        : null,
+
+                DateCreated = (DateTime)reader["DateCreated"],
+
+                NationalityAr = reader["NationalityAr"] != DBNull.Value
+        ? reader["NationalityAr"] as string
+        : null,
+
+                NationalityEn = reader["NationalityEn"] != DBNull.Value
+        ? reader["NationalityEn"] as string
+        : null,
+
+                NationalityId = reader["NationalityId"] != DBNull.Value
+        ? (int)reader["NationalityId"]
+        : 0,
+
+                Gender = reader["Gender"] != DBNull.Value
+        ? reader["Gender"] as string
+        : null,
+
+                MobileNumber = reader["MobileNumber"] != DBNull.Value
+        ? reader["MobileNumber"] as string
+        : null
+            };
+
+
+
+
+            return dto;
+        }
         public async Task<string> PrintingIndividualRequest(IndividualAuthorizationRequest request)
         {
             List<ParameterModel> parameterModel = new List<ParameterModel>();
