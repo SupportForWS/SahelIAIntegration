@@ -116,8 +116,7 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob.DTOs
         public DateTime? EndDate { get; set; }
         public string? Time { get; set; }
         public List<MonthEnum> SelectedMonths { get; set; } = new();
-
-
+        public int? ParameterHistoryId { get; set; }
     }
 
 }

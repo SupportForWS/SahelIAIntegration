@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ReportScheduler.Jobs.ReportSchedulerJob.DTOs;
 using ReportScheduler.Jobs.ReportSchedulerJob.Models;
@@ -17,17 +18,21 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
         private readonly ILogger<ReportSchedulerJob> _logger;
         private readonly string _reportDetailsApiUrl;
         private readonly string _executeReportApiUrl;
+        private readonly string _directExecuteReportApiUrl;
         private readonly string _reportsFolderPath;
         private readonly EmailConfiguration _emailConfig;
 
-        public ReportSchedulerJob(IConfiguration configuration, ILogger<ReportSchedulerJob> logger, EmailConfiguration emailConfig)
+        public ReportSchedulerJob(IConfiguration configuration,
+                                  ILogger<ReportSchedulerJob> logger,
+                                  IOptions<EmailConfiguration> emailOptions)
         {
             _connectionString = configuration.GetConnectionString("Default");
             _logger = logger;
             _reportDetailsApiUrl = configuration["ApiUrls:ReportDetails"];
             _executeReportApiUrl = configuration["ApiUrls:ExecuteReport"];
             _reportsFolderPath = configuration["ReportsFolderPath"];
-            _emailConfig = emailConfig;
+            _emailConfig = emailOptions.Value;
+            _directExecuteReportApiUrl = configuration["ApiUrls:DirectExecuteReportApiUrl"];
         }
 
         public async Task Run()
@@ -38,19 +43,23 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
             {
                 try
                 {
-                    var reportDetails = await GetReportDetailsAsync(report.ParameterHistoryId);
-                    if (reportDetails == null || reportDetails.Serial == null)
-                    {
-                        _logger.LogWarning("Report details not found for ReportId {ReportId}", report.ReportId);
-                        continue;
-                    }
+                    //var reportDetails = await GetReportDetailsAsync(report.ParameterHistoryId);
+                    //if (reportDetails == null || reportDetails.Serial == null)
+                    //{
+                    //    _logger.LogWarning("Report details not found for ReportId {ReportId}", report.ReportId);
+                    //    continue;
+                    //}
 
-                    reportDetails.Serial = report.ReportId;
-                    var reportResult = await ExecuteReportAsync(reportDetails);
+                    //reportDetails.Serial = 0; // report.ReportId; //todo here serial is the start index of data
+                    //var reportResult = await ExecuteReportAsync(reportDetails);
+                    var reportResult = await DirectExecuteReportAsync(report);
 
                     if (reportResult?.DownloadFileDTO != null)
                     {
                         var fullPath = await SaveReportFileAsync(reportResult.DownloadFileDTO);
+
+                        //todo add retry count
+                        //todo what if email is null
                         await SendReportFileByEmailAsync(fullPath, report.SharedWith, "Report File", "Please find the attached report.");
                     }
 
@@ -66,37 +75,37 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
         private async Task<List<ReportExecutionScheduleModel>> GetReportsToRunTodayAsync()
         {
 
-            var reports1 = new List<ReportExecutionScheduleModel>
-                {
-                    new ReportExecutionScheduleModel
-                    {
-                        Id = 2,
-                        ReportId = 11125,
-                        ScheduleType = "O",
-                        ExecutionTime = DateTime.Today.AddHours(9),
-                        Enabled = true,
-                        ParameterHistoryId=622,
-                        SharedWith="www@fff.com,www@fff.com"
-                    },
-                    //new ReportExecutionScheduleModel
-                    //{
-                    //    Id = 2,
-                    //    ReportId = 102,
-                    //    ScheduleType = "W",
-                    //    ExecutionTime = DateTime.Today.AddHours(14),
-                    //    Enabled = true
-                    //},
-                    //new ReportExecutionScheduleModel
-                    //{
-                    //    Id = 3,
-                    //    ReportId = 103,
-                    //    ScheduleType = "O",
-                    //    ExecutionTime = DateTime.Today.AddHours(16),
-                    //    Enabled = false
-                    //}
-                };
+            //var reports1 = new List<ReportExecutionScheduleModel>
+            //    {
+            //        new ReportExecutionScheduleModel
+            //        {
+            //            Id = 2,
+            //            ReportId = 11125,
+            //            ScheduleType = "O",
+            //            ExecutionTime = DateTime.Today.AddHours(9),
+            //            Enabled = true,
+            //            ParameterHistoryId=622,
+            //            SharedWith="www@fff.com,www@fff.com"
+            //        },
+            //        //new ReportExecutionScheduleModel
+            //        //{
+            //        //    Id = 2,
+            //        //    ReportId = 102,
+            //        //    ScheduleType = "W",
+            //        //    ExecutionTime = DateTime.Today.AddHours(14),
+            //        //    Enabled = true
+            //        //},
+            //        //new ReportExecutionScheduleModel
+            //        //{
+            //        //    Id = 3,
+            //        //    ReportId = 103,
+            //        //    ScheduleType = "O",
+            //        //    ExecutionTime = DateTime.Today.AddHours(16),
+            //        //    Enabled = false
+            //        //}
+            //    };
 
-            return reports1;
+            //return reports1;
 
             ///
             var reports = new List<ReportExecutionScheduleModel>();
@@ -119,7 +128,7 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
                     ScheduleType = reader.GetString(reader.GetOrdinal("ScheduleType")),
                     ExecutionTime = reader.GetDateTime(reader.GetOrdinal("ExecutionTime")),
                     Enabled = reader.GetBoolean(reader.GetOrdinal("Enabled")),
-                    ParameterHistoryId = reader.GetInt32(reader.GetOrdinal("ParameterHistoryId")),
+                  //  ParameterHistoryId = reader.GetInt32(reader.GetOrdinal("ParameterHistoryId")),
                     SharedWith = reader.GetString(reader.GetOrdinal("SharedWith"))
                 });
             }
@@ -134,10 +143,26 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
             return result;
         }
 
+        private async Task<ResponseDto> DirectExecuteReportAsync(ReportExecutionScheduleModel model)
+        {
+            //todo check qasem
+            //todo set these from db
+            //saveCriteria.DeclarationChoice = "Normal";
+            //saveCriteria.IsSampleData = true;
+            return await CallPostAPI<ExecuteReportModel, ResponseDto>(new ExecuteReportModel
+            {
+                IsSampleData = true,
+                ReportID=model.ReportId
+            }, _directExecuteReportApiUrl);
+
+        }
+
         private async Task<ResponseDto> ExecuteReportAsync(SaveCriteriaDTO saveCriteria)
         {
             //todo check qasem
+            //todo set these from db
             saveCriteria.DeclarationChoice = "Normal";
+            saveCriteria.IsSampleData = true;
             return await CallPostAPI<SaveCriteriaDTO, ResponseDto>(saveCriteria, _executeReportApiUrl);
         }
 
@@ -242,6 +267,7 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
 
             try
             {
+                //add certificated pass code todo
                 using var message = new MailMessage
                 {
                     From = new MailAddress(_emailConfig.FromEmail),
@@ -290,7 +316,11 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
 
 
 
-
+    public class ExecuteReportModel
+    {
+        public int ReportID { get; set; }
+        public bool IsSampleData { get; set; }
+    }
 
 
 }
