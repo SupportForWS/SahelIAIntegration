@@ -4,12 +4,14 @@ namespace ReportScheduler
 {
     public class Worker : BackgroundService
     {
+
+        private readonly ReportSchedulerJob _job;
         private readonly ILogger<Worker> _logger;
-        private readonly ReportSchedulerJob _reportSchedulerJob;
-        public Worker(ILogger<Worker> logger, ReportSchedulerJob reportSchedulerJob)
+
+        public Worker(ReportSchedulerJob job, ILogger<Worker> logger)
         {
+            _job = job;
             _logger = logger;
-            _reportSchedulerJob = reportSchedulerJob;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,13 +20,15 @@ namespace ReportScheduler
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    _logger.LogInformation("Starting report scheduler job execution at {Time}", DateTime.Now);
                 }
 
-                await _reportSchedulerJob.Run();
+                await _job.Run();
 
                 await Task.Delay(1000, stoppingToken);
             }
         }
+
+
     }
 }

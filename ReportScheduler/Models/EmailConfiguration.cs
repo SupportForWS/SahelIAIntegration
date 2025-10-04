@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReportScheduler.Jobs.ReportSchedulerJob.Models
+namespace ReportScheduler.Models
 {
     public class EmailConfiguration
     {
+
         public string ExchangeServer { get; set; }
         public int Port { get; set; }
         public string FromEmail { get; set; }
@@ -18,5 +19,4 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob.Models
         public string DomainName { get; set; }
         public int MaxAttempts { get; set; }
     }
-
 }
