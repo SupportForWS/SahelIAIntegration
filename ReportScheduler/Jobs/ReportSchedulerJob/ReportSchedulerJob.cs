@@ -159,9 +159,7 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
                     SharedWith = reader.GetString(reader.GetOrdinal("SharedWith"))
                 });
             }
-            reports.RemoveAt(0);
-            reports.RemoveAt(1);
-            return reports;
+             return reports;
         }
 
         private async Task<ResponseDto> DirectExecuteReportAsync(ReportExecutionScheduleModel model)
@@ -423,8 +421,9 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
 
             foreach (var share in shares)
             {
-                var reportLink = $"{baseUrl}{accessPath}{share.Token}";
-
+                //update to send UI links
+              //  var reportLink = $"{baseUrl}{accessPath}{share.Token}";
+                var reportLink = string.Format(_apiSettings.UILinksWithToken, share.Token);
                 try
                 {
                     await SendReportLinkByEmailAsync(reportLink, share.Email, share.ExpiresAt);

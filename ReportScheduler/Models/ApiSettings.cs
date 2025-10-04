@@ -17,5 +17,6 @@ namespace ReportScheduler.Models
         public string PendingSharesPath { get; set; }
         public string SaveSharesPath { get; set; }
         public string AccessReportPath { get; set; }
+        public string UILinksWithToken { get; set; }
     }
 }
