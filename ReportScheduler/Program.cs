@@ -1,6 +1,5 @@
 using ReportScheduler;
 using ReportScheduler.Jobs.ReportSchedulerJob;
-using ReportScheduler.Jobs.ReportSchedulerJob.Models;
 using ReportScheduler.Models;
 using ReportScheduler.Services;
 

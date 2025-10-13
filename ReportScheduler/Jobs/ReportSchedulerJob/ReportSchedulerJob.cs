@@ -266,10 +266,12 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
 
                     var response = await httpClient.SendAsync(request);
 
-                    if (!response.IsSuccessStatusCode)
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<ResponseWrapper<TResponse>>(responseContent);
+
+                    if (!response.IsSuccessStatusCode || !result.Succeeded)
                     {
-                        var error = await response.Content.ReadAsStringAsync();
-                        _logger.LogError("API call failed: {StatusCode} - {Error}", response.StatusCode, error);
+                        _logger.LogError("API call failed: {StatusCode} - {Error}", response.StatusCode, responseContent);
 
                         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && retryCount < _reportSettings.RetryCount - 1)
                         {
@@ -279,11 +281,9 @@ namespace ReportScheduler.Jobs.ReportSchedulerJob
                             continue;
                         }
 
-                        throw new HttpRequestException($"API returned {response.StatusCode}");
+                        throw new HttpRequestException($"API returned {result.Message}");
                     }
 
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ResponseWrapper<TResponse>>(responseContent);
 
                     return result.Data;
                 }

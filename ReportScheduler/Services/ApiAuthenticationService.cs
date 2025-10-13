@@ -37,7 +37,7 @@ namespace ReportScheduler.Services
 
         public async Task<string> GetValidTokenAsync()
         {
-            if (!string.IsNullOrEmpty(_jwtToken) && _tokenExpiry > DateTime.UtcNow.AddMinutes(5))
+            if (!string.IsNullOrEmpty(_jwtToken) && _tokenExpiry > DateTime.Now.AddMinutes(1))
             {
                 return _jwtToken;
             }
@@ -45,7 +45,7 @@ namespace ReportScheduler.Services
             await _semaphore.WaitAsync();
             try
             {
-                if (!string.IsNullOrEmpty(_jwtToken) && _tokenExpiry > DateTime.UtcNow.AddMinutes(5))
+                if (!string.IsNullOrEmpty(_jwtToken) && _tokenExpiry > DateTime.Now.AddMinutes(1))
                 {
                     return _jwtToken;
                 }
@@ -103,7 +103,7 @@ namespace ReportScheduler.Services
 
                 _jwtToken = result.Data.AccessToken;
                 _refreshToken = result.Data.RefreshToken;
-                _tokenExpiry = DateTime.UtcNow.AddMinutes(result.Data.ExpiresIn);
+                _tokenExpiry = DateTime.Now.AddMinutes(result.Data.ExpiresIn);
 
                 _logger.LogInformation("Service authenticated successfully. Token expires at {ExpiresAt}", _tokenExpiry);
             }
@@ -132,7 +132,7 @@ namespace ReportScheduler.Services
 
                 _jwtToken = result.Data.AccessToken;
                 _refreshToken = result.Data.RefreshToken;
-                _tokenExpiry = DateTime.UtcNow.AddMinutes(result.Data.ExpiresIn);
+                _tokenExpiry = DateTime.Now.AddMinutes(result.Data.ExpiresIn);
 
                 _logger.LogInformation("Token refreshed successfully. New expiry: {ExpiresAt}", _tokenExpiry);
             }
